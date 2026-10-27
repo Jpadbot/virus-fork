@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>病毒路線（暫名）</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --card: #1a2332;
+    --text: #e8eef6;
+    --muted: #9aabbd;
+    --accent: #5ec8a0;
+    --accent2: #6ba3e8;
+    --warn: #e0b35a;
+    --bar-bg: #2a3545;
+    --btn: #243044;
+    --btn-hover: #2f4058;
+    --spread: #e87a6b;
+    --adapt: #5ec8a0;
+    --latent: #6ba3e8;
+    --radius: 14px;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+    line-height: 1.45;
+  }
+  body {
+    display: flex;
+    justify-content: center;
+  }
+  #app {
+    width: 100%;
+    max-width: 440px;
+    min-height: 100dvh;
+    padding: 16px 16px calc(20px + var(--safe-bottom));
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  header.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .identity {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid #2e3d52;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .identity .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+  .round-tag {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .bars {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .bar-row { display: flex; flex-direction: column; gap: 4px; }
+  .bar-label {
+    display: flex; justify-content: space-between;
+    font-size: 0.8rem; color: var(--muted);
+  }
+  .bar-track {
+    height: 10px; border-radius: 999px; background: var(--bar-bg); overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%; width: 0%; border-radius: 999px;
+    transition: width 0.35s ease;
+  }
+  .bar-fill.spread { background: linear-gradient(90deg, #c45a4e, var(--spread)); }
+  .bar-fill.adapt { background: linear-gradient(90deg, #3a9a74, var(--adapt)); }
+  .bar-fill.latent { background: linear-gradient(90deg, #3f6fb0, var(--latent)); }
+  .panel {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  h1 {
+    font-size: 1.35rem; margin: 0 0 4px;
+    font-weight: 800;
+  }
+  h2 {
+    font-size: 1.1rem; margin: 0;
+    font-weight: 700;
+  }
+  .muted { color: var(--muted); font-size: 0.92rem; }
+  .scene {
+    font-size: 1.02rem;
+    white-space: pre-wrap;
+  }
+  .result {
+    background: #14202e;
+    border-left: 3px solid var(--accent);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+  }
+  button.choice, button.primary, button.ghost {
+    min-height: 48px;
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #33485f;
+    border-radius: 12px;
+    background: var(--btn);
+    color: var(--text);
+    font-size: 1rem;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button.choice:hover, button.choice:focus-visible,
+  button.primary:hover, button.ghost:hover {
+    background: var(--btn-hover);
+    outline: none;
+  }
+  button.choice:active, button.primary:active { transform: scale(0.985); }
+  button.primary {
+    background: #2a5a48;
+    border-color: #3d7a62;
+    text-align: center;
+    font-weight: 700;
+  }
+  button.ghost {
+    background: transparent;
+    text-align: center;
+    color: var(--muted);
+  }
+  .chip {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #24344a;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .history {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 8px;
+    max-height: 40vh; overflow: auto;
+  }
+  .history li {
+    background: #14202e;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 0.88rem;
+  }
+  .history .k { color: var(--muted); font-size: 0.75rem; }
+  .route-banner {
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-weight: 700;
+  }
+  .route-banner.spread-route { background: #3a2220; color: #f0b0a6; }
+  .route-banner.latent-route { background: #1c2a40; color: #a8c6f0; }
+  .route-banner.mixed-route { background: #2a2a20; color: #e0d09a; }
+  .hidden { display: none !important; }
+  footer.note {
+    font-size: 0.75rem;
+    color: #6d7d8f;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <div class="identity" aria-label="身分"><span class="dot" aria-hidden="true"></span>病毒</div>
+    <div class="round-tag" id="roundTag">準備中</div>
+  </header>
+
+  <section class="bars" aria-label="狀態">
+    <div class="bar-row">
+      <div class="bar-label"><span>擴散</span><span id="vSpread">12</span></div>
+      <div class="bar-track"><div class="bar-fill spread" id="bSpread"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label"><span>適應</span><span id="vAdapt">18</span></div>
+      <div class="bar-track"><div class="bar-fill adapt" id="bAdapt"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label"><span>潛伏</span><span id="vLatent">15</span></div>
+      <div class="bar-track"><div class="bar-fill latent" id="bLatent"></div></div>
+    </div>
+  </section>
+
+  <!-- 開局 -->
+  <section class="panel" id="screenStart">
+    <h1>病毒路線</h1>
+    <p class="muted">工程代號原型・非正式品名。用按鈕探索不同進化；輸贏不是重點。</p>
+    <p class="scene">你是一粒還沒選定棲地的病毒。接下來幾輪，選擇出現地點、宿主，以及進化方向——每條路會長成不同模樣。</p>
+    <div class="choices">
+      <button type="button" class="primary" id="btnStart">開始探索</button>
+    </div>
+  </section>
+
+  <!-- 回合 -->
+  <section class="panel hidden" id="screenPlay">
+    <div><span class="chip" id="choiceType">抉擇</span>
+      <h2 id="sceneTitle">情境</h2>
+    </div>
+    <p class="scene" id="sceneText"></p>
+    <div class="result hidden" id="resultBox"></div>
+    <div class="choices" id="choiceBox"></div>
+  </section>
+
+  <!-- 終局 -->
+  <section class="panel hidden" id="screenEnd">
+    <h2>這條路線的回顧</h2>
+    <div class="route-banner" id="routeBanner"></div>
+    <p class="scene" id="endSummary"></p>
+    <p class="muted">本局關鍵抉擇</p>
+    <ul class="history" id="historyList"></ul>
+    <div class="choices">
+      <button type="button" class="primary" id="btnAgain">再走一局</button>
+    </div>
+  </section>
+
+  <footer class="note">純按鈕・無倒數・休閒探索</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  const TOTAL_ROUNDS = 7;
+
+  const state = {
+    round: 0,
+    spread: 12,
+    adapt: 18,
+    latent: 15,
+    location: null,
+    host: null,
+    flags: { rush: 0, silent: 0 },
+    history: [],
+    pendingResult: null,
+  };
+
+  const el = {
+    roundTag: document.getElementById("roundTag"),
+    vSpread: document.getElementById("vSpread"),
+    vAdapt: document.getElementById("vAdapt"),
+    vLatent: document.getElementById("vLatent"),
+    bSpread: document.getElementById("bSpread"),
+    bAdapt: document.getElementById("bAdapt"),
+    bLatent: document.getElementById("bLatent"),
+    screenStart: document.getElementById("screenStart"),
+    screenPlay: document.getElementById("screenPlay"),
+    screenEnd: document.getElementById("screenEnd"),
+    choiceType: document.getElementById("choiceType"),
+    sceneTitle: document.getElementById("sceneTitle"),
+    sceneText: document.getElementById("sceneText"),
+    resultBox: document.getElementById("resultBox"),
+    choiceBox: document.getElementById("choiceBox"),
+    routeBanner: document.getElementById("routeBanner"),
+    endSummary: document.getElementById("endSummary"),
+    historyList: document.getElementById("historyList"),
+    btnStart: document.getElementById("btnStart"),
+    btnAgain: document.getElementById("btnAgain"),
+  };
+
+  function clamp(n) { return Math.max(0, Math.min(100, Math.round(n))); }
+
+  function renderBars() {
+    el.vSpread.textContent = state.spread;
+    el.vAdapt.textContent = state.adapt;
+    el.vLatent.textContent = state.latent;
+    el.bSpread.style.width = state.spread + "%";
+    el.bAdapt.style.width = state.adapt + "%";
+    el.bLatent.style.width = state.latent + "%";
+  }
+
+  function show(screen) {
+    el.screenStart.classList.toggle("hidden", screen !== "start");
+    el.screenPlay.classList.toggle("hidden", screen !== "play");
+    el.screenEnd.classList.toggle("hidden", screen !== "end");
+  }
+
+  function applyDelta(delta) {
+    if (!delta) return;
+    if (delta.spread) state.spread = clamp(state.spread + delta.spread);
+    if (delta.adapt) state.adapt = clamp(state.adapt + delta.adapt);
+    if (delta.latent) state.latent = clamp(state.latent + delta.latent);
+    if (delta.rush) state.flags.rush += delta.rush;
+    if (delta.silent) state.flags.silent += delta.silent;
+    if (delta.location) state.location = delta.location;
+    if (delta.host) state.host = delta.host;
+  }
+
+  /** 每輪定義：type A 地點 / B 宿主 / C 進化；選項可依旗標分叉 */
+  function getRoundDef(r) {
+    const rush = state.flags.rush;
+    const silent = state.flags.silent;
+
+    const rounds = [
+      {
+        type: "地點",
+        title: "第一站：要在哪裡現身？",
+        text: "空氣裡還很安靜。你需要一個起點——不同場所會把你推向不同節奏。",
+        choices: [
+          { label: "地鐵車廂", result: "人群密集、流動快。你的擴散節奏被拉高。", delta: { spread: 14, adapt: 2, rush: 2, location: "地鐵" } },
+          { label: "郊區農場", result: "動物與人之間的交界地帶。適應空間變大，節奏較慢。", delta: { adapt: 12, latent: 6, silent: 1, location: "農場" } },
+          { label: "密林溪邊", result: "宿主稀少但干擾也少。潛伏與低調成為本能。", delta: { latent: 14, adapt: 4, silent: 2, location: "密林" } },
+          { label: "診所候診區", result: "壓力與消毒並存。你學著在夾縫中移動。", delta: { adapt: 10, spread: 6, rush: 1, location: "診所" } },
+        ],
+      },
+      {
+        type: "宿主",
+        title: "暫時落腳的宿主",
+        text: "你需要一個載體。選擇會改變你之後可走的進化。",
+        choices: [
+          { label: "通勤的人", result: "移動範圍大，接觸面廣——擴散路徑打開。", delta: { spread: 12, rush: 2, host: "人" } },
+          { label: "野鼠", result: "低調、夜行、穿梭縫隙。潛伏餘地增加。", delta: { latent: 12, adapt: 4, silent: 2, host: "野鼠" } },
+          { label: "蚊蟲", result: "短距跳躍式傳遞。傳染節奏不穩但適應彈性上升。", delta: { spread: 6, adapt: 10, rush: 1, silent: 1, host: "蚊蟲" } },
+        ],
+      },
+      {
+        type: "進化",
+        title: "第一次進化分叉",
+        text: "體內訊號躁動。你要偏重哪一種方向？這會明顯拉開路線差異。",
+        choices: [
+          { label: "強化傳染力", result: "外殼變得更「黏」。疾行擴散路線成形。", delta: { spread: 18, latent: -4, rush: 3 } },
+          { label: "拉長潛伏期", result: "存在感降低。靜默潛伏路線成形。", delta: { latent: 18, spread: -4, silent: 3 } },
+          { label: "提升環境適應", result: "溫度與乾燥都不易打倒你。兩條路之間的緩衝變厚。", delta: { adapt: 16, rush: 1, silent: 1 } },
+        ],
+      },
+      {
+        type: "地點",
+        title: "下一站移動",
+        text: state.location
+          ? ("你離開「" + state.location + "」，尋找下一個節點。")
+          : "你尋找下一個節點。",
+        choices: rush >= silent
+          ? [
+              { label: "夜市人潮", result: "高接觸、高流動。擴散再往上推。", delta: { spread: 12, rush: 1, location: "夜市" } },
+              { label: "長途客運", result: "密閉空間裡的長時間共處。傳染節奏穩定上升。", delta: { spread: 10, adapt: 4, rush: 1, location: "客運" } },
+              { label: "改走側巷倉庫", result: "你刻意避開人潮，替潛伏留一點空間。", delta: { latent: 8, silent: 1, location: "倉庫" } },
+            ]
+          : [
+              { label: "廢棄溫室", result: "少有人至。潛伏繼續加深。", delta: { latent: 12, silent: 1, location: "溫室" } },
+              { label: "河岸濕地", result: "潮濕環境利於低調存續。", delta: { latent: 8, adapt: 6, silent: 1, location: "濕地" } },
+              { label: "偶入市集邊緣", result: "短暫接觸人群。擴散略升，但你仍偏靜默。", delta: { spread: 8, rush: 1, location: "市集邊" } },
+            ],
+      },
+      {
+        type: "宿主",
+        title: "宿主策略",
+        text: "要不要換宿主？還是把現有連結用滿？",
+        choices: [
+          { label: "固守目前宿主群", result: "熟悉帶來穩定。適應上升。", delta: { adapt: 10, latent: 4 } },
+          { label: "嘗試跨種跳躍", result: "風險與機會並存。擴散與適應同時跳動。", delta: { spread: 8, adapt: 8, rush: 1 } },
+          { label: "減少活動、更深潛伏", result: "你幾乎不發出訊號。潛伏明顯加深。", delta: { latent: 14, spread: -3, silent: 2 } },
+          { label: "短促爆發一次接觸", result: "一瞬間提高能見度。擴散跳升。", delta: { spread: 14, latent: -2, rush: 2 } },
+        ],
+      },
+      {
+        type: "進化",
+        title: "中段進化",
+        text: rush > silent + 1
+          ? "疾行訊號主導。你可以把它推得更遠，或硬轉彎。"
+          : silent > rush + 1
+          ? "靜默訊號主導。你可以沉得更深，或突然抬頭。"
+          : "兩種傾向還在拉扯。這一選會決定主路線。",
+        choices: rush > silent
+          ? [
+              { label: "再推傳染峰值", result: "疾行擴散成為清楚主線。", delta: { spread: 16, rush: 2 } },
+              { label: "補一點抗干擾", result: "適應補強，主線仍偏擴散。", delta: { adapt: 12, spread: 4, rush: 1 } },
+              { label: "強行轉潛伏", result: "你壓低聲量，路線開始混雜。", delta: { latent: 14, spread: -6, silent: 2 } },
+            ]
+          : [
+              { label: "更深的靜默層", result: "靜默潛伏成為清楚主線。", delta: { latent: 16, silent: 2 } },
+              { label: "在暗處微調適應", result: "適應補強，主線仍偏潛伏。", delta: { adapt: 12, latent: 4, silent: 1 } },
+              { label: "突然提高傳染", result: "你破靜而出，路線開始混雜。", delta: { spread: 14, latent: -6, rush: 2 } },
+            ],
+      },
+      {
+        type: "進化",
+        title: "收束前的最後抉擇",
+        text: "這一局快要定型。選一個收束姿態——不是勝負，只是這條路此刻的樣子。",
+        choices: [
+          { label: "以擴散姿態收束", result: "你把這局的足跡寫成一條疾行軌跡。", delta: { spread: 10, rush: 1 } },
+          { label: "以潛伏姿態收束", result: "你把這局的足跡寫成一條靜默軌跡。", delta: { latent: 10, silent: 1 } },
+          { label: "以適應姿態收束", result: "你強調存續與彈性，路線更綜合。", delta: { adapt: 12 } },
+        ],
+      },
+    ];
+
+    return rounds[r] || rounds[rounds.length - 1];
+  }
+
+  function routeInfo() {
+    const { rush, silent } = state.flags;
+    if (rush >= silent + 2 && state.spread >= state.latent) {
+      return {
+        key: "spread",
+        name: "疾行擴散",
+        cls: "spread-route",
+        summary:
+          "這局你偏向快速接觸與高流動。擴散條明顯較高，文案多是人潮、通勤與傳染峰值。" +
+          "和「靜默潛伏」相比：你更早被人注意到，但覆蓋面也更廣。",
+      };
+    }
+    if (silent >= rush + 2 && state.latent >= state.spread) {
+      return {
+        key: "latent",
+        name: "靜默潛伏",
+        cls: "latent-route",
+        summary:
+          "這局你偏向低調存續。潛伏條明顯較高，文案多是縫隙、濕地與減少訊號。" +
+          "和「疾行擴散」相比：你較慢展開，但更不易被干擾打斷。",
+      };
+    }
+    return {
+      key: "mixed",
+      name: "交錯適應",
+      cls: "mixed-route",
+      summary:
+        "這局疾行與靜默交替出現，適應成為主軸。狀態條較均衡，路線差異較細——若想感受對比，可再走一局刻意偏傳染或偏潛伏。",
+    };
+  }
+
+  function startGame() {
+    state.round = 0;
+    state.spread = 12;
+    state.adapt = 18;
+    state.latent = 15;
+    state.location = null;
+    state.host = null;
+    state.flags = { rush: 0, silent: 0 };
+    state.history = [];
+    state.pendingResult = null;
+    renderBars();
+    show("play");
+    presentRound();
+  }
+
+  function presentRound() {
+    const def = getRoundDef(state.round);
+    el.roundTag.textContent = "第 " + (state.round + 1) + "／" + TOTAL_ROUNDS + " 輪";
+    el.choiceType.textContent = def.type;
+    el.sceneTitle.textContent = def.title;
+    el.sceneText.textContent = def.text;
+    el.resultBox.classList.add("hidden");
+    el.resultBox.textContent = "";
+    el.choiceBox.innerHTML = "";
+    def.choices.forEach(function (c, idx) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "choice";
+      btn.textContent = c.label;
+      btn.addEventListener("click", function () { onChoose(c); });
+      el.choiceBox.appendChild(btn);
+    });
+  }
+
+  function onChoose(choice) {
+    applyDelta(choice.delta);
+    renderBars();
+    state.history.push({
+      round: state.round + 1,
+      type: getRoundDef(state.round).type,
+      label: choice.label,
+      result: choice.result,
+    });
+    el.choiceBox.innerHTML = "";
+    el.resultBox.textContent = choice.result;
+    el.resultBox.classList.remove("hidden");
+
+    const next = document.createElement("button");
+    next.type = "button";
+    next.className = "primary";
+    next.textContent = state.round + 1 >= TOTAL_ROUNDS ? "看路線回顧" : "下一輪";
+    next.addEventListener("click", function () {
+      state.round += 1;
+      if (state.round >= TOTAL_ROUNDS) {
+        endGame();
+      } else {
+        presentRound();
+      }
+    });
+    el.choiceBox.appendChild(next);
+  }
+
+  function endGame() {
+    const info = routeInfo();
+    show("end");
+    el.roundTag.textContent = "回顧";
+    el.routeBanner.className = "route-banner " + info.cls;
+    el.routeBanner.textContent = "本局路線：" + info.name;
+    el.endSummary.textContent =
+      info.summary +
+      "\n\n終局數值 — 擴散 " + state.spread +
+      "／適應 " + state.adapt +
+      "／潛伏 " + state.latent +
+      "。地點軌跡：" + (state.location || "—") +
+      "；宿主：" + (state.host || "—") + "。";
+    el.historyList.innerHTML = "";
+    state.history.forEach(function (h) {
+      const li = document.createElement("li");
+      li.innerHTML = '<div class="k">第 ' + h.round + " 輪・" + h.type + "</div>" +
+        "<div><strong>" + h.label + "</strong> — " + h.result + "</div>";
+      el.historyList.appendChild(li);
+    });
+  }
+
+  el.btnStart.addEventListener("click", startGame);
+  el.btnAgain.addEventListener("click", startGame);
+  renderBars();
+  show("start");
+})();
+</script>
+</body>
+</html>

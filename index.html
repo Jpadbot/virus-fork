@@ -3,748 +3,715 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>微生物圖鑑（暫名）</title>
+<title>微生物下落（暫名）</title>
 <style>
   :root {
-    --bg: #0c1218;
-    --card: #162032;
-    --card2: #1c2a40;
-    --text: #e8eef6;
-    --muted: #8fa0b5;
-    --line: #2a3c55;
-    --accent: #5ec8a0;
-    --bact: #e0a84a;
-    --vir: #6ba8e8;
-    --dim: #3a4a5e;
-    --radius: 14px;
+    --bg: #161a17;
+    --panel: #1e2420;
+    --ink: #e6e2d6;
+    --muted: #9a9588;
+    --line: #3a4038;
+    --bact: #c9a227;
+    --vir: #6a8fa8;
+    --gate: #2a322c;
+    --gate-hi: #3d4a40;
+    --warn: #c47a5a;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
   * { box-sizing: border-box; }
   html, body {
-    margin: 0; padding: 0; min-height: 100%;
-    background: var(--bg); color: var(--text);
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg); color: var(--ink);
     font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
-    line-height: 1.45;
+    line-height: 1.4; overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
   }
-  body { display: flex; justify-content: center; }
   #app {
-    width: 100%; max-width: 440px; min-height: 100dvh;
-    padding: 14px 14px calc(18px + var(--safe-bottom));
-    display: flex; flex-direction: column; gap: 10px;
+    width: 100%; max-width: 440px; height: 100%; height: 100dvh;
+    margin: 0 auto; display: flex; flex-direction: column;
+    position: relative;
   }
-  .screen { display: none; flex-direction: column; gap: 12px; flex: 1; }
+  .screen { display: none; flex: 1; flex-direction: column; min-height: 0; }
   .screen.active { display: flex; }
-  h1 { font-size: 1.35rem; margin: 0; letter-spacing: 0.02em; }
-  .sub { color: var(--muted); font-size: 0.9rem; margin: 0; }
-  .card {
-    background: var(--card); border: 1px solid var(--line);
-    border-radius: var(--radius); padding: 14px;
+
+  /* Title */
+  #title {
+    padding: 28px 20px calc(24px + var(--safe-bottom));
+    justify-content: center; gap: 18px; text-align: center;
   }
+  #title h1 { font-size: 1.5rem; font-weight: 700; margin: 0; letter-spacing: 0.04em; }
+  #title p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .title-mascot { width: 120px; height: 120px; margin: 8px auto; }
   .btn {
-    display: block; width: 100%;
-    min-height: 48px; padding: 12px 14px;
-    border: 1px solid var(--line); border-radius: 12px;
-    background: var(--card2); color: var(--text);
-    font-size: 1rem; font-weight: 600; text-align: left;
-    cursor: pointer; font-family: inherit;
-    transition: background 0.15s, border-color 0.15s;
+    display: block; width: 100%; max-width: 320px; margin: 0 auto;
+    min-height: 48px; padding: 14px 16px;
+    border: 1px solid var(--line); border-radius: 10px;
+    background: var(--panel); color: var(--ink);
+    font-size: 1.05rem; font-weight: 600; font-family: inherit;
+    cursor: pointer;
   }
-  .btn:hover, .btn:focus-visible {
-    background: #243652; border-color: var(--accent); outline: none;
-  }
-  .btn + .btn { margin-top: 8px; }
-  .btn .hint { display: block; font-size: 0.8rem; font-weight: 400; color: var(--muted); margin-top: 2px; }
-  .btn-primary {
-    background: linear-gradient(135deg, #2a6b55, #1e4d6b);
-    border-color: #3d8f74; text-align: center;
-  }
-  .btn-ghost { background: transparent; text-align: center; font-weight: 500; color: var(--muted); }
+  .btn:active { background: var(--gate-hi); }
+  .btn-main { background: #2c3830; border-color: #4a5c50; }
+  .hint-list { text-align: left; color: var(--muted); font-size: 0.85rem; max-width: 320px; margin: 0 auto; padding-left: 1.1em; }
+  .hint-list li { margin: 4px 0; }
 
-  /* Dex / mascot */
-  .dex {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 8px; padding: 16px 12px 12px;
-    background: radial-gradient(ellipse at 50% 30%, #1a3048 0%, var(--card) 70%);
-    border: 1px solid var(--line); border-radius: var(--radius);
+  /* Play */
+  #play { position: relative; background: var(--bg); }
+  #hud {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 5;
+    padding: 10px 12px 8px;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(22,26,23,0.92) 0%, rgba(22,26,23,0) 100%);
   }
-  .mascot-wrap {
-    width: 160px; height: 160px;
-    display: flex; align-items: center; justify-content: center;
-    filter: drop-shadow(0 6px 16px rgba(0,0,0,0.45));
-    transition: transform 0.35s ease;
+  #hud .name { font-size: 1rem; font-weight: 700; margin: 0; }
+  #hud .latin { font-size: 0.78rem; color: var(--muted); font-style: italic; margin: 2px 0 0; }
+  #hud .blurb { font-size: 0.75rem; color: var(--muted); margin: 6px 0 0; }
+  #stage {
+    flex: 1; position: relative; overflow: hidden; touch-action: none;
+    cursor: pointer;
   }
-  .mascot-wrap.pulse { animation: pop 0.45s ease; }
-  @keyframes pop {
-    0% { transform: scale(0.85); opacity: 0.6; }
-    60% { transform: scale(1.06); }
-    100% { transform: scale(1); opacity: 1; }
+  .lane-hint {
+    position: absolute; inset: 0; display: flex; pointer-events: none; opacity: 0.08;
   }
-  .mascot-wrap svg { width: 140px; height: 140px; }
-  .form-name { font-size: 1.15rem; font-weight: 800; text-align: center; margin: 0; }
-  .form-sci { font-size: 0.85rem; color: var(--muted); font-style: italic; text-align: center; margin: 0; }
-  .science {
-    font-size: 0.8rem; color: var(--muted);
-    background: rgba(0,0,0,0.25); border-radius: 10px;
-    padding: 8px 10px; width: 100%;
-  }
-  .science strong { color: var(--accent); font-weight: 700; }
-  .meta-row {
-    display: flex; justify-content: space-between; align-items: center;
-    color: var(--muted); font-size: 0.85rem;
-  }
-  .badge {
-    display: inline-block; padding: 2px 8px; border-radius: 999px;
-    font-size: 0.75rem; font-weight: 700;
-    background: #243044; border: 1px solid var(--line);
-  }
-  .badge.bact { color: var(--bact); border-color: #6a5020; }
-  .badge.vir { color: var(--vir); border-color: #2a5080; }
+  .lane-hint span { flex: 1; border-right: 1px dashed #fff; }
+  .lane-hint span:last-child { border-right: none; }
 
-  /* Tech tree */
-  .tree-card { padding: 12px; }
-  .tree-title { font-size: 0.85rem; font-weight: 700; margin: 0 0 8px; color: var(--muted); }
-  .tree {
-    display: flex; flex-direction: column; align-items: center; gap: 0;
-    font-size: 0.72rem;
+  #creature {
+    position: absolute; width: 72px; height: 72px;
+    margin-left: -36px; margin-top: -36px;
+    z-index: 3; will-change: left, top;
+    transition: filter 0.2s;
   }
-  .tree-node {
-    min-width: 118px; max-width: 160px;
-    padding: 6px 8px; border-radius: 8px; text-align: center;
-    border: 1px solid var(--dim); background: #121a26; color: #6a7a90;
-    transition: all 0.25s;
-  }
-  .tree-node.done {
-    border-color: var(--accent); background: #15352c; color: #c8f0e0; font-weight: 600;
-  }
-  .tree-node.current {
-    border-color: #f0d080; background: #3a3018; color: #ffe9a8;
-    box-shadow: 0 0 0 2px rgba(240,208,128,0.25);
-    font-weight: 800;
-  }
-  .tree-node.locked { opacity: 0.55; }
-  .tree-stem {
-    width: 2px; height: 10px; background: var(--dim);
-  }
-  .tree-stem.lit { background: var(--accent); }
-  .tree-fork {
-    display: flex; gap: 10px; width: 100%; justify-content: center;
-  }
-  .tree-branch {
-    flex: 1; max-width: 48%;
-    display: flex; flex-direction: column; align-items: center;
-  }
-  .tree-branch .tree-node { width: 100%; max-width: none; min-width: 0; }
-  .fork-label {
-    font-size: 0.68rem; margin-bottom: 4px; font-weight: 700;
-  }
-  .fork-label.bact { color: var(--bact); }
-  .fork-label.vir { color: var(--vir); }
+  #creature.flash { filter: brightness(1.4); }
 
-  .scene { font-size: 0.95rem; margin: 0; }
-  .choices { margin-top: auto; display: flex; flex-direction: column; gap: 0; }
-  .result-flash {
-    display: none; padding: 10px 12px; border-radius: 10px;
-    background: #1a2e24; border: 1px solid #2f6b52;
-    font-size: 0.9rem;
+  .gate-row {
+    position: absolute; left: 0; right: 0; height: 88px;
+    display: flex; gap: 8px; padding: 0 10px;
+    z-index: 2; will-change: top;
   }
-  .result-flash.show { display: block; }
-  .review li { margin-bottom: 6px; }
-  .foot-note { font-size: 0.75rem; color: var(--muted); text-align: center; margin: 4px 0 0; }
+  .gate {
+    flex: 1; min-width: 0;
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    background: var(--gate);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 6px 4px; text-align: center;
+  }
+  .gate.hi { border-color: var(--bact); background: var(--gate-hi); }
+  .gate.vir-hi { border-color: var(--vir); background: var(--gate-hi); }
+  .gate .g-title { font-size: 0.82rem; font-weight: 700; line-height: 1.2; }
+  .gate .g-sub { font-size: 0.68rem; color: var(--muted); margin-top: 3px; line-height: 1.15; }
+
+  #toast {
+    position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%);
+    z-index: 6; pointer-events: none;
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 10px 14px;
+    font-size: 0.9rem; text-align: center; max-width: 86%;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  #toast.show { opacity: 1; }
+
+  #controls-hint {
+    position: absolute; bottom: calc(10px + var(--safe-bottom)); left: 0; right: 0;
+    text-align: center; color: var(--muted); font-size: 0.75rem;
+    z-index: 4; pointer-events: none;
+  }
+
+  /* End */
+  #end {
+    padding: 24px 18px calc(24px + var(--safe-bottom));
+    justify-content: center; gap: 14px; text-align: center; overflow-y: auto;
+  }
+  #end h2 { margin: 0; font-size: 1.35rem; line-height: 1.35; }
+  #end .latin { color: var(--muted); font-style: italic; font-size: 0.9rem; margin: 0; }
+  #end .end-mascot { width: 140px; height: 140px; margin: 4px auto; }
+  #end .story { color: var(--muted); font-size: 0.9rem; margin: 0; text-align: left; }
+  #end .path { font-size: 0.8rem; color: var(--muted); text-align: left;
+    border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; }
+  #end .path ol { margin: 6px 0 0; padding-left: 1.2em; }
 </style>
 </head>
 <body>
 <div id="app">
-
-  <!-- 開局 -->
-  <section id="screen-start" class="screen active">
-    <h1>微生物圖鑑</h1>
-    <p class="sub">暫名原型 · 休閒探索 · 非正式品名</p>
-    <div class="card">
-      <p class="scene" style="margin:0">
-        你是一粒尚未定型的<strong>原始微粒</strong>。透過地點、宿主與進化方向的選擇，
-        走出一條偏<strong>細菌</strong>或偏<strong>病毒</strong>的簡化路線——像圖鑑一樣看形態改變，用科技樹回顧足跡。
-      </p>
-      <p class="foot-note">本原型為簡化科普／假設，非真實醫學或演化史教材。</p>
-    </div>
-    <div class="dex" aria-hidden="true">
-      <div class="mascot-wrap" id="start-mascot"></div>
-      <p class="form-name">原始微粒</p>
-      <p class="form-sci">undifferentiated mote（假設）</p>
-    </div>
-    <button type="button" class="btn btn-primary" id="btn-start">開始探索</button>
+  <section id="title" class="screen active" aria-label="開局">
+    <div class="title-mascot" id="titleMascot"></div>
+    <h1>微生物下落</h1>
+    <p>暫名原型・休閒探索・非正式品名</p>
+    <ul class="hint-list">
+      <li>公仔會不斷往下掉</li>
+      <li>左右鍵、左右滑、或點左／右半邊，對準門槽</li>
+      <li>不同選擇會走到不同終局（真分叉）</li>
+    </ul>
+    <button type="button" class="btn btn-main" id="btnStart">開始下落</button>
   </section>
 
-  <!-- 遊玩 -->
-  <section id="screen-play" class="screen">
-    <div class="meta-row">
-      <span id="round-label">第 1／7 輪</span>
-      <span class="badge" id="path-badge">未分化</span>
+  <section id="play" class="screen" aria-label="遊戲">
+    <div id="hud">
+      <p class="name" id="hudName">原始微粒</p>
+      <p class="latin" id="hudLatin">Proto-microbe（簡化／假設）</p>
+      <p class="blurb" id="hudBlurb">簡化科普／假設：尚未分化成細菌或病毒。</p>
     </div>
-
-    <div class="dex">
-      <div class="mascot-wrap" id="mascot"></div>
-      <p class="form-name" id="form-name">原始微粒</p>
-      <p class="form-sci" id="form-sci">undifferentiated mote（假設）</p>
-      <div class="science" id="science-note">
-        <strong>簡化科普：</strong>起點是虛構的「未分化」符號，方便分叉進細菌向或病毒向；真實生命史遠更複雜。
-      </div>
+    <div id="stage">
+      <div class="lane-hint" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div id="creature" aria-hidden="true"></div>
+      <div id="toast" role="status"></div>
+      <div id="controls-hint">← 左半／右半 點或滑 →　鍵盤 ← →</div>
     </div>
-
-    <div class="card tree-card">
-      <p class="tree-title">進化科技樹</p>
-      <div class="tree" id="tech-tree"></div>
-    </div>
-
-    <p class="scene card" id="scene-text"></p>
-    <div class="result-flash" id="result-flash"></div>
-    <div class="choices" id="choices"></div>
   </section>
 
-  <!-- 終局 -->
-  <section id="screen-end" class="screen">
-    <h1>本局進化回顧</h1>
-    <div class="dex">
-      <div class="mascot-wrap" id="end-mascot"></div>
-      <p class="form-name" id="end-name"></p>
-      <p class="form-sci" id="end-sci"></p>
-      <div class="science" id="end-science"></div>
+  <section id="end" class="screen" aria-label="終局">
+    <div class="end-mascot" id="endMascot"></div>
+    <h2 id="endTitle">你已成為……</h2>
+    <p class="latin" id="endLatin"></p>
+    <p class="story" id="endStory"></p>
+    <div class="path">
+      <strong>本局路徑</strong>
+      <ol id="endPath"></ol>
     </div>
-    <div class="card tree-card">
-      <p class="tree-title">你走過的科技樹</p>
-      <div class="tree" id="end-tree"></div>
-    </div>
-    <div class="card">
-      <p class="sub" style="margin:0 0 8px">路線足跡</p>
-      <ol class="review" id="review-list"></ol>
-      <p class="foot-note">輸贏與分數非本原型重點；請比較另一條路線的終局形態。</p>
-    </div>
-    <button type="button" class="btn btn-primary" id="btn-again">再走一局</button>
-    <button type="button" class="btn btn-ghost" id="btn-home">回開局</button>
+    <button type="button" class="btn btn-main" id="btnAgain">再玩一次</button>
   </section>
-
 </div>
 
 <script>
 (function () {
   "use strict";
 
-  /** 形態定義：id → 顯示與 SVG */
+  /* —— 形態 SVG（原創簡筆） —— */
+  function svg(inner, vb) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + (vb || "0 0 64 64") +
+      '" width="100%" height="100%" aria-hidden="true">' + inner + "</svg>";
+  }
   const FORMS = {
-    primordial: {
-      name: "原始微粒",
-      sci: "undifferentiated mote（假設）",
-      science: "起點是虛構的「未分化」符號，方便之後分叉；真實生命史沒有這種單一按鈕起點。",
-      path: null,
-      svg: function () {
-        return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <defs><radialGradient id="g0" cx="40%" cy="35%"><stop offset="0%" stop-color="#c4b5e8"/><stop offset="100%" stop-color="#6b5b95"/></radialGradient></defs>
-          <ellipse cx="60" cy="62" rx="38" ry="34" fill="url(#g0)" opacity="0.95"/>
-          <ellipse cx="48" cy="52" rx="10" ry="7" fill="#efe8ff" opacity="0.45"/>
-          <circle cx="42" cy="68" r="3.5" fill="#2a2038"/><circle cx="58" cy="74" r="2.8" fill="#2a2038"/><circle cx="72" cy="64" r="3.2" fill="#2a2038"/>
-          <path d="M35 48 Q50 38 70 46" fill="none" stroke="#9b8bc4" stroke-width="2" opacity="0.5"/>
-        </svg>`;
+    seed: {
+      id: "seed", name: "原始微粒", latin: "Proto-microbe（簡化／假設）",
+      blurb: "簡化科普／假設：共同起點，尚未分化成細菌或病毒。",
+      draw: function () {
+        return svg(
+          '<circle cx="32" cy="32" r="14" fill="#8a8680" stroke="#cfcac0" stroke-width="2"/>' +
+          '<circle cx="28" cy="28" r="3" fill="#cfcac0" opacity="0.5"/>'
+        );
       }
     },
-    prokaryote: {
-      name: "原核雛形",
-      sci: "prokaryotic precursor（簡化）",
-      science: "細菌屬原核生物：沒有細胞核膜包住的核。此節點把「有細胞壁的單細胞」簡化成一顆膠囊。",
-      path: "bact",
-      svg: function () {
-        return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="60" cy="60" rx="44" ry="28" fill="#3d7a5a" stroke="#8fd4b0" stroke-width="3"/>
-          <ellipse cx="60" cy="60" rx="28" ry="14" fill="#2a5540" opacity="0.85"/>
-          <circle cx="52" cy="58" r="5" fill="#b8f0d0"/><circle cx="70" cy="64" r="4" fill="#7ec8a0"/>
-          <path d="M28 52 Q40 40 55 48" fill="none" stroke="#a8e8c8" stroke-width="2" opacity="0.6"/>
-        </svg>`;
+    bact_wall: {
+      id: "bact_wall", name: "原核雛形", latin: "Prokaryotic draft（簡化／假設）",
+      blurb: "簡化科普／假設：出現細胞壁與獨立代謝方向，偏細菌。",
+      draw: function () {
+        return svg(
+          '<ellipse cx="32" cy="34" rx="18" ry="14" fill="#a88820" stroke="#e8c84a" stroke-width="2.5"/>' +
+          '<ellipse cx="32" cy="34" rx="10" ry="7" fill="#6a5810" opacity="0.55"/>' +
+          '<circle cx="26" cy="30" r="2.5" fill="#f0e6a8"/>'
+        );
       }
     },
-    gram_pos: {
-      name: "革蘭陽性球菌前體",
-      sci: "Gram-positive coccus-like（簡化）",
-      science: "許多常見球菌細胞壁較厚，革蘭氏染色呈陽性。此處只借用「圓形＋厚壁」意象，非實驗結果。",
-      path: "bact",
-      svg: function () {
-        return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="60" cy="60" r="40" fill="#c9a14a" stroke="#f0d080" stroke-width="6"/>
-          <circle cx="60" cy="60" r="28" fill="#8a6a28"/>
-          <circle cx="50" cy="52" r="8" fill="#ffe9a8" opacity="0.5"/>
-          <circle cx="68" cy="68" r="6" fill="#5a4010" opacity="0.4"/>
-        </svg>`;
+    bact_cocci: {
+      id: "bact_cocci", name: "球菌團", latin: "Coccus cluster（簡化／假設）",
+      blurb: "簡化科普／假設：球形細胞聚集，朝葡萄球菌屬方向。",
+      draw: function () {
+        return svg(
+          '<circle cx="24" cy="28" r="10" fill="#b89220" stroke="#e8c84a" stroke-width="2"/>' +
+          '<circle cx="40" cy="28" r="10" fill="#c9a227" stroke="#e8c84a" stroke-width="2"/>' +
+          '<circle cx="32" cy="42" r="10" fill="#a88820" stroke="#e8c84a" stroke-width="2"/>'
+        );
       }
     },
-    staph_genus: {
-      name: "葡萄球菌屬雛形",
-      sci: "Staphylococcus-like cluster（簡化）",
-      science: "葡萄球菌常成串如葡萄。屬名 Staphylococcus 來自希臘文「葡萄＋球菌」——此為命名典故的簡化說明。",
-      path: "bact",
-      svg: function () {
-        return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="48" cy="52" r="22" fill="#d4a84a" stroke="#f5d98a" stroke-width="3"/>
-          <circle cx="74" cy="52" r="22" fill="#c89838" stroke="#f5d98a" stroke-width="3"/>
-          <circle cx="61" cy="74" r="22" fill="#b88828" stroke="#f5d98a" stroke-width="3"/>
-          <circle cx="42" cy="46" r="5" fill="#fff3c8" opacity="0.45"/>
-        </svg>`;
+    bact_pigment: {
+      id: "bact_pigment", name: "金黃前體", latin: "Golden cocci（簡化／假設）",
+      blurb: "簡化科普／假設：出現金黃色素傾向；真實菌種特徵遠更複雜。",
+      draw: function () {
+        return svg(
+          '<circle cx="22" cy="26" r="11" fill="#d4a820" stroke="#ffe08a" stroke-width="2"/>' +
+          '<circle cx="40" cy="24" r="11" fill="#e0b428" stroke="#ffe08a" stroke-width="2"/>' +
+          '<circle cx="30" cy="40" r="12" fill="#c99618" stroke="#ffe08a" stroke-width="2"/>' +
+          '<circle cx="44" cy="40" r="9" fill="#d4a820" stroke="#ffe08a" stroke-width="2"/>'
+        );
       }
     },
-    s_aureus: {
-      name: "金黃葡萄球菌",
-      sci: "Staphylococcus aureus",
-      science: "現實中常見的革蘭陽性球菌，可棲於皮膚與鼻腔；部分菌株與感染有關。本局只呈現命名與外觀意象，非診斷或防疫指引。",
-      path: "bact",
-      svg: function () {
-        return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-          <defs><radialGradient id="ga" cx="35%" cy="30%"><stop offset="0%" stop-color="#ffe08a"/><stop offset="100%" stop-color="#c87818"/></radialGradient></defs>
-          <circle cx="42" cy="48" r="24" fill="url(#ga)" stroke="#ffd060" stroke-width="2.5"/>
-          <circle cx="72" cy="42" r="23" fill="#e8a028" stroke="#ffd060" stroke-width="2.5"/>
-          <circle cx="58" cy="70" r="26" fill="#d89020" stroke="#ffd060" stroke-width="2.5"/>
-          <circle cx="82" cy="68" r="20" fill="#c87818" stroke="#ffd060" stroke-width="2.5"/>
-          <circle cx="38" cy="72" r="18" fill="#b86810" stroke="#ffd060" stroke-width="2.5"/>
-          <circle cx="36" cy="40" r="5" fill="#fff6d0" opacity="0.5"/>
-        </svg>`;
+    aureus: {
+      id: "aureus", name: "金黃葡萄球菌", latin: "Staphylococcus aureus",
+      blurb: "簡化科普／假設：常見於皮膚／鼻腔的球菌；此為遊戲簡化形態。",
+      draw: function () {
+        return svg(
+          '<circle cx="20" cy="24" r="11" fill="#e8b020" stroke="#fff0a8" stroke-width="2"/>' +
+          '<circle cx="38" cy="22" r="12" fill="#f0c040" stroke="#fff0a8" stroke-width="2"/>' +
+          '<circle cx="28" cy="38" r="12" fill="#d4a018" stroke="#fff0a8" stroke-width="2"/>' +
+          '<circle cx="46" cy="38" r="10" fill="#e8b020" stroke="#fff0a8" stroke-width="2"/>' +
+          '<circle cx="34" cy="28" r="3" fill="#fff8d0" opacity="0.7"/>'
+        );
       }
     },
-    nucleo: {
-      name: "核酸片段／病毒前體",
-      sci: "nucleic precursor（假設）",
-      science: "病毒不是細胞：核心是核酸（DNA 或 RNA）加上蛋白質外殼。此節點用「纏繞核酸」示意，非真實病毒粒子照片。",
-      path: "vir",
-      svg: function () {
-        return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="60" cy="60" rx="36" ry="40" fill="#2a4a6e" stroke="#7ab0e8" stroke-width="3" opacity="0.9"/>
-          <path d="M42 40 Q55 55 42 70 Q55 85 70 72 Q55 58 70 44 Q58 35 42 40" fill="none" stroke="#a8d4ff" stroke-width="4" stroke-linecap="round"/>
-          <circle cx="60" cy="60" r="6" fill="#d0e8ff"/>
-        </svg>`;
+    vir_capsid: {
+      id: "vir_capsid", name: "病毒雛形", latin: "Capsid draft（簡化／假設）",
+      blurb: "簡化科普／假設：核酸外包蛋白殼，需宿主才能複製。",
+      draw: function () {
+        return svg(
+          '<polygon points="32,12 50,22 50,42 32,52 14,42 14,22" fill="#4a6a80" stroke="#9ec0d8" stroke-width="2"/>' +
+          '<circle cx="32" cy="32" r="7" fill="#2a4050"/>'
+        );
       }
     },
-    rna_env: {
-      name: "包膜 RNA 病毒雛形",
-      sci: "enveloped RNA virus-like（簡化）",
-      science: "部分 RNA 病毒具脂質包膜。包膜來自宿主細胞膜的「借用」——此為高度簡化的教科書說法。",
-      path: "vir",
-      svg: function () {
-        return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="60" cy="60" r="38" fill="#3a6a9a" stroke="#8ec0f0" stroke-width="5"/>
-          <circle cx="60" cy="60" r="24" fill="#1e4060"/>
-          <path d="M48 52 Q60 48 72 56 Q64 68 50 64 Z" fill="#9ad0ff" opacity="0.7"/>
-          <circle cx="70" cy="48" r="4" fill="#c8e8ff"/>
-        </svg>`;
+    vir_rna: {
+      id: "vir_rna", name: "RNA 粒子", latin: "RNA virion draft（簡化／假設）",
+      blurb: "簡化科普／假設：偏向 RNA 基因組；真實分類遠更細。",
+      draw: function () {
+        return svg(
+          '<ellipse cx="32" cy="34" rx="16" ry="12" fill="#5a7a90" stroke="#a8d0e8" stroke-width="2"/>' +
+          '<path d="M20 34 Q26 26 32 34 Q38 42 44 34" fill="none" stroke="#c8e8f8" stroke-width="2"/>' +
+          '<circle cx="18" cy="22" r="3" fill="#8ab0c8"/><circle cx="46" cy="22" r="3" fill="#8ab0c8"/>' +
+          '<circle cx="32" cy="16" r="3" fill="#8ab0c8"/>'
+        );
       }
     },
-    ortho: {
-      name: "正黏液病毒科雛形",
-      sci: "Orthomyxoviridae-like（簡化）",
-      science: "流感病毒屬於正黏液病毒科，表面有血球凝集素等突起。圖中短刺只是示意，結構遠較此複雜。",
-      path: "vir",
-      svg: function () {
-        return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="60" cy="60" r="32" fill="#4a88c8" stroke="#a8d4ff" stroke-width="3"/>
-          <g stroke="#d0e8ff" stroke-width="3" stroke-linecap="round">
-            <line x1="60" y1="28" x2="60" y2="18"/><line x1="60" y1="92" x2="60" y2="102"/>
-            <line x1="28" y1="60" x2="18" y2="60"/><line x1="92" y1="60" x2="102" y2="60"/>
-            <line x1="36" y1="36" x2="28" y2="28"/><line x1="84" y1="84" x2="92" y2="92"/>
-            <line x1="84" y1="36" x2="92" y2="28"/><line x1="36" y1="84" x2="28" y2="92"/>
-          </g>
-          <circle cx="60" cy="28" r="4" fill="#f0f8ff"/><circle cx="60" cy="92" r="4" fill="#f0f8ff"/>
-          <circle cx="28" cy="60" r="4" fill="#f0f8ff"/><circle cx="92" cy="60" r="4" fill="#f0f8ff"/>
-          <circle cx="52" cy="54" r="6" fill="#1a3858" opacity="0.5"/>
-        </svg>`;
+    vir_spike: {
+      id: "vir_spike", name: "突刺粒子", latin: "Spiked envelope（簡化／假設）",
+      blurb: "簡化科普／假設：表面突刺利於附著細胞；流感病毒亦有類似結構（簡化）。",
+      draw: function () {
+        return svg(
+          '<ellipse cx="32" cy="36" rx="15" ry="11" fill="#6a8fa8" stroke="#b8d8f0" stroke-width="2"/>' +
+          '<line x1="32" y1="12" x2="32" y2="25" stroke="#c8e0f0" stroke-width="2"/>' +
+          '<circle cx="32" cy="11" r="4" fill="#d0e8f8"/>' +
+          '<line x1="16" y1="20" x2="22" y2="28" stroke="#c8e0f0" stroke-width="2"/>' +
+          '<circle cx="15" cy="18" r="3.5" fill="#d0e8f8"/>' +
+          '<line x1="48" y1="20" x2="42" y2="28" stroke="#c8e0f0" stroke-width="2"/>' +
+          '<circle cx="49" cy="18" r="3.5" fill="#d0e8f8"/>' +
+          '<line x1="12" y1="40" x2="20" y2="38" stroke="#c8e0f0" stroke-width="2"/>' +
+          '<circle cx="10" cy="40" r="3" fill="#d0e8f8"/>' +
+          '<line x1="52" y1="40" x2="44" y2="38" stroke="#c8e0f0" stroke-width="2"/>' +
+          '<circle cx="54" cy="40" r="3" fill="#d0e8f8"/>'
+        );
       }
     },
     influenza: {
-      name: "流感病毒",
-      sci: "Influenza virus",
-      science: "流感病毒會感染呼吸道等部位，並以抗原變化聞名。本局終局只借用俗名／學名意象，非疫情模擬或防疫建議。",
-      path: "vir",
-      svg: function () {
-        return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-          <defs><radialGradient id="gv" cx="40%" cy="35%"><stop offset="0%" stop-color="#7ab8f0"/><stop offset="100%" stop-color="#2a5a98"/></radialGradient></defs>
-          <circle cx="60" cy="60" r="34" fill="url(#gv)" stroke="#b8dcff" stroke-width="3"/>
-          <g fill="#e8f4ff" stroke="#9ec8f0" stroke-width="1">
-            <ellipse cx="60" cy="22" rx="5" ry="9"/><ellipse cx="60" cy="98" rx="5" ry="9"/>
-            <ellipse cx="22" cy="60" rx="9" ry="5"/><ellipse cx="98" cy="60" rx="9" ry="5"/>
-            <ellipse cx="32" cy="32" rx="7" ry="5" transform="rotate(-45 32 32)"/>
-            <ellipse cx="88" cy="88" rx="7" ry="5" transform="rotate(-45 88 88)"/>
-            <ellipse cx="88" cy="32" rx="7" ry="5" transform="rotate(45 88 32)"/>
-            <ellipse cx="32" cy="88" rx="7" ry="5" transform="rotate(45 32 88)"/>
-            <ellipse cx="42" cy="20" rx="4" ry="7" transform="rotate(-20 42 20)"/>
-            <ellipse cx="78" cy="100" rx="4" ry="7" transform="rotate(-20 78 100)"/>
-          </g>
-          <circle cx="54" cy="55" r="8" fill="#163858" opacity="0.45"/>
-          <circle cx="68" cy="66" r="5" fill="#a8d0f8" opacity="0.5"/>
-        </svg>`;
+      id: "influenza", name: "流感病毒", latin: "Influenza virus",
+      blurb: "簡化科普／假設：常見呼吸道病毒；此為遊戲簡化形態，非臨床診斷依據。",
+      draw: function () {
+        return svg(
+          '<ellipse cx="32" cy="36" rx="16" ry="12" fill="#7aa0b8" stroke="#d0ecff" stroke-width="2.5"/>' +
+          '<ellipse cx="32" cy="36" rx="8" ry="6" fill="#3a5568"/>' +
+          '<line x1="32" y1="8" x2="32" y2="24" stroke="#e0f0ff" stroke-width="2.5"/>' +
+          '<circle cx="32" cy="7" r="5" fill="#f0f8ff"/>' +
+          '<line x1="12" y1="18" x2="20" y2="28" stroke="#e0f0ff" stroke-width="2.5"/>' +
+          '<circle cx="10" cy="16" r="4.5" fill="#f0f8ff"/>' +
+          '<line x1="52" y1="18" x2="44" y2="28" stroke="#e0f0ff" stroke-width="2.5"/>' +
+          '<circle cx="54" cy="16" r="4.5" fill="#f0f8ff"/>' +
+          '<line x1="8" y1="42" x2="18" y2="40" stroke="#e0f0ff" stroke-width="2"/>' +
+          '<circle cx="6" cy="42" r="3.5" fill="#f0f8ff"/>' +
+          '<line x1="56" y1="42" x2="46" y2="40" stroke="#e0f0ff" stroke-width="2"/>' +
+          '<circle cx="58" cy="42" r="3.5" fill="#f0f8ff"/>'
+        );
       }
     }
   };
 
-  const BACT_CHAIN = ["primordial", "prokaryote", "gram_pos", "staph_genus", "s_aureus"];
-  const VIR_CHAIN = ["primordial", "nucleo", "rna_env", "ortho", "influenza"];
-
-  const state = {
-    round: 0,
-    totalRounds: 7,
-    formId: "primordial",
-    path: null, // 'bact' | 'vir' | null
-    stage: 0,   // index along chosen chain (0 = primordial)
-    history: [],
-    place: null,
-    host: null
+  /* —— 真分叉關卡（背後樹；畫面不畫樹） ——
+     每一關 options[].next 指向下一形態；終局 next 為 null 且 endKind 標示。
+     細菌線與病毒線從第一關即分叉，終點不同。 */
+  const LEVELS = {
+    seed: {
+      form: "seed",
+      prompt: "你要往哪種結構長？",
+      options: [
+        { title: "築起細胞壁", sub: "獨立代謝・細菌向", next: "bact_wall", tint: "bact" },
+        { title: "包進蛋白殼", sub: "寄生複製・病毒向", next: "vir_capsid", tint: "vir" },
+        { title: "再觀望一下", sub: "仍停留未分化", next: "seed_loop", tint: "" }
+      ]
+    },
+    seed_loop: {
+      form: "seed",
+      prompt: "不能再拖了——選一邊",
+      options: [
+        { title: "築起細胞壁", sub: "細菌向", next: "bact_wall", tint: "bact" },
+        { title: "包進蛋白殼", sub: "病毒向", next: "vir_capsid", tint: "vir" }
+      ]
+    },
+    bact_wall: {
+      form: "bact_wall",
+      prompt: "細胞形態？",
+      options: [
+        { title: "聚成球菌串", sub: "朝葡萄球菌屬", next: "bact_cocci", tint: "bact" },
+        { title: "拉成細桿", sub: "偏桿菌（仍細菌向）", next: "bact_cocci_via_rod", tint: "bact" }
+      ]
+    },
+    bact_cocci_via_rod: {
+      form: "bact_cocci",
+      prompt: "環境壓力下又縮回球菌團",
+      options: [
+        { title: "維持球菌團", sub: "繼續細菌線", next: "bact_cocci", tint: "bact" }
+      ]
+    },
+    bact_cocci: {
+      form: "bact_cocci",
+      prompt: "色素與酶？",
+      options: [
+        { title: "金黃色素", sub: "朝金黃葡萄球菌", next: "bact_pigment", tint: "bact" },
+        { title: "偏白菌落", sub: "仍可轉金黃（簡化）", next: "bact_pigment", tint: "bact" },
+        { title: "加強表面黏附", sub: "形態接近金黃前體", next: "bact_pigment", tint: "bact" }
+      ]
+    },
+    bact_pigment: {
+      form: "bact_pigment",
+      prompt: "定植何處？",
+      options: [
+        { title: "人體鼻腔／皮膚", sub: "成為金黃葡萄球菌", next: "aureus", tint: "bact" },
+        { title: "傷口周圍", sub: "同樣收束金黃葡萄球菌", next: "aureus", tint: "bact" }
+      ]
+    },
+    aureus: {
+      form: "aureus", end: true,
+      endKind: "bact",
+      endTitle: "你已成為「金黃葡萄球菌」細菌",
+      endStory: "本局走細菌向真分叉終局。金黃葡萄球菌（Staphylococcus aureus）在此僅作休閒探索命名；非醫療建議。"
+    },
+    vir_capsid: {
+      form: "vir_capsid",
+      prompt: "基因組傾向？",
+      options: [
+        { title: "RNA 單股", sub: "朝流感樣", next: "vir_rna", tint: "vir" },
+        { title: "碎成多節段 RNA", sub: "亦朝流感樣（簡化）", next: "vir_rna", tint: "vir" }
+      ]
+    },
+    vir_rna: {
+      form: "vir_rna",
+      prompt: "表面構造？",
+      options: [
+        { title: "長出突刺蛋白", sub: "朝流感病毒", next: "vir_spike", tint: "vir" },
+        { title: "加一層脂膜", sub: "之後仍長突刺", next: "vir_spike", tint: "vir" },
+        { title: "強化殼體對稱", sub: "再進化出突刺", next: "vir_spike", tint: "vir" }
+      ]
+    },
+    vir_spike: {
+      form: "vir_spike",
+      prompt: "複製場域？",
+      options: [
+        { title: "呼吸道上皮", sub: "成為流感病毒", next: "influenza", tint: "vir" },
+        { title: "飛沫傳播循環", sub: "同樣收束流感病毒", next: "influenza", tint: "vir" }
+      ]
+    },
+    influenza: {
+      form: "influenza", end: true,
+      endKind: "vir",
+      endTitle: "你已成為「流感病毒」病毒",
+      endStory: "本局走病毒向真分叉終局。流感病毒（Influenza virus）在此僅作休閒探索命名；非醫療建議。"
+    }
   };
 
-  const $ = (id) => document.getElementById(id);
+  /* 證明非假分叉：從 seed 選細胞壁永不達 influenza；選蛋白殼永不達 aureus */
+  const PROOF = {
+    bactExclusiveEnd: "aureus",
+    virExclusiveEnd: "influenza",
+    note: "第一關「築起細胞壁」鎖細菌線→金黃葡萄球菌；「包進蛋白殼」鎖病毒線→流感病毒。兩線無匯合節點。"
+  };
 
-  function showScreen(id) {
-    document.querySelectorAll(".screen").forEach((el) => el.classList.remove("active"));
-    $(id).classList.add("active");
+  const el = {
+    title: document.getElementById("title"),
+    play: document.getElementById("play"),
+    end: document.getElementById("end"),
+    stage: document.getElementById("stage"),
+    creature: document.getElementById("creature"),
+    toast: document.getElementById("toast"),
+    hudName: document.getElementById("hudName"),
+    hudLatin: document.getElementById("hudLatin"),
+    hudBlurb: document.getElementById("hudBlurb"),
+    titleMascot: document.getElementById("titleMascot"),
+    endMascot: document.getElementById("endMascot"),
+    endTitle: document.getElementById("endTitle"),
+    endLatin: document.getElementById("endLatin"),
+    endStory: document.getElementById("endStory"),
+    endPath: document.getElementById("endPath")
+  };
+
+  el.titleMascot.innerHTML = FORMS.seed.draw();
+
+  let state = null;
+  let raf = 0;
+  let lastTs = 0;
+  let keys = { left: false, right: false };
+  let gateRowEl = null;
+
+  function showScreen(name) {
+    el.title.classList.toggle("active", name === "title");
+    el.play.classList.toggle("active", name === "play");
+    el.end.classList.toggle("active", name === "end");
   }
 
-  function setMascot(el, formId, pulse) {
+  function setForm(formId) {
     const f = FORMS[formId];
-    el.innerHTML = f.svg();
-    if (pulse) {
-      el.classList.remove("pulse");
-      void el.offsetWidth;
-      el.classList.add("pulse");
-    }
+    el.creature.innerHTML = f.draw();
+    el.hudName.textContent = f.name;
+    el.hudLatin.textContent = f.latin;
+    el.hudBlurb.textContent = f.blurb;
+    el.creature.classList.add("flash");
+    setTimeout(function () { el.creature.classList.remove("flash"); }, 220);
   }
 
-  function updateDex(pulse) {
-    const f = FORMS[state.formId];
-    setMascot($("mascot"), state.formId, pulse);
-    $("form-name").textContent = f.name;
-    $("form-sci").textContent = f.sci;
-    $("science-note").innerHTML = "<strong>簡化科普：</strong>" + f.science;
-    $("round-label").textContent = "第 " + state.round + "／" + state.totalRounds + " 輪";
-    const badge = $("path-badge");
-    if (state.path === "bact") {
-      badge.textContent = "細菌向";
-      badge.className = "badge bact";
-    } else if (state.path === "vir") {
-      badge.textContent = "病毒向";
-      badge.className = "badge vir";
-    } else {
-      badge.textContent = "未分化";
-      badge.className = "badge";
-    }
+  function toast(msg, ms) {
+    el.toast.textContent = msg;
+    el.toast.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { el.toast.classList.remove("show"); }, ms || 900);
   }
 
-  function nodeClass(id) {
-    const chain = state.path === "bact" ? BACT_CHAIN : state.path === "vir" ? VIR_CHAIN : ["primordial"];
-    const idx = chain.indexOf(id);
-    const curIdx = chain.indexOf(state.formId);
-    if (id === state.formId) return "tree-node current";
-    if (state.path === null) {
-      return id === "primordial" ? "tree-node current" : "tree-node locked";
-    }
-    // other branch entirely locked gray unless shared root
-    const onPath = chain.indexOf(id) !== -1;
-    if (!onPath && id !== "primordial") return "tree-node locked";
-    if (idx !== -1 && idx < curIdx) return "tree-node done";
-    if (idx !== -1 && idx > curIdx) return "tree-node locked";
-    return "tree-node locked";
+  function clearGates() {
+    if (gateRowEl && gateRowEl.parentNode) gateRowEl.parentNode.removeChild(gateRowEl);
+    gateRowEl = null;
   }
 
-  function renderTree(container) {
-    const short = {
-      primordial: "原始微粒",
-      prokaryote: "原核雛形",
-      gram_pos: "革蘭陽性球菌",
-      staph_genus: "葡萄球菌屬",
-      s_aureus: "金黃葡萄球菌",
-      nucleo: "核酸前體",
-      rna_env: "包膜RNA雛形",
-      ortho: "正黏液病毒科",
-      influenza: "流感病毒"
-    };
-    const litStem = state.formId !== "primordial";
-    const bactLit = state.path === "bact";
-    const virLit = state.path === "vir";
-
-    function n(id) {
-      return '<div class="' + nodeClass(id) + '">' + short[id] + "</div>";
-    }
-    function stem(on) {
-      return '<div class="tree-stem' + (on ? " lit" : "") + '"></div>';
-    }
-
-    container.innerHTML =
-      n("primordial") +
-      stem(litStem) +
-      '<div class="tree-fork">' +
-        '<div class="tree-branch">' +
-          '<div class="fork-label bact">細菌向</div>' +
-          n("prokaryote") + stem(bactLit && ["gram_pos","staph_genus","s_aureus"].indexOf(state.formId) !== -1 || state.formId === "prokaryote") +
-          n("gram_pos") + stem(bactLit && ["staph_genus","s_aureus"].indexOf(state.formId) !== -1 || state.formId === "gram_pos") +
-          n("staph_genus") + stem(bactLit && state.formId === "s_aureus") +
-          n("s_aureus") +
-        "</div>" +
-        '<div class="tree-branch">' +
-          '<div class="fork-label vir">病毒向</div>' +
-          n("nucleo") + stem(virLit && ["rna_env","ortho","influenza"].indexOf(state.formId) !== -1 || state.formId === "nucleo") +
-          n("rna_env") + stem(virLit && ["ortho","influenza"].indexOf(state.formId) !== -1 || state.formId === "rna_env") +
-          n("ortho") + stem(virLit && state.formId === "influenza") +
-          n("influenza") +
-        "</div>" +
-      "</div>";
-  }
-
-  function advanceForm() {
-    if (!state.path) return;
-    const chain = state.path === "bact" ? BACT_CHAIN : VIR_CHAIN;
-    const next = Math.min(state.stage + 1, chain.length - 1);
-    state.stage = next;
-    state.formId = chain[next];
-  }
-
-  function setFormToStage(stage) {
-    const chain = state.path === "bact" ? BACT_CHAIN : VIR_CHAIN;
-    state.stage = Math.min(stage, chain.length - 1);
-    state.formId = chain[state.stage];
-  }
-
-  const ROUNDS = [
-    // 1 地點
-    {
-      scene: function () {
-        return "第一個棲所：這粒微粒會先在哪裡冒頭？地點會影響之後的故事氛圍（簡化假設）。";
-      },
-      choices: [
-        { label: "醫院走廊", hint: "人群密集、清潔與壓力並存", apply: function () { state.place = "醫院"; } },
-        { label: "鄉村農場", hint: "人畜接觸多", apply: function () { state.place = "農場"; } },
-        { label: "都會地鐵", hint: "通勤流動快", apply: function () { state.place = "地鐵"; } },
-        { label: "潮濕林地", hint: "野生宿主較多", apply: function () { state.place = "林地"; } }
-      ],
-      result: function (c) { return "你落在「" + state.place + "」。形態仍是未分化微粒，科技樹根節點亮著。"; }
-    },
-    // 2 宿主
-    {
-      scene: function () {
-        return "暫時依附誰？宿主選擇只推動敘事，尚未鎖定細菌或病毒路線。";
-      },
-      choices: [
-        { label: "人體皮膚／黏膜", hint: "近距離群聚", apply: function () { state.host = "人"; } },
-        { label: "家畜（豬／禽）", hint: "牧場常見", apply: function () { state.host = "家畜"; } },
-        { label: "齧齒動物", hint: "縫隙與倉庫", apply: function () { state.host = "鼠類"; } },
-        { label: "昆蟲媒介", hint: "叮咬傳遞意象", apply: function () { state.host = "昆蟲"; } }
-      ],
-      result: function () { return "暫時與「" + state.host + "」產生關聯。中央公仔仍是原始微粒。"; }
-    },
-    // 3 分叉
-    {
-      scene: function () {
-        return "關鍵分叉：要往「有細胞壁的單細胞」細菌向，還是「核酸＋外殼」病毒向？兩條終局會變成不同真實風格名稱。";
-      },
-      choices: [
-        {
-          label: "細菌向：打造細胞構造",
-          hint: "朝原核、球菌、葡萄串發展",
-          apply: function () {
-            state.path = "bact";
-            setFormToStage(1); // prokaryote
-          }
-        },
-        {
-          label: "病毒向：精簡成核酸策略",
-          hint: "朝外殼、包膜、刺突發展",
-          apply: function () {
-            state.path = "vir";
-            setFormToStage(1); // nucleo
-          }
-        }
-      ],
-      result: function () {
-        return state.path === "bact"
-          ? "科技樹亮起「原核雛形」。你離開未分化，踏入細菌向。"
-          : "科技樹亮起「核酸片段／病毒前體」。你踏入病毒向。";
-      }
-    },
-    // 4
-    {
-      scene: function () {
-        if (state.path === "bact") {
-          return "細胞壁要加厚成圓形球菌意象，還是先維持修長？此處導向革蘭陽性球菌前體（簡化）。";
-        }
-        return "要不要加上「包膜」意象？包膜 RNA 病毒雛形會改變中央公仔輪廓。";
-      },
-      choices: function () {
-        if (state.path === "bact") {
-          return [
-            { label: "加厚成球菌", hint: "圓潤＋厚壁", apply: function () { setFormToStage(2); } },
-            { label: "先觀察環境再定型", hint: "仍會推進到同一節點（探索）", apply: function () { setFormToStage(2); } }
-          ];
-        }
-        return [
-          { label: "包裹脂質樣包膜", hint: "外輪廓變柔軟光圈", apply: function () { setFormToStage(2); } },
-          { label: "先穩固核酸摺疊", hint: "仍推進至包膜雛形", apply: function () { setFormToStage(2); } }
-        ];
-      },
-      result: function () {
-        return "形態更新為「" + FORMS[state.formId].name + "」。請看中央公仔與科技樹。";
-      }
-    },
-    // 5
-    {
-      scene: function () {
-        if (state.path === "bact") {
-          return "球菌開始成串？葡萄樣排列會讓你更接近葡萄球菌屬雛形。";
-        }
-        return "表面要長出短刺示意？這會推向正黏液病毒科雛形（流感家族的簡化路標）。";
-      },
-      choices: function () {
-        if (state.path === "bact") {
-          return [
-            { label: "聚集成葡萄串", hint: "Staphylococcus 命名典故", apply: function () { setFormToStage(3); } },
-            { label: "雙球菌並列再擴展", hint: "同樣進入屬級雛形", apply: function () { setFormToStage(3); } }
-          ];
-        }
-        return [
-          { label: "長出表面突起", hint: "刺突示意", apply: function () { setFormToStage(3); } },
-          { label: "分段核酸意象", hint: "仍進入正黏液病毒科雛形", apply: function () { setFormToStage(3); } }
-        ];
-      },
-      result: function () {
-        return "抵達「" + FORMS[state.formId].name + "」。另一條路線的終局會完全不同。";
-      }
-    },
-    // 6
-    {
-      scene: function () {
-        if (state.path === "bact") {
-          return "金色色素意象？現實中金黃葡萄球菌名稱與「金色」有關（簡化）。即將定型為終局。";
-        }
-        return "突起更密、包膜更完整——終局將定型為流感病毒意象。";
-      },
-      choices: function () {
-        if (state.path === "bact") {
-          return [
-            { label: "染上金黃光澤", hint: "定型 Staphylococcus aureus", apply: function () { setFormToStage(4); } },
-            { label: "維持成串並命名", hint: "同樣終局", apply: function () { setFormToStage(4); } }
-          ];
-        }
-        return [
-          { label: "定型為流感病毒", hint: "Influenza virus", apply: function () { setFormToStage(4); } },
-          { label: "完成刺突排列", hint: "同樣終局", apply: function () { setFormToStage(4); } }
-        ];
-      },
-      result: function () {
-        return "終局形態：「" + FORMS[state.formId].name + "」（" + FORMS[state.formId].sci + "）。";
-      }
-    },
-    // 7 回顧觸發前的最後敘事
-    {
-      scene: function () {
-        return "探索尾聲：要記錄這條鏈，或想像若當初選另一邊會看見什麼？（本輪不改變終局形態）";
-      },
-      choices: [
-        { label: "寫下圖鑑紀錄", hint: "進入路線回顧", apply: function () {} },
-        { label: "對照另一條路線", hint: "回顧中會提示對照", apply: function () {} }
-      ],
-      result: function () {
-        const other = state.path === "bact" ? "流感病毒（病毒向）" : "金黃葡萄球菌（細菌向）";
-        return "本局定格。對照線終局會是「" + other + "」——可再開一局驗證。";
-      }
-    }
-  ];
-
-  function getChoices(roundDef) {
-    return typeof roundDef.choices === "function" ? roundDef.choices() : roundDef.choices;
-  }
-
-  function renderRound() {
-    const def = ROUNDS[state.round - 1];
-    $("scene-text").textContent = def.scene();
-    $("result-flash").classList.remove("show");
-    $("result-flash").textContent = "";
-    updateDex(false);
-    renderTree($("tech-tree"));
-
-    const box = $("choices");
-    box.innerHTML = "";
-    getChoices(def).forEach(function (ch, i) {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "btn";
-      b.innerHTML = ch.label + (ch.hint ? '<span class="hint">' + ch.hint + "</span>" : "");
-      b.addEventListener("click", function () { onChoose(ch); });
-      box.appendChild(b);
+  function spawnGates(level) {
+    clearGates();
+    const row = document.createElement("div");
+    row.className = "gate-row";
+    row.setAttribute("role", "group");
+    row.setAttribute("aria-label", level.prompt || "選擇");
+    level.options.forEach(function (opt, i) {
+      const g = document.createElement("div");
+      g.className = "gate" + (opt.tint === "bact" ? " hi" : opt.tint === "vir" ? " vir-hi" : "");
+      g.dataset.idx = String(i);
+      g.innerHTML = '<div class="g-title"></div><div class="g-sub"></div>';
+      g.querySelector(".g-title").textContent = opt.title;
+      g.querySelector(".g-sub").textContent = opt.sub || "";
+      row.appendChild(g);
     });
-  }
-
-  function onChoose(ch) {
-    const def = ROUNDS[state.round - 1];
-    ch.apply();
-    const msg = def.result(ch);
-    state.history.push({
-      round: state.round,
-      label: ch.label,
-      formId: state.formId,
-      formName: FORMS[state.formId].name
-    });
-    updateDex(true);
-    renderTree($("tech-tree"));
-    const flash = $("result-flash");
-    flash.textContent = msg;
-    flash.classList.add("show");
-    $("choices").innerHTML = "";
-
-    const nextBtn = document.createElement("button");
-    nextBtn.type = "button";
-    nextBtn.className = "btn btn-primary";
-    if (state.round >= state.totalRounds) {
-      nextBtn.textContent = "查看進化回顧";
-      nextBtn.addEventListener("click", endGame);
-    } else {
-      nextBtn.textContent = "下一輪";
-      nextBtn.addEventListener("click", function () {
-        state.round += 1;
-        renderRound();
-      });
-    }
-    $("choices").appendChild(nextBtn);
-  }
-
-  function endGame() {
-    const f = FORMS[state.formId];
-    setMascot($("end-mascot"), state.formId, true);
-    $("end-name").textContent = f.name;
-    $("end-sci").textContent = f.sci;
-    $("end-science").innerHTML = "<strong>簡化科普：</strong>" + f.science;
-    renderTree($("end-tree"));
-    const ol = $("review-list");
-    ol.innerHTML = "";
-    state.history.forEach(function (h) {
-      const li = document.createElement("li");
-      li.textContent = "第" + h.round + "輪「" + h.label + "」→ " + h.formName;
-      ol.appendChild(li);
-    });
-    showScreen("screen-end");
-  }
-
-  function resetGame() {
-    state.round = 1;
-    state.formId = "primordial";
-    state.path = null;
-    state.stage = 0;
-    state.history = [];
-    state.place = null;
-    state.host = null;
+    el.stage.appendChild(row);
+    gateRowEl = row;
+    const sh = el.stage.clientHeight;
+    state.gateY = -100;
+    state.gateTargetY = sh * 0.62;
+    state.gateSpeed = 0; /* gates stay; creature falls into them */
+    row.style.top = state.gateTargetY + "px";
+    state.gateY = state.gateTargetY;
+    state.gatesReady = true;
+    state.resolved = false;
+    /* place creature near top for this segment */
+    state.y = Math.max(90, sh * 0.18);
+    state.fallSpeed = Math.min(160, 110 + state.segment * 8);
   }
 
   function startGame() {
-    resetGame();
-    showScreen("screen-play");
-    renderRound();
+    cancelAnimationFrame(raf);
+    clearGates();
+    state = {
+      nodeId: "seed",
+      segment: 0,
+      x: 0.5,
+      y: 100,
+      vx: 0,
+      fallSpeed: 120,
+      path: [{ label: "原始微粒", choice: "開局" }],
+      gatesReady: false,
+      resolved: false,
+      pauseUntil: 0,
+      domain: null /* 'bact' | 'vir' after first real fork */
+    };
+    showScreen("play");
+    setForm("seed");
+    const sw = el.stage.clientWidth;
+    state.x = sw / 2;
+    spawnGates(LEVELS.seed);
+    lastTs = 0;
+    raf = requestAnimationFrame(tick);
+    toast(LEVELS.seed.prompt, 1200);
   }
 
-  $("btn-start").addEventListener("click", startGame);
-  $("btn-again").addEventListener("click", startGame);
-  $("btn-home").addEventListener("click", function () {
-    resetGame();
-    showScreen("screen-start");
+  function pickOption(idx) {
+    if (!state || state.resolved) return;
+    const level = LEVELS[state.nodeId];
+    if (!level || level.end || !level.options) return;
+    const opt = level.options[idx];
+    if (!opt) return;
+    state.resolved = true;
+
+    state.path.push({ label: FORMS[level.form].name, choice: opt.title });
+
+    /* domain lock */
+    if (opt.next === "bact_wall") state.domain = "bact";
+    if (opt.next === "vir_capsid") state.domain = "vir";
+
+    const nextId = opt.next;
+    const nextNode = LEVELS[nextId];
+
+    toast(opt.title, 700);
+    clearGates();
+    state.gatesReady = false;
+
+    if (nextNode && nextNode.end) {
+      const formId = nextNode.form;
+      setForm(formId);
+      state.path.push({ label: FORMS[formId].name, choice: "終局" });
+      state.pauseUntil = performance.now() + 600;
+      state.pendingEnd = nextNode;
+      return;
+    }
+
+    /* morph then next segment */
+    const formId = nextNode.form;
+    state.nodeId = nextId;
+    state.segment += 1;
+    setForm(formId);
+    state.pauseUntil = performance.now() + 500;
+    state.pendingSpawn = nextId;
+  }
+
+  function finish(endNode) {
+    cancelAnimationFrame(raf);
+    clearGates();
+    const form = FORMS[endNode.form];
+    el.endMascot.innerHTML = form.draw();
+    el.endTitle.textContent = endNode.endTitle;
+    el.endLatin.textContent = form.latin;
+    el.endStory.textContent = endNode.endStory + " " + PROOF.note;
+    el.endPath.innerHTML = "";
+    state.path.forEach(function (p) {
+      const li = document.createElement("li");
+      li.textContent = p.label + " ← " + p.choice;
+      el.endPath.appendChild(li);
+    });
+    showScreen("end");
+  }
+
+  function nearestGateIndex() {
+    if (!gateRowEl) return 0;
+    const gates = gateRowEl.querySelectorAll(".gate");
+    const cx = state.x;
+    let best = 0, bestDist = Infinity;
+    gates.forEach(function (g, i) {
+      const r = g.getBoundingClientRect();
+      const sr = el.stage.getBoundingClientRect();
+      const mid = (r.left + r.right) / 2 - sr.left;
+      const d = Math.abs(mid - cx);
+      if (d < bestDist) { bestDist = d; best = i; }
+    });
+    return best;
+  }
+
+  function highlightGate() {
+    if (!gateRowEl) return;
+    const idx = nearestGateIndex();
+    gateRowEl.querySelectorAll(".gate").forEach(function (g, i) {
+      g.style.outline = i === idx ? "2px solid #e6e2d6" : "none";
+      g.style.outlineOffset = "2px";
+    });
+  }
+
+  function tick(ts) {
+    if (!state) return;
+    if (!lastTs) lastTs = ts;
+    const dt = Math.min(0.05, (ts - lastTs) / 1000);
+    lastTs = ts;
+
+    if (ts < state.pauseUntil) {
+      raf = requestAnimationFrame(tick);
+      return;
+    }
+    if (state.pendingEnd) {
+      const e = state.pendingEnd;
+      state.pendingEnd = null;
+      finish(e);
+      return;
+    }
+    if (state.pendingSpawn) {
+      const id = state.pendingSpawn;
+      state.pendingSpawn = null;
+      spawnGates(LEVELS[id]);
+      toast(LEVELS[id].prompt, 1000);
+    }
+
+    const sw = el.stage.clientWidth;
+    const sh = el.stage.clientHeight;
+    const speed = 280;
+    if (keys.left) state.vx = -speed;
+    else if (keys.right) state.vx = speed;
+    else state.vx *= 0.82;
+
+    state.x += state.vx * dt;
+    const margin = 36;
+    if (state.x < margin) { state.x = margin; state.vx = 0; }
+    if (state.x > sw - margin) { state.x = sw - margin; state.vx = 0; }
+
+    if (state.gatesReady && !state.resolved) {
+      state.y += state.fallSpeed * dt;
+      highlightGate();
+      /* collide with gate row */
+      if (state.y >= state.gateY + 10) {
+        pickOption(nearestGateIndex());
+      }
+      /* wrap if somehow missed */
+      if (state.y > sh + 40 && !state.resolved) {
+        pickOption(nearestGateIndex());
+      }
+    }
+
+    el.creature.style.left = state.x + "px";
+    el.creature.style.top = state.y + "px";
+
+    raf = requestAnimationFrame(tick);
+  }
+
+  /* controls */
+  document.getElementById("btnStart").addEventListener("click", startGame);
+  document.getElementById("btnAgain").addEventListener("click", function () {
+    showScreen("title");
   });
 
-  // 開局公仔
-  setMascot($("start-mascot"), "primordial", false);
+  window.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") { keys.left = true; e.preventDefault(); }
+    if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") { keys.right = true; e.preventDefault(); }
+  });
+  window.addEventListener("keyup", function (e) {
+    if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") keys.left = false;
+    if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = false;
+  });
+
+  let touchX0 = null;
+  el.stage.addEventListener("pointerdown", function (e) {
+    if (!state || !el.play.classList.contains("active")) return;
+    touchX0 = e.clientX;
+    const rect = el.stage.getBoundingClientRect();
+    const mid = rect.left + rect.width / 2;
+    if (e.clientX < mid) keys.left = true;
+    else keys.right = true;
+    el.stage.setPointerCapture(e.pointerId);
+  });
+  el.stage.addEventListener("pointermove", function (e) {
+    if (touchX0 == null || !state) return;
+    const dx = e.clientX - touchX0;
+    if (Math.abs(dx) > 8) {
+      keys.left = dx < 0;
+      keys.right = dx > 0;
+    }
+    /* direct steer toward pointer x within stage */
+    const rect = el.stage.getBoundingClientRect();
+    state.x = e.clientX - rect.left;
+  });
+  function clearPointer(e) {
+    keys.left = false; keys.right = false; touchX0 = null;
+    try { el.stage.releasePointerCapture(e.pointerId); } catch (err) {}
+  }
+  el.stage.addEventListener("pointerup", clearPointer);
+  el.stage.addEventListener("pointercancel", clearPointer);
+
+  /* expose for evidence scripts */
+  window.__VIRUS_FORK__ = {
+    FORMS: FORMS,
+    LEVELS: LEVELS,
+    PROOF: PROOF,
+    startGame: startGame,
+    getState: function () { return state; },
+    forcePick: function (idx) { pickOption(idx); },
+    /** 將公仔移到第 idx 個門中央並立即落入 */
+    fallInto: function (idx) {
+      if (!state || !gateRowEl) return false;
+      var gates = gateRowEl.querySelectorAll('.gate');
+      var g = gates[idx];
+      if (!g) return false;
+      var r = g.getBoundingClientRect();
+      var sr = el.stage.getBoundingClientRect();
+      state.x = (r.left + r.right) / 2 - sr.left;
+      state.y = state.gateY + 20;
+      pickOption(idx);
+      return true;
+    }
+  };
 })();
 </script>
 </body>

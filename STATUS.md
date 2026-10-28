@@ -9,3 +9,9 @@
 - verify: verify-phone-html --also-landscape PASS (errors=0)
 - updated: 2026-10-28 Asia/Hong_Kong
 - note: SendToAgent 無圖；證據請讀 evidence-v4
+
+## Accept (Mobile Engineer)
+- accepted: 2026-10-28 Asia/Hong_Kong
+- verdict: PASS（票據四項：禁選字工程證明、title 封面、六互斥終局、verify PASS）
+- caveat: iOS 實機長按選字未在本機重現；見 evidence-v4/UNVERIFIED.md
+- next: Orchestrator 轉 John

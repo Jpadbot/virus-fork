@@ -3,7 +3,7 @@
 - status: done
 - ticket: 現實環境時間軸持續生長（選項影響；動畫不可還原）
 - branch: feat/env-time-grow-persist
-- HEAD: f1ee430 (f1ee4307632a31c592a046c7e15cb6ed3d63f320)
+- HEAD: f1ee430 (feat); tip b731979
 - base: feat/scene-bg-gap-obvious @ 1b4ff07
 - john_notes: /workspace/scratch/virus-fork-cli-john-notes-v16/
 - deliverable: /workspace/virus-fork-cli/playable.html

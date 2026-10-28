@@ -1,13 +1,11 @@
 # STATUS — virus-fork-cli
 
 - status: done
-- ticket: 單檔瘦身（手機聊天可預覽）
-- branch: feat/playable-slim
-- prior_done: feat/env-long-diegetic @ ea45442（playable ≈633KB）
-- deliverable: /workspace/virus-fork-cli/playable.html（≈312KB ≤450／理想≤400）
-- evidence: /workspace/scratch/virus-fork-cli-evidence-v12/
-- cover: cover-playable.jpg（440×782 q=62）；重建：`python3 scripts/build-playable.py`
-- checks: allPass；verify PASS
-- path: A — Mobile Engineer
+- ticket: 還原未瘦身單檔並推 GitHub（John 指示不要瘦身）
+- branch: main（還原 playable @ ea45442 內容）
+- prior: feat/playable-slim @ 256186f 已作廢（John 不要瘦身）
+- deliverable: /workspace/virus-fork-cli/playable.html（≈633KB；環境長局版）
+- github: https://github.com/Jpadbot/virus-fork
+- path: A — Orchestrator 直接還原並推送
 - finished: 2026-10-28 Asia/Hong_Kong
-- note: 路徑 B 仍暫緩；請 Orchestrator 轉 John
+- note: 路徑 B 仍暫緩

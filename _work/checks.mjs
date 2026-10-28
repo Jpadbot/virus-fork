@@ -2,7 +2,7 @@ import { chromium } from "playwright-core";
 import fs from "fs";
 import path from "path";
 
-const outDir = "/workspace/scratch/virus-fork-cli-evidence-v11";
+const outDir = "/workspace/scratch/virus-fork-cli-evidence-v13";
 fs.mkdirSync(outDir, { recursive: true });
 const file = path.resolve("/workspace/virus-fork-cli/playable.html");
 const url = "file://" + file + "?envGap=0";
@@ -150,10 +150,53 @@ const envStart = await page.evaluate(() => {
     hasStableLabel,
     creatureClass: document.getElementById("creature")?.className || "",
     particleCount: document.querySelectorAll("#particles i").length,
-    gap: window.__VIRUS_FORK__.ENV_OPTION_GAP_MS
+    gap: window.__VIRUS_FORK__.ENV_OPTION_GAP_MS,
+    liveGrowFlag: !!window.__VIRUS_FORK__.liveGrow,
+    gateTitleFs: getComputedStyle(document.querySelector(".gate .g-title") || document.body).fontSize,
+    gateMinH: (document.querySelector(".gate") || {}).offsetHeight || 0
   };
 });
+
 await page.screenshot({ path: path.join(outDir, "20-env-diegetic-options.png"), fullPage: true });
+
+// live-grow gap evidence: pick once then let pause run without zeroing pauseUntil
+const gapEvidence = await page.evaluate(async () => {
+  const V = window.__VIRUS_FORK__;
+  let s = V.getState();
+  const before = s.pop;
+  s.pauseUntil = 0;
+  V.fallInto(0);
+  await new Promise((r) => setTimeout(r, 50));
+  s = V.getState();
+  const after = s.pop;
+  // ?envGap=0 skips real gap; force a short grow window for evidence
+  s.pendingSpawn = s.pendingSpawn || s.nodeId;
+  s.pauseUntil = performance.now() + 1600;
+  V.beginEnvGapGrow(before, after);
+  const frames = [];
+  for (let i = 0; i < 5; i++) {
+    await new Promise((r) => setTimeout(r, 250));
+    const st = V.getState();
+    const c = document.getElementById("creature");
+    frames.push({
+      t: i,
+      pauseLeft: st ? Math.max(0, (st.pauseUntil || 0) - performance.now()) : 0,
+      pendingSpawn: !!(st && st.pendingSpawn),
+      liveGrow: !!(c && c.classList.contains("live-grow")),
+      gapGrowing: document.getElementById("play").classList.contains("gap-growing"),
+      y: st && Math.round(st.y),
+      className: c ? c.className : ""
+    });
+  }
+  return { before, after, frames, liveGrowFlag: !!V.liveGrow };
+});
+
+await page.screenshot({ path: path.join(outDir, "23-env-gap-grow-a.png"), fullPage: true });
+await page.waitForTimeout(500);
+await page.screenshot({ path: path.join(outDir, "24-env-gap-grow-b.png"), fullPage: true });
+// clear remaining gap so later envPick can proceed
+await page.evaluate(() => { const s = window.__VIRUS_FORK__.getState(); if (s) { s.pauseUntil = 0; } });
+await page.waitForTimeout(80);
 
 async function envPick(idx) {
   await page.evaluate((i) => {
@@ -263,6 +306,7 @@ const checks = {
   textHits: api.textHits,
   pathResult,
   envStart,
+  gapEvidence,
   midHigh,
   midLow,
   thrive,
@@ -281,6 +325,10 @@ const checks = {
     noHudMetrics,
     noEndMetrics,
     toastClean,
+    liveGrowApi: !!envStart.liveGrowFlag,
+    gateTitleBig: parseFloat(envStart.gateTitleFs || "0") >= 15, // ~0.96–1.02rem at 390
+    gateTall: (envStart.gateMinH || 0) >= 100,
+    gapLiveFrames: (gapEvidence.frames || []).filter((f) => f.liveGrow || f.gapGrowing).length >= 2,
     vitalHigh: /vital-high/.test(midHigh.creatureClass || "") || (midHigh.particles || 0) >= (envStart.particleCount || 0),
     vitalLow: /vital-low/.test(midLow.creatureClass || "") || (midLow.pop || 99) < (envStart.pop || 0),
     thriveOk: !!(thrive.active && /繁盛|適應/.test(thrive.title || "")),

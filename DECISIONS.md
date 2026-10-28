@@ -1,5 +1,12 @@
 # virus-fork-cli — 決策紀錄
 
+## 2026-10-28 現實環境連續生長＋選項按鈕重設計（feat/env-live-grow-ui）
+- Grok CLI 無頭探索逾數分鐘未改檔 → 本席直寫收尾（路徑 A 既有備援）。
+- **波間**：`tick` 在 env＋`pendingSpawn`／`pendingEnvEnd` 期間呼叫 `updateEnvLiveGrow`（pop 外表插值、呼吸 keyframes、顆粒桶、輕微漂浮）；`?envGap=0` 仍可瞬切（測試用）。
+- **門卡**：下落＋環境共用 `.gate` 加大字級與卡片高度。
+- **禁**：指標條／±HUD；未強制瘦身（cover-v1 inline）。
+- checks allPass；verify-phone-html PASS；證據 `/workspace/scratch/virus-fork-cli-evidence-v13/`。
+
 ## 2026-10-28 單檔瘦身（feat/playable-slim）
 - 問題：`playable.html` ≈633KB，聊天預覽「檔案過大」；inline cover base64 為主因（原 cover-v1.jpg ≈281KB → base64 ≈375KB）。
 - 作法：另存 `cover-playable.jpg`（440×782、JPEG q=62、optimize）≈40KB；`scripts/build-playable.py` 將 `index.html` 的 `cover-v1.jpg` 換成 data URL 產出 `playable.html`。

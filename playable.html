@@ -147,18 +147,53 @@
   }
   #creature.vital-low {
     filter: drop-shadow(0 6px 10px rgba(0,0,0,0.5)) drop-shadow(0 0 6px rgba(180,120,90,0.25)) saturate(0.55) brightness(0.88);
-    transform: scale(0.92);
+    --vital-scale: 0.92;
   }
   #creature.vital-mid {
     filter: drop-shadow(0 6px 14px rgba(0,0,0,0.45)) drop-shadow(0 0 10px rgba(140,190,160,0.35));
+    --vital-scale: 1;
   }
   #creature.vital-high {
     filter: drop-shadow(0 6px 16px rgba(0,0,0,0.4)) drop-shadow(0 0 16px rgba(160,230,170,0.55)) saturate(1.15) brightness(1.06);
-    transform: scale(1.06);
+    --vital-scale: 1.06;
   }
   #play.phase-env #creature.vital-low,
   #play.phase-env #creature.vital-mid,
   #play.phase-env #creature.vital-high { will-change: filter, transform; }
+  #play.phase-env #creature.live-grow {
+    animation: env-live-breathe 2.4s ease-in-out infinite;
+    transform-origin: center center;
+  }
+  #play.phase-env #creature.live-grow.vital-low {
+    animation-name: env-live-breathe-low;
+  }
+  #play.phase-env #creature.live-grow.vital-high {
+    animation-name: env-live-breathe-high;
+  }
+  @keyframes env-live-breathe {
+    0%, 100% { transform: scale(calc(var(--vital-scale, 1) * 0.97)); }
+    50% { transform: scale(calc(var(--vital-scale, 1) * 1.05)); }
+  }
+  @keyframes env-live-breathe-low {
+    0%, 100% { transform: scale(0.88); filter: drop-shadow(0 6px 10px rgba(0,0,0,0.5)) drop-shadow(0 0 4px rgba(180,120,90,0.2)) saturate(0.5) brightness(0.85); }
+    50% { transform: scale(0.94); filter: drop-shadow(0 6px 10px rgba(0,0,0,0.5)) drop-shadow(0 0 8px rgba(180,120,90,0.32)) saturate(0.6) brightness(0.92); }
+  }
+  @keyframes env-live-breathe-high {
+    0%, 100% { transform: scale(1.02); filter: drop-shadow(0 6px 16px rgba(0,0,0,0.4)) drop-shadow(0 0 12px rgba(160,230,170,0.45)) saturate(1.1) brightness(1.04); }
+    50% { transform: scale(1.12); filter: drop-shadow(0 6px 18px rgba(0,0,0,0.35)) drop-shadow(0 0 22px rgba(160,230,170,0.7)) saturate(1.22) brightness(1.1); }
+  }
+  #play.phase-env .particles.live-grow i {
+    animation-duration: 6s;
+  }
+  #play.phase-env.gap-growing::after {
+    content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 45%, rgba(120,210,150,0.08) 0%, transparent 55%);
+    animation: env-gap-glow 3.2s ease-in-out infinite alternate;
+  }
+  @keyframes env-gap-glow {
+    from { opacity: 0.35; }
+    to { opacity: 1; }
+  }
   .particles.dense i { opacity: 1; }
   .particles.sparse i { opacity: 0.35; }
   .particles.mid i { opacity: 0.7; }
@@ -205,59 +240,62 @@
   }
 
   .gate-row {
-    position: absolute; left: 0; right: 0; height: 108px;
-    display: flex; gap: 8px; padding: 0 10px;
+    position: absolute; left: 0; right: 0; height: 128px;
+    display: flex; gap: 10px; padding: 0 12px;
     z-index: 2; will-change: top;
   }
-  .gate-row.gates-3 { gap: 6px; padding: 0 8px; }
-  .gate-row.gates-4 { gap: 4px; padding: 0 6px; }
+  .gate-row.gates-3 { gap: 8px; padding: 0 10px; }
+  .gate-row.gates-4 { gap: 6px; padding: 0 8px; }
   .gate {
-    flex: 1; min-width: 0; min-height: 96px;
-    border: 2px solid rgba(60,80,90,0.9);
-    border-radius: 14px;
-    background: linear-gradient(165deg, rgba(28,42,52,0.96) 0%, rgba(16,26,34,0.94) 100%);
+    flex: 1; min-width: 0; min-height: 112px;
+    border: 1.5px solid rgba(90,120,130,0.75);
+    border-radius: 18px;
+    background:
+      linear-gradient(165deg, rgba(36,52,62,0.98) 0%, rgba(18,28,36,0.96) 55%, rgba(14,22,28,0.97) 100%);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 8px 6px; text-align: center;
+    padding: 12px 8px; text-align: center;
     box-shadow:
-      0 8px 20px rgba(0,0,0,0.35),
-      inset 0 1px 0 rgba(255,255,255,0.06),
-      inset 0 0 28px rgba(0,0,0,0.28);
+      0 10px 24px rgba(0,0,0,0.38),
+      0 1px 0 rgba(255,255,255,0.08) inset,
+      0 -1px 0 rgba(0,0,0,0.25) inset;
     position: relative;
-    transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s, background 0.15s;
+    backdrop-filter: blur(2px);
   }
   #play.phase-env .gate {
-    border-color: rgba(50,80,60,0.9);
-    background: linear-gradient(165deg, rgba(24,44,34,0.96) 0%, rgba(14,28,20,0.94) 100%);
+    border-color: rgba(70,120,90,0.8);
+    background:
+      linear-gradient(165deg, rgba(30,54,42,0.98) 0%, rgba(16,34,24,0.96) 55%, rgba(12,24,18,0.97) 100%);
   }
-  .gate-row.gates-4 .gate { min-height: 88px; padding: 6px 3px; border-radius: 12px; }
+  .gate-row.gates-4 .gate { min-height: 104px; padding: 10px 5px; border-radius: 16px; }
   .gate::before {
-    content: ""; position: absolute; inset: 4px; border-radius: 10px;
-    border: 1px dashed rgba(255,255,255,0.07); pointer-events: none;
+    content: ""; position: absolute; inset: 5px; border-radius: 13px;
+    border: 1px solid rgba(255,255,255,0.06); pointer-events: none;
   }
   .gate.hi {
     border-color: var(--bact);
-    background: linear-gradient(165deg, rgba(48,42,28,0.97) 0%, rgba(28,26,18,0.95) 100%);
-    box-shadow: 0 0 18px var(--bact-glow), 0 8px 18px rgba(0,0,0,0.3), inset 0 0 22px rgba(224,168,58,0.1);
+    background: linear-gradient(165deg, rgba(52,46,30,0.98) 0%, rgba(30,28,18,0.96) 100%);
+    box-shadow: 0 0 20px var(--bact-glow), 0 10px 22px rgba(0,0,0,0.32), inset 0 0 24px rgba(224,168,58,0.12);
   }
   .gate.vir-hi {
     border-color: var(--vir);
-    background: linear-gradient(165deg, rgba(28,44,54,0.97) 0%, rgba(16,28,36,0.95) 100%);
-    box-shadow: 0 0 18px var(--vir-glow), 0 8px 18px rgba(0,0,0,0.3), inset 0 0 22px rgba(94,200,232,0.1);
+    background: linear-gradient(165deg, rgba(30,48,58,0.98) 0%, rgba(16,30,38,0.96) 100%);
+    box-shadow: 0 0 20px var(--vir-glow), 0 10px 22px rgba(0,0,0,0.32), inset 0 0 24px rgba(94,200,232,0.12);
   }
   .gate.selected {
-    outline: 2px solid #e8efe8; outline-offset: 2px;
-    transform: translateY(-2px);
-    box-shadow: 0 0 22px rgba(232,239,232,0.22), 0 10px 22px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.04);
+    outline: 2px solid #f0f6f2; outline-offset: 3px;
+    transform: translateY(-3px);
+    box-shadow: 0 0 26px rgba(232,239,232,0.28), 0 12px 26px rgba(0,0,0,0.42), inset 0 0 22px rgba(255,255,255,0.05);
   }
-  .gate .g-icon { width: 30px; height: 30px; margin-bottom: 4px; opacity: 0.92; flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35)); }
-  .gate-row.gates-4 .g-icon { width: 22px; height: 22px; margin-bottom: 2px; }
-  .gate .g-title { font-size: 0.84rem; font-weight: 700; line-height: 1.15; word-break: break-word; color: #eef4f0; }
-  .gate-row.gates-3 .g-title { font-size: 0.76rem; }
-  .gate-row.gates-4 .g-title { font-size: 0.68rem; }
-  .gate .g-sub { font-size: 0.68rem; color: #8fa8a0; margin-top: 4px; line-height: 1.15; word-break: break-word; }
-  .gate-row.gates-3 .g-sub { font-size: 0.62rem; }
-  .gate-row.gates-4 .g-sub { font-size: 0.58rem; }
-  #play.phase-env .gate .g-sub { color: #8fb898; }
+  .gate .g-icon { width: 34px; height: 34px; margin-bottom: 6px; opacity: 0.95; flex-shrink: 0; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.4)); }
+  .gate-row.gates-4 .g-icon { width: 28px; height: 28px; margin-bottom: 4px; }
+  .gate .g-title { font-size: 1.02rem; font-weight: 800; line-height: 1.2; word-break: break-word; color: #f4f8f5; letter-spacing: 0.01em; }
+  .gate-row.gates-3 .g-title { font-size: 0.96rem; }
+  .gate-row.gates-4 .g-title { font-size: 0.88rem; }
+  .gate .g-sub { font-size: 0.8rem; color: #9bb4ac; margin-top: 5px; line-height: 1.25; word-break: break-word; }
+  .gate-row.gates-3 .g-sub { font-size: 0.74rem; }
+  .gate-row.gates-4 .g-sub { font-size: 0.7rem; }
+  #play.phase-env .gate .g-sub { color: #9ec8a8; }
 
   #toast {
     position: absolute; left: 50%; top: 38%; transform: translate(-50%, -50%);
@@ -3787,6 +3825,88 @@ function svg(inner, vb) {
     return "族群旺盛，顆粒密布";
   }
 
+  var visualPop = 50;
+  var lastParticleBucket = -1;
+  var growTickAccum = 0;
+
+  function vitalClassFor(p) {
+    if (p <= 35) return "vital-low";
+    if (p <= 65) return "vital-mid";
+    return "vital-high";
+  }
+
+  function applyVisualPop(p, forceParticles) {
+    p = Math.max(0, Math.min(100, p));
+    visualPop = p;
+    if (el.popMood) el.popMood.textContent = moodPhrase(p);
+    el.creature.classList.remove("vital-low", "vital-mid", "vital-high");
+    el.creature.classList.add(vitalClassFor(p));
+    var bucket = p <= 35 ? 0 : p <= 65 ? 1 : 2;
+    var count = 6 + Math.round((p / 100) * 36);
+    if (forceParticles || bucket !== lastParticleBucket) {
+      lastParticleBucket = bucket;
+      rebuildParticles(count);
+      el.particles.classList.remove("sparse", "mid", "dense");
+      if (bucket === 0) el.particles.classList.add("sparse");
+      else if (bucket === 1) el.particles.classList.add("mid");
+      else el.particles.classList.add("dense");
+    }
+  }
+
+  function setLiveGrow(on) {
+    if (!el.creature || !el.play) return;
+    el.creature.classList.toggle("live-grow", !!on);
+    el.particles.classList.toggle("live-grow", !!on);
+    el.play.classList.toggle("gap-growing", !!on);
+  }
+
+  function beginEnvGapGrow(fromPop, toPop) {
+    if (!state) return;
+    state.growFrom = fromPop;
+    state.growTo = toPop;
+    state.growStart = performance.now();
+    state.growEnd = state.pauseUntil || (performance.now() + ENV_OPTION_GAP_MS);
+    setLiveGrow(true);
+    applyVisualPop(fromPop, true);
+  }
+
+  function updateEnvLiveGrow(ts, dt) {
+    if (!state || state.phase !== "env") return;
+    var from = typeof state.growFrom === "number" ? state.growFrom : visualPop;
+    var to = typeof state.growTo === "number" ? state.growTo : state.pop;
+    var t0 = state.growStart || (ts - 1);
+    var t1 = state.growEnd || (ts + 1);
+    var u = Math.max(0, Math.min(1, (ts - t0) / Math.max(1, t1 - t0)));
+    /* ease-out cubic */
+    var e = 1 - Math.pow(1 - u, 3);
+    var target = from + (to - from) * e;
+    /* micro pulse so it never looks frozen even near end */
+    var pulse = Math.sin(ts / 380) * 1.8;
+    applyVisualPop(target + pulse, false);
+    /* gentle bob while waiting for next gates */
+    if (!state.gatesReady) {
+      var sh = el.stage.clientHeight || 600;
+      var baseY = Math.max(90, sh * 0.22);
+      state.y = baseY + Math.sin(ts / 520) * 10;
+      state.x = state.x + Math.sin(ts / 900) * 0.15;
+      syncCreatureX();
+    }
+    growTickAccum += dt;
+    if (growTickAccum > 1.1) {
+      growTickAccum = 0;
+      /* occasional particle refresh mid-gap to show density change */
+      applyVisualPop(target, true);
+    }
+  }
+
+  function endEnvGapGrow() {
+    if (!state) return;
+    applyVisualPop(state.pop, true);
+    state.growFrom = state.growTo = null;
+    state.growStart = state.growEnd = 0;
+    setLiveGrow(false);
+  }
+
   var state = null;
   var raf = 0;
   var lastTs = 0;
@@ -3885,13 +4005,8 @@ function svg(inner, vb) {
 
   function updatePopUI() {
     if (!state || state.phase !== "env") return;
-    var p = Math.max(0, Math.min(100, Math.round(state.pop)));
-    if (el.popMood) el.popMood.textContent = moodPhrase(p);
-    el.creature.classList.remove("vital-low", "vital-mid", "vital-high");
-    if (p <= 35) el.creature.classList.add("vital-low");
-    else if (p <= 65) el.creature.classList.add("vital-mid");
-    else el.creature.classList.add("vital-high");
-    syncParticleDensity(p);
+    var p = Math.max(0, Math.min(100, state.pop));
+    applyVisualPop(p, true);
   }
 
   function currentLevel() {
@@ -3912,7 +4027,9 @@ function svg(inner, vb) {
   function startGame() {
     cancelAnimationFrame(raf);
     clearGates();
+    setLiveGrow(false);
     el.creature.classList.remove("vital-low", "vital-mid", "vital-high");
+    lastParticleBucket = -1;
     rebuildParticles(18);
     el.particles.classList.remove("sparse", "mid", "dense");
     setPhaseUI("evo");
@@ -3936,6 +4053,8 @@ function svg(inner, vb) {
   function startEnv(formId) {
     cancelAnimationFrame(raf);
     clearGates();
+    setLiveGrow(false);
+    lastParticleBucket = -1;
     var startId = getEnvStartId(formId);
     if (!startId) { toast("此物種尚無環境關卡", 1200); return; }
     setPhaseUI("env");
@@ -3975,6 +4094,7 @@ function svg(inner, vb) {
   function finishEnv(endNode) {
     cancelAnimationFrame(raf);
     clearGates();
+    endEnvGapGrow();
     pointerActive = false;
     setPhaseUI("evo");
     var formId = state.envFormId;
@@ -4018,12 +4138,14 @@ function svg(inner, vb) {
     if (state.phase === "env") {
       var formName = FORMS[state.envFormId].name;
       state.path.push({ label: formName, choice: opt.title });
+      var popBefore = state.pop;
       applyPopDelta(opt.delta || 0);
       toast(opt.title, 900);
       clearGates();
       state.gatesReady = false;
       if (state.pop <= 0) {
-        state.pauseUntil = performance.now() + 550;
+        state.pauseUntil = performance.now() + 900;
+        beginEnvGapGrow(popBefore, 0);
         state.pendingEnvEnd = {
           outcome: "decline",
           endTitle: "逐漸消退・場所改換",
@@ -4035,7 +4157,8 @@ function svg(inner, vb) {
       var nodes = getEnvNodes(state.envFormId);
       var nextNode = nodes[nextId];
       if (nextNode && nextNode.end) {
-        state.pauseUntil = performance.now() + 550;
+        state.pauseUntil = performance.now() + 900;
+        beginEnvGapGrow(popBefore, state.pop);
         state.pendingEnvEnd = nextNode;
         return;
       }
@@ -4043,6 +4166,7 @@ function svg(inner, vb) {
       state.segment += 1;
       state.pauseUntil = performance.now() + ENV_OPTION_GAP_MS;
       state.pendingSpawn = nextId;
+      beginEnvGapGrow(popBefore, state.pop);
       return;
     }
 
@@ -4254,9 +4378,13 @@ function svg(inner, vb) {
     lastTs = ts;
 
     if (ts < state.pauseUntil) {
+      if (state.phase === "env" && (state.pendingSpawn || state.pendingEnvEnd)) {
+        updateEnvLiveGrow(ts, dt);
+      }
       raf = requestAnimationFrame(tick);
       return;
     }
+    if (state.phase === "env") endEnvGapGrow();
     if (state.pendingEnd) {
       var e = state.pendingEnd; state.pendingEnd = null; finish(e); return;
     }
@@ -4521,7 +4649,7 @@ function svg(inner, vb) {
 
   window.__VIRUS_FORK__ = {
     FORMS: FORMS, LEVELS: LEVELS, DEX: DEX, PROOF: PROOF,
-    ENV_POOLS: ENV_POOLS, ENV_POOL_OF: ENV_POOL_OF, ENV_OPTION_GAP_MS: ENV_OPTION_GAP_MS,
+    ENV_POOLS: ENV_POOLS, ENV_POOL_OF: ENV_POOL_OF, ENV_OPTION_GAP_MS: ENV_OPTION_GAP_MS, liveGrow: true, beginEnvGapGrow: beginEnvGapGrow, setLiveGrow: setLiveGrow, applyVisualPop: applyVisualPop,
     startGame: startGame, startEnv: startEnv, openDex: openDex, renderDex: renderDex,
     loadUnlocked: loadUnlocked, unlockSpecies: unlockSpecies,
     saveUnlocked: saveUnlocked, probeStorage: probeStorage,

@@ -118,11 +118,191 @@
       radial-gradient(circle at 30% 40%, rgba(120,200,140,0.07) 0%, transparent 42%),
       radial-gradient(circle at 70% 60%, rgba(80,160,120,0.05) 0%, transparent 40%);
   }
+  /* A/B 場景動畫背景層 */
+  #scene-bg {
+    position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  }
+  #scene-bg .layer {
+    position: absolute; inset: -20%; pointer-events: none;
+  }
+  #play[data-scene="cosmos"] {
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(60,40,110,0.55) 0%, transparent 45%),
+      radial-gradient(ellipse at 70% 70%, rgba(20,60,120,0.4) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 40%, #0a0618 0%, #05030c 70%);
+  }
+  #play[data-scene="cosmos"]::before {
+    background:
+      radial-gradient(circle at 18% 28%, rgba(160,120,255,0.12) 0%, transparent 36%),
+      radial-gradient(circle at 78% 62%, rgba(80,180,255,0.1) 0%, transparent 40%);
+    animation: cosmos-nebula 14s ease-in-out infinite alternate;
+  }
+  #play[data-scene="cosmos"] #scene-bg .layer.a {
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 18%, #fff, transparent),
+      radial-gradient(1px 1px at 28% 42%, #cde, transparent),
+      radial-gradient(2px 2px at 44% 22%, #fff, transparent),
+      radial-gradient(1px 1px at 62% 58%, #9cf, transparent),
+      radial-gradient(1.5px 1.5px at 78% 30%, #fff, transparent),
+      radial-gradient(1px 1px at 88% 72%, #fdf, transparent),
+      radial-gradient(1px 1px at 8% 78%, #adf, transparent),
+      radial-gradient(2px 2px at 52% 80%, #fff, transparent),
+      radial-gradient(1px 1px at 36% 66%, #cef, transparent),
+      radial-gradient(1.5px 1.5px at 70% 12%, #fff, transparent);
+    background-size: 100% 100%;
+    animation: star-twinkle 2.8s ease-in-out infinite alternate;
+    opacity: 0.85;
+  }
+  #play[data-scene="cosmos"] #scene-bg .layer.b {
+    background:
+      radial-gradient(ellipse at 40% 50%, rgba(120,80,220,0.18) 0%, transparent 42%),
+      radial-gradient(ellipse at 65% 35%, rgba(40,140,220,0.14) 0%, transparent 38%);
+    animation: cosmos-drift 18s linear infinite;
+  }
+  @keyframes star-twinkle {
+    from { opacity: 0.45; filter: brightness(0.85); }
+    to { opacity: 1; filter: brightness(1.35); }
+  }
+  @keyframes cosmos-nebula {
+    from { opacity: 0.55; transform: scale(1); }
+    to { opacity: 1; transform: scale(1.08); }
+  }
+  @keyframes cosmos-drift {
+    from { transform: translate(-4%, -2%) rotate(0deg); }
+    to { transform: translate(5%, 3%) rotate(8deg); }
+  }
+  #play[data-scene="city"] {
+    background:
+      linear-gradient(180deg, #0a121c 0%, #121c28 40%, #0e1820 100%);
+  }
+  #play[data-scene="city"]::before {
+    background:
+      repeating-linear-gradient(90deg, transparent 0 18px, rgba(120,180,220,0.045) 18px 19px),
+      repeating-linear-gradient(0deg, transparent 0 22px, rgba(255,200,100,0.04) 22px 23px);
+    animation: city-grid 8s linear infinite;
+  }
+  #play[data-scene="city"] #scene-bg .layer.a {
+    background:
+      linear-gradient(90deg, transparent 10%, rgba(255,210,120,0.12) 10.5%, transparent 11%),
+      linear-gradient(90deg, transparent 28%, rgba(180,220,255,0.1) 28.4%, transparent 29%),
+      linear-gradient(90deg, transparent 55%, rgba(255,200,100,0.14) 55.5%, transparent 56%),
+      linear-gradient(90deg, transparent 72%, rgba(160,200,255,0.1) 72.4%, transparent 73%),
+      linear-gradient(90deg, transparent 88%, rgba(255,220,140,0.12) 88.5%, transparent 89%);
+    background-size: 100% 100%;
+    animation: city-windows 1.6s steps(2, end) infinite;
+    opacity: 0.9;
+  }
+  #play[data-scene="city"] #scene-bg .layer.b {
+    background: linear-gradient(180deg, transparent 55%, rgba(40,60,80,0.35) 100%);
+    animation: city-haze 6s ease-in-out infinite alternate;
+  }
+  @keyframes city-grid { from { background-position: 0 0, 0 0; } to { background-position: 19px 0, 0 23px; } }
+  @keyframes city-windows { from { opacity: 0.35; } to { opacity: 1; } }
+  @keyframes city-haze { from { opacity: 0.4; } to { opacity: 0.85; } }
+  #play[data-scene="suburb"] {
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(70,120,70,0.35) 0%, transparent 45%),
+      linear-gradient(180deg, #0c1810 0%, #142818 45%, #0a140c 100%);
+  }
+  #play[data-scene="suburb"]::before {
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(100,180,90,0.12) 0%, transparent 40%),
+      radial-gradient(ellipse at 80% 70%, rgba(180,200,80,0.08) 0%, transparent 38%);
+    animation: suburb-glow 7s ease-in-out infinite alternate;
+  }
+  #play[data-scene="suburb"] #scene-bg .layer.a {
+    background:
+      radial-gradient(ellipse at 30% 85%, rgba(90,160,100,0.2) 0%, transparent 35%),
+      radial-gradient(ellipse at 70% 90%, rgba(140,180,90,0.15) 0%, transparent 32%);
+    animation: suburb-wave 9s ease-in-out infinite alternate;
+  }
+  #play[data-scene="suburb"] #scene-bg .layer.b {
+    background:
+      radial-gradient(circle at 15% 25%, rgba(255,230,160,0.18) 0%, transparent 8%),
+      radial-gradient(circle at 85% 30%, rgba(255,210,120,0.12) 0%, transparent 6%);
+    animation: suburb-farlight 4s ease-in-out infinite alternate;
+  }
+  @keyframes suburb-glow { from { opacity: 0.5; } to { opacity: 1; } }
+  @keyframes suburb-wave { from { transform: translateY(0); } to { transform: translateY(-18px); } }
+  @keyframes suburb-farlight { from { opacity: 0.35; } to { opacity: 1; } }
+  #play[data-scene="hospital"] {
+    background:
+      radial-gradient(ellipse at 50% 20%, rgba(180,220,230,0.12) 0%, transparent 50%),
+      linear-gradient(180deg, #0e1618 0%, #121c20 50%, #0a1214 100%);
+  }
+  #play[data-scene="hospital"]::before {
+    background:
+      repeating-linear-gradient(90deg, transparent 0 40px, rgba(180,220,230,0.05) 40px 41px),
+      radial-gradient(circle at 50% 30%, rgba(200,240,255,0.08) 0%, transparent 45%);
+    animation: hosp-pulse 3.2s ease-in-out infinite alternate;
+  }
+  #play[data-scene="hospital"] #scene-bg .layer.a {
+    background:
+      linear-gradient(90deg, transparent 48%, rgba(120,220,200,0.15) 49%, transparent 51%),
+      radial-gradient(circle at 70% 40%, rgba(100,200,220,0.12) 0%, transparent 20%);
+    animation: hosp-scan 5s linear infinite;
+  }
+  #play[data-scene="hospital"] #scene-bg .layer.b {
+    background: radial-gradient(ellipse at 50% 90%, rgba(160,200,210,0.1) 0%, transparent 40%);
+    animation: hosp-pulse 2.4s ease-in-out infinite alternate-reverse;
+  }
+  @keyframes hosp-pulse { from { opacity: 0.4; } to { opacity: 0.95; } }
+  @keyframes hosp-scan { from { transform: translateX(-8%); } to { transform: translateX(8%); } }
+  #play[data-scene="host"] {
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(160,80,90,0.22) 0%, transparent 55%),
+      linear-gradient(180deg, #1a1014 0%, #241418 50%, #120c10 100%);
+  }
+  #play[data-scene="host"]::before {
+    background:
+      radial-gradient(circle at 40% 45%, rgba(220,120,130,0.12) 0%, transparent 40%),
+      radial-gradient(circle at 60% 55%, rgba(180,90,100,0.1) 0%, transparent 35%);
+    animation: host-pulse 4.5s ease-in-out infinite alternate;
+  }
+  #play[data-scene="host"] #scene-bg .layer.a {
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(200,100,110,0.15) 0%, transparent 45%);
+    animation: host-breathe 3.5s ease-in-out infinite alternate;
+  }
+  #play[data-scene="host"] #scene-bg .layer.b {
+    background:
+      radial-gradient(circle at 25% 35%, rgba(255,160,150,0.1) 0%, transparent 15%),
+      radial-gradient(circle at 75% 60%, rgba(220,120,100,0.08) 0%, transparent 12%);
+    animation: host-vein 6s ease-in-out infinite alternate;
+  }
+  @keyframes host-pulse { from { opacity: 0.45; } to { opacity: 1; } }
+  @keyframes host-breathe { from { transform: scale(0.92); opacity: 0.5; } to { transform: scale(1.08); opacity: 0.95; } }
+  @keyframes host-vein { from { opacity: 0.3; } to { opacity: 0.85; } }
+  #play[data-scene="wet"] {
+    background:
+      radial-gradient(ellipse at 50% 70%, rgba(40,100,130,0.35) 0%, transparent 50%),
+      linear-gradient(180deg, #0a1418 0%, #0e2030 55%, #081018 100%);
+  }
+  #play[data-scene="wet"]::before {
+    background:
+      radial-gradient(ellipse at 30% 60%, rgba(60,160,180,0.14) 0%, transparent 40%),
+      radial-gradient(ellipse at 70% 80%, rgba(40,120,160,0.12) 0%, transparent 38%);
+    animation: wet-shim 5s ease-in-out infinite alternate;
+  }
+  #play[data-scene="wet"] #scene-bg .layer.a {
+    background:
+      repeating-linear-gradient(180deg, transparent 0 28px, rgba(120,200,220,0.06) 28px 30px);
+    animation: wet-ripple 4s linear infinite;
+  }
+  #play[data-scene="wet"] #scene-bg .layer.b {
+    background:
+      radial-gradient(circle at 40% 30%, rgba(180,230,255,0.15) 0%, transparent 10%),
+      radial-gradient(circle at 65% 50%, rgba(140,210,240,0.1) 0%, transparent 8%);
+    animation: wet-bubble 3.2s ease-in-out infinite alternate;
+  }
+  @keyframes wet-shim { from { opacity: 0.5; } to { opacity: 1; } }
+  @keyframes wet-ripple { from { transform: translateY(0); } to { transform: translateY(30px); } }
+  @keyframes wet-bubble { from { transform: translateY(6px); opacity: 0.4; } to { transform: translateY(-10px); opacity: 1; } }
   #hud {
     position: absolute; top: 0; left: 0; right: 0; z-index: 5;
-    padding: 10px 14px 12px;
+    padding: 8px 14px 8px;
     pointer-events: none;
-    background: linear-gradient(180deg, rgba(11,18,24,0.92) 0%, rgba(11,18,24,0.35) 70%, rgba(11,18,24,0) 100%);
+    background: linear-gradient(180deg, rgba(11,18,24,0.88) 0%, rgba(11,18,24,0.28) 65%, rgba(11,18,24,0) 100%);
   }
   #play.phase-env #hud {
     background: linear-gradient(180deg, rgba(10,20,14,0.92) 0%, rgba(10,20,14,0.3) 70%, transparent 100%);
@@ -169,22 +349,49 @@
   }
   #play.phase-env.gap-growing::after {
     content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
-    background: radial-gradient(ellipse at 50% 42%, rgba(140,230,160,0.22) 0%, transparent 58%);
-    animation: env-gap-glow 1.1s ease-in-out infinite alternate;
+    background: radial-gradient(ellipse at 50% 50%, rgba(140,230,160,0.32) 0%, transparent 58%);
+    animation: env-gap-glow 0.85s ease-in-out infinite alternate;
   }
   @keyframes env-gap-glow {
-    from { opacity: 0.25; transform: scale(0.92); }
-    to { opacity: 1; transform: scale(1.08); }
+    from { opacity: 0.35; transform: scale(0.88); }
+    to { opacity: 1; transform: scale(1.14); }
+  }
+  #play.gap-growing #creature::after {
+    content: ""; position: absolute; left: 50%; top: 50%;
+    width: 140px; height: 140px; margin: -70px 0 0 -70px;
+    border-radius: 50%; pointer-events: none; z-index: -1;
+    border: 3px solid rgba(160,255,180,0.65);
+    box-shadow: 0 0 28px rgba(140,240,160,0.55), inset 0 0 20px rgba(140,240,160,0.25);
+    animation: grow-ring 1.05s ease-out infinite;
+  }
+  @keyframes grow-ring {
+    0% { transform: scale(0.55); opacity: 0.95; }
+    100% { transform: scale(1.55); opacity: 0; }
+  }
+  #grow-hint {
+    display: none; position: absolute; left: 50%; top: 62%;
+    transform: translateX(-50%); z-index: 4; pointer-events: none;
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 0.82rem; letter-spacing: 0.12em; font-weight: 600;
+    color: #d8ffe0; background: rgba(20,48,28,0.72);
+    border: 1px solid rgba(140,220,150,0.55);
+    text-shadow: 0 0 10px rgba(140,240,160,0.55);
+    animation: grow-hint-pulse 1.1s ease-in-out infinite alternate;
+  }
+  #play.gap-growing #grow-hint { display: block; }
+  @keyframes grow-hint-pulse {
+    from { opacity: 0.55; transform: translateX(-50%) scale(0.96); }
+    to { opacity: 1; transform: translateX(-50%) scale(1.04); }
   }
   #colony {
     position: absolute; left: 0; top: 0; width: 0; height: 0;
     z-index: 2; pointer-events: none;
   }
   #colony .bud {
-    position: absolute; width: 64px; height: 64px; margin-left: -32px; margin-top: -32px;
-    opacity: 0.72; transform-origin: center;
-    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4));
-    transition: opacity 0.25s;
+    position: absolute; width: 72px; height: 72px; margin-left: -36px; margin-top: -36px;
+    opacity: 0.88; transform-origin: center;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.45)) drop-shadow(0 0 8px rgba(160,230,140,0.35));
+    transition: opacity 0.2s;
   }
   #creature.art-mc svg, #colony .bud.art-mc svg {
     image-rendering: pixelated;
@@ -533,10 +740,12 @@
       </div>
     </div>
     <div id="stage">
+      <div id="scene-bg" aria-hidden="true"><div class="layer a"></div><div class="layer b"></div></div>
       <div class="particles" id="particles" aria-hidden="true"></div>
       <div class="lane-hint" id="laneHint" aria-hidden="true"><span></span><span></span></div>
       <div id="creature" aria-hidden="true"></div>
       <div id="colony" aria-hidden="true"></div>
+      <div id="grow-hint" aria-hidden="true">生長中…</div>
       <div id="toast" role="status"></div>
       <div id="controls-hint">拖移跟指選門　鍵盤 ← →　支援 1–4 門</div>
     </div>
@@ -3867,7 +4076,9 @@ function svg(inner, vb) {
     envEndStory: document.getElementById("envEndStory"),
     envEndNote: document.getElementById("envEndNote"),
     styleChip: document.getElementById("btnStyleChip"),
-    colony: document.getElementById("colony")
+    colony: document.getElementById("colony"),
+    sceneBg: document.getElementById("scene-bg"),
+    growHint: document.getElementById("grow-hint")
   };
 
   function rebuildParticles(count) {
@@ -3944,11 +4155,63 @@ function svg(inner, vb) {
     el.creature.classList.toggle("live-grow", !!on);
     el.particles.classList.toggle("live-grow", !!on);
     el.play.classList.toggle("gap-growing", !!on);
+    if (el.growHint) el.growHint.setAttribute("aria-hidden", on ? "false" : "true");
     if (!on) {
       el.creature.style.transform = "";
       el.creature.style.filter = "";
       clearColony();
     }
+  }
+
+  function inferSceneKey(text) {
+    var t = String(text || "");
+    if (/醫院|門診|負壓|營養室|藥房|隔離/.test(t)) return "hospital";
+    if (/市區|捷運|車廂|學校|櫃檯|地下街|廚房|公寓|通勤|城市|課桌|小吃/.test(t)) return "city";
+    if (/近郊|陽台|公園|住宅|花盆|農場|園藝|長椅|水泥/.test(t)) return "suburb";
+    if (/皮膚|皮毛|宿主|傷口|黏膜|手部|裂縫/.test(t)) return "host";
+    if (/水面|水生|浴室|水槽|海鮮|潮|貝類|鹹濕|磁磚/.test(t)) return "wet";
+    return "suburb";
+  }
+
+  var currentSceneKey = "cosmos";
+  function setSceneKey(key) {
+    if (!el.play) return;
+    var k = key || "cosmos";
+    currentSceneKey = k;
+    el.play.setAttribute("data-scene", k);
+  }
+
+  function refreshSceneFromLevel(level, choiceTitle) {
+    if (!state) return;
+    if (state.phase !== "env") {
+      setSceneKey("cosmos");
+      return;
+    }
+    var blob = String(choiceTitle || "");
+    if (!blob && level) {
+      blob = String(level.prompt || "");
+      (level.options || []).forEach(function (o) { blob += " " + (o.title || "") + " " + (o.sub || ""); });
+    }
+    if (!blob && state.path && state.path.length) {
+      blob = String(state.path[state.path.length - 1].choice || "");
+    }
+    setSceneKey(inferSceneKey(blob));
+  }
+
+  function placeCreatureCentered(ts) {
+    if (!state || !el.stage) return;
+    var sh = el.stage.clientHeight || 600;
+    var sw = el.stage.clientWidth || 360;
+    var baseY = sh * 0.50;
+    var wobble = ts ? (Math.sin(ts / 280) * 14 + Math.sin(ts / 160) * 6) : 0;
+    state.y = baseY + wobble;
+    if (typeof state.x !== "number" || !isFinite(state.x)) state.x = sw / 2;
+    /* 水平大致置中，僅輕微漂移 */
+    var cx = sw / 2;
+    state.x = cx + (ts ? Math.sin(ts / 420) * 10 : 0);
+    if (state.x < 40) state.x = 40;
+    if (state.x > sw - 40) state.x = sw - 40;
+    syncCreatureX();
   }
 
   function beginEnvGapGrow(fromPop, toPop) {
@@ -3961,6 +4224,7 @@ function svg(inner, vb) {
     setLiveGrow(true);
     applyVisualPop(fromPop, true);
     clearColony();
+    placeCreatureCentered(state.growStart);
   }
 
   function spawnGrowBud(ts, scaleHint) {
@@ -3970,14 +4234,25 @@ function svg(inner, vb) {
     var bud = document.createElement("div");
     bud.className = "bud" + (artStyle === "mc" ? " art-mc" : "");
     bud.innerHTML = html;
-    var ang = (ts / 180 + state.growBudAt * 2.1) % (Math.PI * 2);
-    var rad = 38 + (state.growBudAt % 3) * 18 + scaleHint * 10;
+    var ang = (ts / 140 + state.growBudAt * 1.7) % (Math.PI * 2);
+    var rad = 48 + (state.growBudAt % 4) * 22 + scaleHint * 18;
     bud.style.left = (state.x + Math.cos(ang) * rad) + "px";
-    bud.style.top = (state.y + Math.sin(ang) * rad * 0.85) + "px";
-    bud.style.transform = "scale(" + (0.45 + (state.growBudAt % 4) * 0.12) + ") rotate(" + (ang * 40) + "deg)";
+    bud.style.top = (state.y + Math.sin(ang) * rad * 0.9) + "px";
+    bud.style.transform = "scale(" + (0.55 + (state.growBudAt % 5) * 0.14) + ") rotate(" + (ang * 48) + "deg)";
     el.colony.appendChild(bud);
     state.growBudAt += 1;
-    while (el.colony.children.length > 7) el.colony.removeChild(el.colony.firstChild);
+    while (el.colony.children.length > 12) el.colony.removeChild(el.colony.firstChild);
+  }
+
+  function syncColonyToCreature(ts, e) {
+    if (!el.colony || !state) return;
+    var buds = el.colony.children;
+    for (var bi = 0; bi < buds.length; bi++) {
+      var ang = (ts / 140 + bi * 1.7) % (Math.PI * 2);
+      var rad = 48 + (bi % 4) * 22 + (e || 0) * 18;
+      buds[bi].style.left = (state.x + Math.cos(ang) * rad) + "px";
+      buds[bi].style.top = (state.y + Math.sin(ang) * rad * 0.9) + "px";
+    }
   }
 
   function updateEnvLiveGrow(ts, dt) {
@@ -3990,32 +4265,29 @@ function svg(inner, vb) {
     var e = 1 - Math.pow(1 - u, 3);
     var target = from + (to - from) * e;
     var rising = to >= from;
-    /* 肉眼級：縮放 0.55→1.55、色相、分裂芽體 */
-    var breath = Math.sin(ts / 220) * 0.22 + Math.sin(ts / 140) * 0.08;
-    var baseScale = rising ? (0.58 + e * 0.92) : (1.45 - e * 0.75);
-    var scale = Math.max(0.45, Math.min(1.7, baseScale + breath));
-    var rot = Math.sin(ts / 310) * 18 + Math.sin(ts / 170) * 8;
-    var hue = rising ? (e * 55 + Math.sin(ts / 260) * 12) : (-e * 40 + Math.sin(ts / 260) * 10);
-    var sat = rising ? (1 + e * 0.55) : (1 - e * 0.35);
-    var bright = rising ? (0.92 + e * 0.28) : (1.05 - e * 0.25);
+    /* 無可辯駁：縮放約 0.4↔1.9、旋轉、色相、芽體、光環 */
+    var breath = Math.sin(ts / 170) * 0.55 + Math.sin(ts / 90) * 0.28;
+    var baseScale = rising ? (0.40 + e * 1.35) : (1.90 - e * 1.25);
+    var scale = Math.max(0.38, Math.min(1.95, baseScale + breath));
+    var rot = Math.sin(ts / 240) * 28 + Math.sin(ts / 130) * 14;
+    var hue = rising ? (e * 70 + Math.sin(ts / 200) * 18) : (-e * 55 + Math.sin(ts / 200) * 14);
+    var sat = rising ? (1 + e * 0.75) : (1 - e * 0.45);
+    var bright = rising ? (0.88 + e * 0.42 + Math.sin(ts / 160) * 0.08) : (1.12 - e * 0.35 + Math.sin(ts / 160) * 0.06);
     el.creature.style.transform = "scale(" + scale.toFixed(3) + ") rotate(" + rot.toFixed(1) + "deg)";
-    el.creature.style.filter = "hue-rotate(" + hue.toFixed(1) + "deg) saturate(" + sat.toFixed(2) + ") brightness(" + bright.toFixed(2) + ") drop-shadow(0 0 " + (8 + e * 18).toFixed(0) + "px rgba(140,230,160," + (0.25 + e * 0.45).toFixed(2) + "))";
-    applyVisualPop(target + Math.sin(ts / 300) * 4, false);
+    el.creature.style.filter = "hue-rotate(" + hue.toFixed(1) + "deg) saturate(" + sat.toFixed(2) + ") brightness(" + bright.toFixed(2) + ") drop-shadow(0 0 " + (12 + e * 28).toFixed(0) + "px rgba(140,230,160," + (0.35 + e * 0.5).toFixed(2) + "))";
+    applyVisualPop(target + Math.sin(ts / 220) * 8, false);
     if (!state.gatesReady) {
-      var sh = el.stage.clientHeight || 600;
-      var baseY = Math.max(90, sh * 0.20);
-      state.y = baseY + Math.sin(ts / 260) * 28 + Math.sin(ts / 140) * 10;
-      state.x = state.x + Math.sin(ts / 400) * 0.9;
-      var sw = el.stage.clientWidth || 360;
-      if (state.x < 40) state.x = 40;
-      if (state.x > sw - 40) state.x = sw - 40;
-      syncCreatureX();
+      placeCreatureCentered(ts);
+      syncColonyToCreature(ts, e);
     }
     growTickAccum += dt;
-    if (growTickAccum > 0.55) {
+    if (growTickAccum > 0.28) {
       growTickAccum = 0;
       applyVisualPop(target, true);
       spawnGrowBud(ts, e);
+      /* 顆粒明顯增減 */
+      var bump = 10 + Math.round(Math.abs(Math.sin(ts / 300)) * 28) + Math.round(e * 16);
+      rebuildParticles(bump);
     }
   }
 
@@ -4138,8 +4410,10 @@ function svg(inner, vb) {
     state.gateY = state.gateTargetY;
     state.gatesReady = true;
     state.resolved = false;
-    state.y = Math.max(90, sh * 0.16);
+    /* 下落可自偏上開始；波間置中另由 placeCreatureCentered 負責 */
+    state.y = Math.max(100, sh * 0.22);
     state.fallSpeed = Math.min(170, 115 + state.segment * 8);
+    refreshSceneFromLevel(level, null);
   }
 
   var lastEndNode = null;
@@ -4163,6 +4437,7 @@ function svg(inner, vb) {
   function setPhaseUI(phase) {
     el.play.classList.toggle("phase-env", phase === "env");
     if (el.hudPhase) el.hudPhase.textContent = phase === "env" ? "現實環境" : "進化・實驗室";
+    if (phase !== "env") setSceneKey("cosmos");
   }
 
   function updatePopUI() {
@@ -4195,6 +4470,7 @@ function svg(inner, vb) {
     rebuildParticles(18);
     el.particles.classList.remove("sparse", "mid", "dense");
     setPhaseUI("evo");
+    setSceneKey("cosmos");
     state = {
       phase: "evo", envFormId: null, pop: 0,
       nodeId: "seed", segment: 0, x: 0.5, y: 100, vx: 0, fallSpeed: 120,
@@ -4220,6 +4496,7 @@ function svg(inner, vb) {
     var startId = getEnvStartId(formId);
     if (!startId) { toast("此物種尚無環境關卡", 1200); return; }
     setPhaseUI("env");
+    setSceneKey("suburb");
     var base = getEnvBasePop(formId);
     var form = FORMS[formId];
     state = {
@@ -4235,6 +4512,7 @@ function svg(inner, vb) {
     state.x = el.stage.clientWidth / 2;
     updatePopUI();
     spawnGatesForCurrent();
+    refreshSceneFromLevel(currentLevel(), null);
     lastTs = 0;
     pointerActive = false;
     raf = requestAnimationFrame(tick);
@@ -4303,6 +4581,7 @@ function svg(inner, vb) {
       var popBefore = state.pop;
       applyPopDelta(opt.delta || 0);
       toast(opt.title, 900);
+      setSceneKey(inferSceneKey(opt.title + " " + (opt.sub || "")));
       clearGates();
       state.gatesReady = false;
       if (state.pop <= 0) {
@@ -4542,6 +4821,8 @@ function svg(inner, vb) {
     if (ts < state.pauseUntil) {
       if (state.phase === "env" && (state.pendingSpawn || state.pendingEnvEnd)) {
         updateEnvLiveGrow(ts, dt);
+      } else if (!state.gatesReady) {
+        placeCreatureCentered(ts);
       }
       raf = requestAnimationFrame(tick);
       return;
@@ -4826,7 +5107,7 @@ function svg(inner, vb) {
   })();
   window.__VIRUS_FORK__ = {
     FORMS: FORMS, LEVELS: LEVELS, DEX: DEX, PROOF: PROOF,
-    ENV_POOLS: ENV_POOLS, ENV_POOL_OF: ENV_POOL_OF, ENV_OPTION_GAP_MS: ENV_OPTION_GAP_MS, liveGrow: true, beginEnvGapGrow: beginEnvGapGrow, setLiveGrow: setLiveGrow, applyVisualPop: applyVisualPop, artStyleGet: function () { return artStyle; }, setArtStyle: setArtStyle, drawMinecraft: drawMinecraft,
+    ENV_POOLS: ENV_POOLS, ENV_POOL_OF: ENV_POOL_OF, ENV_OPTION_GAP_MS: ENV_OPTION_GAP_MS, liveGrow: true, beginEnvGapGrow: beginEnvGapGrow, setLiveGrow: setLiveGrow, applyVisualPop: applyVisualPop, artStyleGet: function () { return artStyle; }, setArtStyle: setArtStyle, drawMinecraft: drawMinecraft, inferSceneKey: inferSceneKey, setSceneKey: setSceneKey, getSceneKey: function () { return currentSceneKey || (el.play && el.play.getAttribute("data-scene")) || ""; }, placeCreatureCentered: placeCreatureCentered,
     startGame: startGame, startEnv: startEnv, openDex: openDex, renderDex: renderDex,
     loadUnlocked: loadUnlocked, unlockSpecies: unlockSpecies,
     saveUnlocked: saveUnlocked, probeStorage: probeStorage,

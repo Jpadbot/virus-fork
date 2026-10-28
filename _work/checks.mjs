@@ -2,7 +2,7 @@ import { chromium } from "playwright-core";
 import fs from "fs";
 import path from "path";
 
-const outDir = "/workspace/scratch/virus-fork-cli-evidence-v14";
+const outDir = "/workspace/scratch/virus-fork-cli-evidence-v15";
 fs.mkdirSync(outDir, { recursive: true });
 const file = path.resolve("/workspace/virus-fork-cli/playable.html");
 const url = "file://" + file + "?envGap=0";
@@ -174,10 +174,14 @@ const gapEvidence = await page.evaluate(async () => {
   s.pauseUntil = performance.now() + 1600;
   V.beginEnvGapGrow(before, after);
   const frames = [];
+  const stage = document.getElementById("stage");
   for (let i = 0; i < 5; i++) {
     await new Promise((r) => setTimeout(r, 250));
     const st = V.getState();
     const c = document.getElementById("creature");
+    const cr = c.getBoundingClientRect();
+    const sr = stage.getBoundingClientRect();
+    const cyRatio = sr.height ? ((cr.top + cr.bottom) / 2 - sr.top) / sr.height : 0;
     frames.push({
       t: i,
       pauseLeft: st ? Math.max(0, (st.pauseUntil || 0) - performance.now()) : 0,
@@ -185,9 +189,11 @@ const gapEvidence = await page.evaluate(async () => {
       liveGrow: !!(c && c.classList.contains("live-grow")),
       gapGrowing: document.getElementById("play").classList.contains("gap-growing"),
       y: st && Math.round(st.y),
+      cyRatio: Math.round(cyRatio * 1000) / 1000,
       className: c ? c.className : "",
       transform: c ? (c.style.transform || "") : "",
-      buds: document.querySelectorAll("#colony .bud").length
+      buds: document.querySelectorAll("#colony .bud").length,
+      growHint: !!(document.getElementById("grow-hint") && getComputedStyle(document.getElementById("grow-hint")).display !== "none")
     });
   }
   const transforms = frames.map((f) => f.transform || "");
@@ -196,6 +202,9 @@ const gapEvidence = await page.evaluate(async () => {
     return m ? parseFloat(m[1]) : 1;
   });
   const scaleSpan = scales.length ? Math.max(...scales) - Math.min(...scales) : 0;
+  const midRatios = frames.map((f) => f.cyRatio).filter((n) => typeof n === "number");
+  const centeredOk = midRatios.length > 0 && midRatios.every((r) => r >= 0.35 && r <= 0.68);
+  const growHintVisible = frames.some((f) => f.growHint);
   // style toggle smoke
   V.setArtStyle("mc", { silent: true });
   const mcOn = V.artStyleGet() === "mc" && document.getElementById("creature").classList.contains("art-mc");
@@ -205,6 +214,7 @@ const gapEvidence = await page.evaluate(async () => {
   return {
     before, after, frames, liveGrowFlag: !!V.liveGrow,
     scaleSpan, budMax: Math.max(...frames.map((f) => f.buds || 0)),
+    centeredOk, growHintVisible,
     mcOn, classicOn, mcHasRect: mcHtml.includes("<rect")
   };
 });
@@ -215,6 +225,67 @@ await page.screenshot({ path: path.join(outDir, "24-env-gap-grow-b.png"), fullPa
 // clear remaining gap so later envPick can proceed
 await page.evaluate(() => { const s = window.__VIRUS_FORK__.getState(); if (s) { s.pauseUntil = 0; } });
 await page.waitForTimeout(80);
+
+// Scene A/B evidence (non-destructive sample via API, then restore env run)
+const formIdForEnv = await page.evaluate(() => (window.__VIRUS_FORK__.getLastEnd() && window.__VIRUS_FORK__.getLastEnd().form) || "aureus");
+await page.evaluate(() => window.__VIRUS_FORK__.startGame());
+await page.waitForTimeout(200);
+const sceneEvo = await page.evaluate(() => ({
+  scene: document.getElementById("play")?.getAttribute("data-scene") || "",
+  phaseEnv: document.getElementById("play")?.classList.contains("phase-env"),
+  api: window.__VIRUS_FORK__.getSceneKey()
+}));
+await page.screenshot({ path: path.join(outDir, "50-scene-cosmos-evo.png"), fullPage: true });
+
+await page.evaluate((fid) => window.__VIRUS_FORK__.startEnv(fid), formIdForEnv);
+await page.waitForTimeout(250);
+await page.evaluate(() => {
+  const V = window.__VIRUS_FORK__;
+  V.setSceneKey(V.inferSceneKey("繁忙市區捷運車廂 人群摩肩"));
+});
+await page.waitForTimeout(120);
+const sceneCity = await page.evaluate(() => document.getElementById("play")?.getAttribute("data-scene") || "");
+await page.screenshot({ path: path.join(outDir, "51-scene-city.png"), fullPage: true });
+await page.evaluate(() => {
+  const V = window.__VIRUS_FORK__;
+  V.setSceneKey(V.inferSceneKey("近郊住宅陽台 陽光與風較多"));
+});
+await page.waitForTimeout(120);
+const sceneSuburb = await page.evaluate(() => document.getElementById("play")?.getAttribute("data-scene") || "");
+await page.screenshot({ path: path.join(outDir, "52-scene-suburb.png"), fullPage: true });
+const sceneEvidence = {
+  evoCosmos: sceneEvo.scene === "cosmos" && sceneEvo.phaseEnv === false,
+  cityOk: sceneCity === "city",
+  suburbOk: sceneSuburb === "suburb",
+  inferCity: await page.evaluate(() => window.__VIRUS_FORK__.inferSceneKey("繁忙市區捷運車廂")),
+  inferSuburb: await page.evaluate(() => window.__VIRUS_FORK__.inferSceneKey("近郊住宅陽台")),
+  inferHospital: await page.evaluate(() => window.__VIRUS_FORK__.inferSceneKey("醫院門診等候區")),
+  inferHost: await page.evaluate(() => window.__VIRUS_FORK__.inferSceneKey("寄生在人的手部皮膚")),
+  inferWet: await page.evaluate(() => window.__VIRUS_FORK__.inferSceneKey("浴室磁磚接縫"))
+};
+
+// centered still shot during forced grow
+await page.evaluate(() => {
+  const V = window.__VIRUS_FORK__;
+  const s = V.getState();
+  if (!s) return;
+  s.gatesReady = false;
+  s.pendingSpawn = s.nodeId || "x";
+  s.pauseUntil = performance.now() + 2200;
+  V.beginEnvGapGrow(40, 80);
+  V.placeCreatureCentered(performance.now());
+});
+await page.waitForTimeout(350);
+await page.screenshot({ path: path.join(outDir, "53-centered-gap.png"), fullPage: true });
+
+// restore clean env for subsequent envPick growth path
+await page.evaluate((fid) => {
+  const V = window.__VIRUS_FORK__;
+  V.startEnv(fid);
+  const s = V.getState();
+  if (s) s.pauseUntil = 0;
+}, formIdForEnv);
+await page.waitForTimeout(200);
 
 async function envPick(idx) {
   await page.evaluate((i) => {
@@ -325,6 +396,7 @@ const checks = {
   pathResult,
   envStart,
   gapEvidence,
+  sceneEvidence,
   midHigh,
   midLow,
   thrive,
@@ -347,10 +419,15 @@ const checks = {
     gateTitleBig: parseFloat(envStart.gateTitleFs || "0") >= 15, // ~0.96–1.02rem at 390
     gateTall: (envStart.gateMinH || 0) >= 100,
     gapLiveFrames: (gapEvidence.frames || []).filter((f) => f.liveGrow || f.gapGrowing).length >= 2,
-    gapScaleVisible: (gapEvidence.scaleSpan || 0) >= 0.25,
-    gapBuds: (gapEvidence.budMax || 0) >= 1,
+    gapScaleVisible: (gapEvidence.scaleSpan || 0) >= 0.35,
+    gapBuds: (gapEvidence.budMax || 0) >= 2,
     artMc: !!(gapEvidence.mcOn && gapEvidence.mcHasRect),
     artClassic: !!gapEvidence.classicOn,
+    gapCentered: !!(gapEvidence.centeredOk),
+    growHint: !!(gapEvidence.growHintVisible),
+    sceneCosmos: !!(sceneEvidence && sceneEvidence.evoCosmos),
+    sceneCity: !!(sceneEvidence && sceneEvidence.cityOk),
+    sceneSuburb: !!(sceneEvidence && sceneEvidence.suburbOk),
     vitalHigh: /vital-high/.test(midHigh.creatureClass || "") || (midHigh.particles || 0) >= (envStart.particleCount || 0),
     vitalLow: /vital-low/.test(midLow.creatureClass || "") || (midLow.pop || 99) < (envStart.pop || 0),
     thriveOk: !!(thrive.active && /繁盛|適應/.test(thrive.title || "")),

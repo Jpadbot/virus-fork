@@ -1,7 +1,7 @@
 # STATUS — virus-fork-cli
 
 - status: running
-- ticket: 解鎖式物種圖鑑（取代三張樹圖）
+- ticket: 解鎖式物種圖鑑＋拖動順滑＋進化過程再加深
 - branch: feat/species-dex
 - prior: feat/science-depth-hints @ 3f85f6e（已 Accept）
 - deliverable: /workspace/virus-fork-cli/playable.html（單檔）

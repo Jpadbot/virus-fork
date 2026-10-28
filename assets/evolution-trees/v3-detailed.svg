@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 860" width="1280" height="860" role="img" aria-labelledby="title desc">
+  <title id="title">細胞生命與病毒側群（細節版）</title>
+  <desc id="desc">較細的教育用生命樹：LUCA、細菌與古菌主要枝、真核與內共生、病毒多起源側群標註。</desc>
+  <defs>
+    <style>
+      .bg { fill: #101820; }
+      .g { stroke: #9aa7b5; stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .b { stroke: #3ecf8e; }
+      .a { stroke: #62b0ff; }
+      .e { stroke: #ffb020; }
+      .v { stroke: #ff6b6b; stroke-dasharray: 4 3; stroke-width: 1.8; }
+      .t { font-family: "Noto Sans CJK TC","Noto Serif CJK TC","Noto Sans CJK SC",sans-serif; fill: #e7eef6; }
+      .title { font-size: 22px; font-weight: 700; }
+      .h { font-size: 13px; font-weight: 700; }
+      .s { font-size: 11px; fill: #9aa7b5; }
+      .tiny { font-size: 10px; fill: #7d8a97; }
+      .box { fill: #182230; stroke: #2a3a4c; }
+    </style>
+  </defs>
+  <rect class="bg" width="1280" height="860"/>
+  <text class="t title" x="40" y="40">版本 C｜細節教育圖（適合深入說明／圖鑑）</text>
+  <text class="t s" x="40" y="62">分支長度示意；門級名稱為常用教學選樣，非完整分類目錄</text>
+
+  <!-- Root -->
+  <circle cx="640" cy="780" r="9" fill="#e7eef6"/>
+  <text class="t h" x="640" y="810" text-anchor="middle">LUCA｜最後共同祖先</text>
+  <path class="g" d="M640 770 V700"/>
+  <path class="g b" d="M640 700 C520 700 420 620 320 520"/>
+  <path class="g a" d="M640 700 C760 700 860 620 960 520"/>
+
+  <!-- Bacteria major tips -->
+  <path class="g b" d="M320 520 C260 470 210 420 170 360"/>
+  <path class="g b" d="M320 520 C300 450 290 380 280 310"/>
+  <path class="g b" d="M320 520 C360 460 400 400 430 340"/>
+  <path class="g b" d="M320 520 C380 500 450 490 520 480"/>
+  <circle cx="170" cy="360" r="5" fill="#3ecf8e"/>
+  <circle cx="280" cy="310" r="5" fill="#3ecf8e"/>
+  <circle cx="430" cy="340" r="5" fill="#3ecf8e"/>
+  <circle cx="520" cy="480" r="5" fill="#3ecf8e"/>
+  <text class="t h" x="170" y="340" text-anchor="middle" fill="#3ecf8e">藍菌門</text>
+  <text class="t tiny" x="170" y="325" text-anchor="middle">質體祖先相關</text>
+  <text class="t h" x="280" y="290" text-anchor="middle" fill="#3ecf8e">厚壁菌門</text>
+  <text class="t tiny" x="280" y="275" text-anchor="middle">示意（芽孢桿菌等）</text>
+  <text class="t h" x="430" y="320" text-anchor="middle" fill="#3ecf8e">變形菌門</text>
+  <text class="t tiny" x="430" y="305" text-anchor="middle">含 α 變形菌→粒線體</text>
+  <text class="t h" x="520" y="465" text-anchor="middle" fill="#3ecf8e">擬桿菌／其他細菌</text>
+  <text class="t s" x="320" y="545" text-anchor="middle" fill="#3ecf8e">細菌域</text>
+
+  <!-- Archaea -->
+  <path class="g a" d="M960 520 C1020 470 1070 410 1100 350"/>
+  <path class="g a" d="M960 520 C980 450 990 380 995 310"/>
+  <path class="g a" d="M960 520 C920 450 880 390 850 330"/>
+  <circle cx="1100" cy="350" r="5" fill="#62b0ff"/>
+  <circle cx="995" cy="310" r="5" fill="#62b0ff"/>
+  <circle cx="850" cy="330" r="5" fill="#62b0ff"/>
+  <text class="t h" x="1100" y="330" text-anchor="middle" fill="#62b0ff">廣古菌／其他古菌</text>
+  <text class="t h" x="995" y="290" text-anchor="middle" fill="#62b0ff">泉古菌等</text>
+  <text class="t h" x="850" y="310" text-anchor="middle" fill="#62b0ff">阿斯加德古菌</text>
+  <text class="t tiny" x="850" y="295" text-anchor="middle">與真核來源密切相關</text>
+  <text class="t s" x="960" y="545" text-anchor="middle" fill="#62b0ff">古菌域</text>
+
+  <!-- Eukarya from Asgard -->
+  <path class="g e" d="M850 330 C820 260 780 200 740 150"/>
+  <path class="g e" d="M740 150 C700 120 660 100 620 90"/>
+  <path class="g e" d="M740 150 C780 110 820 90 860 80"/>
+  <path class="g e" d="M740 150 C760 130 780 120 800 110"/>
+  <circle cx="620" cy="90" r="5" fill="#ffb020"/>
+  <circle cx="860" cy="80" r="5" fill="#ffb020"/>
+  <circle cx="800" cy="110" r="5" fill="#ffb020"/>
+  <text class="t h" x="620" y="70" text-anchor="middle" fill="#ffb020">動物／真菌等</text>
+  <text class="t h" x="860" y="60" text-anchor="middle" fill="#ffb020">植物（含質體）</text>
+  <text class="t h" x="800" y="95" text-anchor="middle" fill="#ffb020">原生生物（多樣性高）</text>
+  <text class="t s" x="740" y="175" text-anchor="middle" fill="#ffb020">真核生物（古菌系衍生＋內共生）</text>
+
+  <!-- Endosymbiosis notes as dashed thin lines conceptually via labels -->
+  <text class="t tiny" x="500" y="220">內共生① α-變形菌 → 粒線體（幾乎所有真核）</text>
+  <text class="t tiny" x="500" y="238">內共生② 藍菌相關 → 質體（植物／部分藻類譜系）</text>
+
+  <!-- Virus side groups around mid trunk -->
+  <path class="g v" d="M600 720 C520 680 450 620 400 560"/>
+  <path class="g v" d="M680 720 C760 680 830 620 880 560"/>
+  <path class="g v" d="M640 740 C640 680 620 620 600 560"/>
+  <path class="g v" d="M640 740 C640 690 680 640 720 590"/>
+  <text class="t h" x="390" y="545" fill="#ff6b6b">雙鏈 DNA 病毒</text>
+  <text class="t tiny" x="390" y="560">（含噬菌體、部分巨型病毒）</text>
+  <text class="t h" x="900" y="545" fill="#ff6b6b">RNA 病毒</text>
+  <text class="t tiny" x="900" y="560">（正／負股、反轉錄等）</text>
+  <text class="t h" x="560" y="545" fill="#ff6b6b">反轉錄病毒等</text>
+  <text class="t h" x="740" y="575" fill="#ff6b6b">衛星／類病毒等</text>
+  <text class="t s" x="640" y="660" text-anchor="middle" fill="#ff6b6b">病毒＝多起源側群（非細胞生命域）</text>
+
+  <rect class="box" x="40" y="700" width="360" height="130" rx="10"/>
+  <text class="t h" x="56" y="728">使用注意（App／教材）</text>
+  <text class="t s" x="56" y="752">1. 不要把病毒畫成與細菌／古菌並列的「第三域」</text>
+  <text class="t s" x="56" y="772">2. 真核應掛在古菌側，並標內共生來源</text>
+  <text class="t s" x="56" y="792">3. 門級名稱可依課程裁剪；避免暗示「完整目錄」</text>
+  <text class="t s" x="56" y="812">4. 適合互動：點葉片展開說明，而非一次塞滿</text>
+</svg>

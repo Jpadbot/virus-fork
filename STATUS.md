@@ -1,19 +1,12 @@
 # STATUS — virus-fork-cli
 
 - status: done
-- ticket: 真分叉擴充（≥20 終局／多選項）
-- branch: feat/evo-tree-20
-- prior: feat/playtest-polish @ 54f0114（已 Accept）
-- endings: 21（零假分叉；≥3 選關 7/11＝63.6%）
-- evidence: /workspace/scratch/virus-fork-cli-evidence-v5/
+- ticket: 演化樹資產接入（圖鑑／說明）
+- branch: feat/evolution-atlas
+- prior: feat/evo-tree-20 @ 18197ad（21 終局已 Accept）
+- assets: /workspace/virus-fork-cli/assets/evolution-trees/（六檔）
+- evidence: /workspace/scratch/virus-fork-cli-evidence-v6/
 - verify: PASS（verify-phone-html --also-landscape；無 --game）
-- grok: CLI 1.0.72／模型 grok-4.7（cwd 直寫）
+- entry: title「演化圖鑑」＋終局同鈕；三版 tab 切換
 - updated: 2026-10-28 Asia/Hong_Kong
-- note: 路徑 A Orchestrator 直派；完成握手
-
-## Accept (Mobile Engineer)
-- accepted: 2026-10-28 Asia/Hong_Kong
-- verdict: PASS
-- checks: endings 21／unique 21／fakeForks []／choiceLevels 11／ge3 7（63.6%）／4選 2；verify-phone-html --also-landscape PASS
-- evidence: /workspace/scratch/virus-fork-cli-evidence-v5/
-- next: Orchestrator 轉 John
+- note: 路徑 A；對局內不顯示科技樹；相對路徑可離線開 index.html

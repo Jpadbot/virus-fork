@@ -217,6 +217,109 @@
   .disclaimer {
     font-size: 0.72rem; color: #6a7a74; margin: 0; text-align: left;
   }
+
+  /* —— 演化圖鑑（非對局 HUD） —— */
+  .btn-secondary {
+    background: linear-gradient(180deg, #243038 0%, #1a242c 100%);
+    border-color: #3a4a54; color: #c8d8e0;
+    box-shadow: none; font-weight: 650; font-size: 0.98rem;
+  }
+  #atlas {
+    padding: 0; background: #0a1016;
+    overflow: hidden;
+  }
+  .atlas-bar {
+    flex-shrink: 0;
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px calc(6px);
+    background: rgba(10,16,22,0.96);
+    border-bottom: 1px solid var(--line);
+  }
+  .atlas-bar h2 {
+    margin: 0; flex: 1; font-size: 1.05rem; letter-spacing: 0.06em; color: #f0d78a;
+  }
+  .atlas-bar .btn-mini {
+    min-height: 40px; min-width: 64px; max-width: none; width: auto;
+    margin: 0; padding: 8px 12px; font-size: 0.88rem;
+    border-radius: 10px;
+  }
+  .atlas-rule {
+    flex-shrink: 0;
+    margin: 0; padding: 8px 12px 4px;
+    font-size: 0.72rem; color: #8fa09a; line-height: 1.35; text-align: left;
+  }
+  .atlas-tabs {
+    flex-shrink: 0;
+    display: flex; gap: 6px; padding: 6px 12px 8px;
+  }
+  .atlas-tabs button {
+    flex: 1; min-height: 40px; padding: 8px 6px;
+    border: 1px solid var(--line); border-radius: 10px;
+    background: var(--panel); color: var(--muted);
+    font-family: inherit; font-size: 0.82rem; font-weight: 650;
+    cursor: pointer;
+  }
+  .atlas-tabs button.active {
+    border-color: #6a5a30; color: #f5e6b8;
+    background: linear-gradient(180deg, #3a3220 0%, #2a2418 100%);
+  }
+  .atlas-zoom {
+    flex-shrink: 0;
+    display: flex; gap: 6px; padding: 0 12px 8px; align-items: center;
+  }
+  .atlas-zoom button {
+    min-height: 36px; min-width: 40px; padding: 6px 10px;
+    border: 1px solid var(--line); border-radius: 8px;
+    background: var(--bg2); color: var(--ink);
+    font-family: inherit; font-size: 0.9rem; cursor: pointer;
+  }
+  .atlas-zoom .zoom-label {
+    margin-left: auto; font-size: 0.72rem; color: var(--muted);
+  }
+  .atlas-viewport {
+    flex: 1; min-height: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+    padding: 0 8px 8px;
+    overscroll-behavior: contain;
+  }
+  .atlas-canvas {
+    transform-origin: 0 0;
+    width: max-content; min-width: 100%;
+    margin: 0 auto;
+  }
+  .atlas-canvas object, .atlas-canvas img {
+    display: block; width: min(100vw, 440px); max-width: none;
+    height: auto; background: #0f1419; border-radius: 8px;
+    pointer-events: auto;
+  }
+  .atlas-leaves {
+    flex-shrink: 0;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 4px 12px 8px;
+    max-height: 88px; overflow-y: auto;
+  }
+  .atlas-leaves button {
+    min-height: 34px; padding: 6px 10px;
+    border: 1px solid var(--line); border-radius: 999px;
+    background: #152028; color: #c8d8e0;
+    font-family: inherit; font-size: 0.72rem; cursor: pointer;
+  }
+  .atlas-leaves button.active {
+    border-color: #e0a83a; color: #f5e6b8; background: #2a2418;
+  }
+  .atlas-detail {
+    flex-shrink: 0;
+    margin: 0 12px calc(12px + var(--safe-bottom));
+    padding: 10px 12px;
+    border: 1px solid var(--line); border-radius: 10px;
+    background: var(--panel);
+    font-size: 0.8rem; color: var(--ink); text-align: left; line-height: 1.4;
+    display: none;
+  }
+  .atlas-detail.show { display: block; }
+  .atlas-detail strong { color: #f0d78a; }
 </style>
 </head>
 <body>
@@ -231,6 +334,7 @@
       <p class="sub">Proto → Real Species</p>
       <p class="hint">多門選擇・成為誰　｜　簡化科普／假設・≥20 終局</p>
       <button type="button" class="btn" id="btnStart">開始下落</button>
+      <button type="button" class="btn btn-secondary" id="btnAtlas">演化圖鑑</button>
     </div>
   </section>
 
@@ -260,6 +364,33 @@
       <ol id="endPath"></ol>
     </div>
     <button type="button" class="btn" id="btnAgain">再玩一次</button>
+    <button type="button" class="btn btn-secondary" id="btnAtlasEnd">演化圖鑑</button>
+  </section>
+
+  <section id="atlas" class="screen" aria-label="演化圖鑑">
+    <div class="atlas-bar">
+      <button type="button" class="btn btn-ghost btn-mini" id="btnAtlasBack">返回</button>
+      <h2>演化圖鑑</h2>
+    </div>
+    <p class="atlas-rule">簡化科普／假設：根＝LUCA；細菌域／古菌域二分；真核＝古菌系衍生＋內共生（非第三域）；病毒＝多起源側枝。</p>
+    <div class="atlas-tabs" role="tablist" aria-label="圖鑑版本">
+      <button type="button" role="tab" data-ver="v1" class="active" id="tabV1">v1 概覽</button>
+      <button type="button" role="tab" data-ver="v2" id="tabV2">v2 內共生</button>
+      <button type="button" role="tab" data-ver="v3" id="tabV3">v3 深入</button>
+    </div>
+    <div class="atlas-zoom">
+      <button type="button" id="btnZoomOut" aria-label="縮小">−</button>
+      <button type="button" id="btnZoomIn" aria-label="放大">＋</button>
+      <button type="button" id="btnZoomReset" aria-label="重置縮放">重置</button>
+      <span class="zoom-label" id="zoomLabel">100%</span>
+    </div>
+    <div class="atlas-viewport" id="atlasViewport">
+      <div class="atlas-canvas" id="atlasCanvas">
+        <img id="atlasObject" src="assets/evolution-trees/v1-overview.svg" alt="演化樹概覽（簡化科普／假設）" width="960" height="640" decoding="async" />
+      </div>
+    </div>
+    <div class="atlas-leaves" id="atlasLeaves" aria-label="葉片說明"></div>
+    <div class="atlas-detail" id="atlasDetail" role="status"></div>
   </section>
 </div>
 
@@ -787,6 +918,7 @@
     title: document.getElementById("title"),
     play: document.getElementById("play"),
     end: document.getElementById("end"),
+    atlas: document.getElementById("atlas"),
     stage: document.getElementById("stage"),
     creature: document.getElementById("creature"),
     toast: document.getElementById("toast"),
@@ -799,7 +931,13 @@
     endStory: document.getElementById("endStory"),
     endPath: document.getElementById("endPath"),
     particles: document.getElementById("particles"),
-    laneHint: document.getElementById("laneHint")
+    laneHint: document.getElementById("laneHint"),
+    atlasObject: document.getElementById("atlasObject"),
+    atlasCanvas: document.getElementById("atlasCanvas"),
+    atlasViewport: document.getElementById("atlasViewport"),
+    atlasLeaves: document.getElementById("atlasLeaves"),
+    atlasDetail: document.getElementById("atlasDetail"),
+    zoomLabel: document.getElementById("zoomLabel")
   };
 
   (function spawnParticles() {
@@ -824,6 +962,7 @@
     el.title.classList.toggle("active", name === "title");
     el.play.classList.toggle("active", name === "play");
     el.end.classList.toggle("active", name === "end");
+    el.atlas.classList.toggle("active", name === "atlas");
   }
 
   function setForm(formId) {
@@ -1050,10 +1189,150 @@
     raf = requestAnimationFrame(tick);
   }
 
+
+  /* —— 演化圖鑑（title／終局入口；對局內不顯示） —— */
+  var ATLAS = {
+    v1: {
+      src: "assets/evolution-trees/v1-overview.svg",
+      fallback: "assets/evolution-trees/v1-overview.png",
+      label: "v1 概覽",
+      leaves: [
+        { id: "luca", title: "LUCA", body: "最後共同祖先：細胞生命之根（簡化科普／假設）。" },
+        { id: "bact", title: "細菌域", body: "原核、無核膜；與古菌二分之一側（非三域並列）。" },
+        { id: "arch", title: "古菌域", body: "另一側細胞生命域；真核由此系衍生。" },
+        { id: "euk", title: "真核生物", body: "古菌系衍生＋細菌內共生（粒線體等）；勿畫成第三域。" },
+        { id: "vir", title: "病毒側群", body: "多起源虛線側枝；依附細胞複製，非單一「病毒域」。" }
+      ]
+    },
+    v2: {
+      src: "assets/evolution-trees/v2-endosymbiosis.svg",
+      fallback: "assets/evolution-trees/v2-endosymbiosis.png",
+      label: "v2 內共生",
+      leaves: [
+        { id: "luca", title: "LUCA", body: "根部；由此分出細菌域與古菌域。" },
+        { id: "alpha", title: "α-變形菌", body: "內共生 → 粒線體（幾乎所有真核）。" },
+        { id: "cyano", title: "藍菌相關", body: "部分譜系內共生 → 質體／葉綠體。" },
+        { id: "asgard", title: "阿斯加德古菌", body: "與真核來源密切相關的古菌側枝（示意）。" },
+        { id: "euk", title: "真核生物", body: "嵌於古菌側；細胞核與複雜細胞器。" },
+        { id: "vir", title: "病毒分群", body: "DNA／RNA／巨型病毒等側枝示意；仍非單系域。" }
+      ]
+    },
+    v3: {
+      src: "assets/evolution-trees/v3-detailed.svg",
+      fallback: "assets/evolution-trees/v3-detailed.png",
+      label: "v3 深入",
+      leaves: [
+        { id: "luca", title: "LUCA", body: "細節教育圖之根；分支長度僅示意。" },
+        { id: "firm", title: "厚壁菌門", body: "細菌域示意葉片（芽孢桿菌等）；非完整目錄。" },
+        { id: "proteo", title: "變形菌門", body: "含 α 變形菌 → 粒線體祖先相關。" },
+        { id: "asgard", title: "阿斯加德古菌", body: "真核來源密切相關；真核掛在此側。" },
+        { id: "plant", title: "植物（含質體）", body: "真核葉片；質體來自藍菌相關內共生。" },
+        { id: "vir", title: "病毒側群", body: "雙鏈 DNA／RNA／反轉錄／衛星等；多起源、非細胞生命域。" }
+      ]
+    }
+  };
+  var atlasState = { ver: "v1", zoom: 1, returnTo: "title", leafId: null };
+
+  function setAtlasZoom(z) {
+    atlasState.zoom = Math.max(0.6, Math.min(2.8, Math.round(z * 100) / 100));
+    var img = el.atlasObject;
+    var base = el.atlasViewport.clientWidth || 360;
+    var w = Math.max(base, base * atlasState.zoom);
+    img.style.width = w + "px";
+    img.style.height = "auto";
+    el.atlasCanvas.style.transform = "none";
+    el.atlasCanvas.style.width = "max-content";
+    el.zoomLabel.textContent = Math.round(atlasState.zoom * 100) + "%";
+  }
+
+  function renderAtlasLeaves() {
+    var pack = ATLAS[atlasState.ver];
+    el.atlasLeaves.innerHTML = "";
+    pack.leaves.forEach(function (leaf) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = leaf.title;
+      b.dataset.leaf = leaf.id;
+      if (atlasState.leafId === leaf.id) b.classList.add("active");
+      b.addEventListener("click", function () { showLeafDetail(leaf.id); });
+      el.atlasLeaves.appendChild(b);
+    });
+  }
+
+  function showLeafDetail(leafId) {
+    var pack = ATLAS[atlasState.ver];
+    var leaf = null;
+    for (var i = 0; i < pack.leaves.length; i++) {
+      if (pack.leaves[i].id === leafId) { leaf = pack.leaves[i]; break; }
+    }
+    if (!leaf) {
+      el.atlasDetail.classList.remove("show");
+      el.atlasDetail.textContent = "";
+      atlasState.leafId = null;
+      renderAtlasLeaves();
+      return;
+    }
+    atlasState.leafId = leafId;
+    el.atlasDetail.innerHTML = "<strong>" + leaf.title + "</strong> — " + leaf.body;
+    el.atlasDetail.classList.add("show");
+    renderAtlasLeaves();
+  }
+
+  function loadAtlasVersion(ver) {
+    if (!ATLAS[ver]) return;
+    atlasState.ver = ver;
+    atlasState.leafId = null;
+    document.querySelectorAll(".atlas-tabs button").forEach(function (btn) {
+      btn.classList.toggle("active", btn.getAttribute("data-ver") === ver);
+    });
+    var pack = ATLAS[ver];
+    var obj = el.atlasObject;
+    /* 相對路徑優先 SVG；onerror 後備 PNG */
+    obj.onerror = function () {
+      if (obj.dataset.fallbackApplied === pack.fallback) return;
+      obj.dataset.fallbackApplied = pack.fallback;
+      obj.src = pack.fallback;
+    };
+    obj.dataset.fallbackApplied = "";
+    obj.src = pack.src;
+    obj.alt = pack.label + "（簡化科普／假設）";
+    /* 依版本調整 intrinsic 提示寬高比 */
+    if (ver === "v1") { obj.width = 960; obj.height = 640; }
+    else if (ver === "v2") { obj.width = 1100; obj.height = 720; }
+    else { obj.width = 1280; obj.height = 860; }
+    el.atlasDetail.classList.remove("show");
+    el.atlasDetail.textContent = "";
+    renderAtlasLeaves();
+    setAtlasZoom(1);
+    el.atlasViewport.scrollLeft = 0;
+    el.atlasViewport.scrollTop = 0;
+  }
+
+  function openAtlas(from) {
+    atlasState.returnTo = from || "title";
+    showScreen("atlas");
+    loadAtlasVersion(atlasState.ver || "v1");
+  }
+
+  function closeAtlas() {
+    showScreen(atlasState.returnTo === "end" ? "end" : "title");
+  }
+
+
   document.getElementById("btnStart").addEventListener("click", startGame);
   document.getElementById("btnAgain").addEventListener("click", function () {
     showScreen("title");
   });
+  document.getElementById("btnAtlas").addEventListener("click", function () { openAtlas("title"); });
+  document.getElementById("btnAtlasEnd").addEventListener("click", function () { openAtlas("end"); });
+  document.getElementById("btnAtlasBack").addEventListener("click", closeAtlas);
+  document.querySelectorAll(".atlas-tabs button").forEach(function (btn) {
+    btn.addEventListener("click", function () { loadAtlasVersion(btn.getAttribute("data-ver")); });
+  });
+  document.getElementById("btnZoomIn").addEventListener("click", function () { setAtlasZoom(atlasState.zoom + 0.2); });
+  document.getElementById("btnZoomOut").addEventListener("click", function () { setAtlasZoom(atlasState.zoom - 0.2); });
+  document.getElementById("btnZoomReset").addEventListener("click", function () { setAtlasZoom(1); });
+
 
   window.addEventListener("keydown", function (e) {
     if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") { keys.left = true; e.preventDefault(); }
@@ -1132,6 +1411,9 @@
     FORMS: FORMS,
     LEVELS: LEVELS,
     PROOF: PROOF,
+    ATLAS: ATLAS,
+    openAtlas: openAtlas,
+    loadAtlasVersion: loadAtlasVersion,
     startGame: startGame,
     getState: function () { return state; },
     forcePick: function (idx) { pickOption(idx); },

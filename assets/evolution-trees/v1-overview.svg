@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" width="960" height="640" role="img" aria-labelledby="title desc">
+  <title id="title">生命樹概覽（教育用）</title>
+  <desc id="desc">以 LUCA 為根，細菌域與古菌域二分；真核生物由古菌系經內共生衍生；病毒為多起源側枝。</desc>
+  <defs>
+    <style>
+      .bg { fill: #0f1419; }
+      .trunk { stroke: #c8d0d8; stroke-width: 4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .bacteria { stroke: #3dd68c; }
+      .archaea { stroke: #6eb5ff; }
+      .eukarya { stroke: #f5a524; }
+      .virus { stroke: #e5484d; stroke-dasharray: 6 5; stroke-width: 2.5; }
+      .label { font-family: "Noto Sans CJK TC", "Noto Serif CJK TC", "Noto Sans CJK SC", sans-serif; fill: #e8eef4; }
+      .title { font-size: 22px; font-weight: 700; }
+      .h1 { font-size: 16px; font-weight: 700; }
+      .h2 { font-size: 13px; fill: #a9b4c0; }
+      .note { font-size: 12px; fill: #8b98a5; }
+      .chip { font-size: 12px; fill: #0f1419; font-weight: 700; }
+      .legend-box { fill: #1a222c; stroke: #2a3542; }
+    </style>
+  </defs>
+  <rect class="bg" width="960" height="640"/>
+  <text class="label title" x="40" y="48">版本 A｜生命樹概覽（適合 App 首屏）</text>
+  <text class="label note" x="40" y="72">根＝LUCA（最後共同祖先）· 細胞生命兩大域 · 真核嵌於古菌側 · 病毒＝多起源側群（非第三域）</text>
+
+  <!-- Root -->
+  <circle cx="480" cy="560" r="10" fill="#e8eef4"/>
+  <text class="label h1" x="480" y="592" text-anchor="middle">LUCA</text>
+  <text class="label h2" x="480" y="612" text-anchor="middle">最後共同祖先</text>
+
+  <!-- Main split -->
+  <path class="trunk" d="M480 550 V420"/>
+  <path class="trunk bacteria" d="M480 420 C400 420 320 360 260 280"/>
+  <path class="trunk archaea" d="M480 420 C560 420 640 360 700 280"/>
+
+  <!-- Bacteria tip -->
+  <circle cx="260" cy="280" r="8" fill="#3dd68c"/>
+  <text class="label h1" x="260" y="250" text-anchor="middle" fill="#3dd68c">細菌域</text>
+  <text class="label h2" x="260" y="230" text-anchor="middle">Bacteria</text>
+  <text class="label note" x="260" y="200" text-anchor="middle">原核 · 無核膜</text>
+
+  <!-- Archaea tip + Eukarya nest -->
+  <circle cx="700" cy="280" r="8" fill="#6eb5ff"/>
+  <text class="label h1" x="700" y="250" text-anchor="middle" fill="#6eb5ff">古菌域</text>
+  <text class="label h2" x="700" y="230" text-anchor="middle">Archaea</text>
+
+  <!-- Eukarya branch from archaea -->
+  <path class="trunk eukarya" d="M700 280 C720 220 760 180 820 150"/>
+  <circle cx="820" cy="150" r="8" fill="#f5a524"/>
+  <text class="label h1" x="820" y="120" text-anchor="middle" fill="#f5a524">真核生物</text>
+  <text class="label h2" x="820" y="100" text-anchor="middle">由古菌系衍生</text>
+  <text class="label note" x="820" y="80" text-anchor="middle">＋細菌內共生（粒線體等）</text>
+
+  <!-- Virus side groups -->
+  <path class="trunk virus" d="M420 480 C300 470 200 430 140 360"/>
+  <path class="trunk virus" d="M540 480 C660 470 760 430 820 360"/>
+  <path class="trunk virus" d="M480 500 C480 440 500 400 520 360"/>
+  <text class="label h1" x="140" y="340" text-anchor="middle" fill="#e5484d">病毒側群</text>
+  <text class="label note" x="140" y="320" text-anchor="middle">多起源 · 非單系</text>
+  <text class="label h1" x="820" y="340" text-anchor="middle" fill="#e5484d">病毒側群</text>
+  <text class="label note" x="820" y="320" text-anchor="middle">依附細胞複製</text>
+  <text class="label h1" x="540" y="340" text-anchor="middle" fill="#e5484d">病毒側群</text>
+
+  <!-- Legend -->
+  <rect class="legend-box" x="40" y="500" width="220" height="110" rx="10"/>
+  <text class="label h1" x="56" y="528">圖例</text>
+  <line x1="56" y1="545" x2="90" y2="545" class="trunk bacteria" stroke-width="3"/>
+  <text class="label note" x="100" y="549">細菌域</text>
+  <line x1="56" y1="565" x2="90" y2="565" class="trunk archaea" stroke-width="3"/>
+  <text class="label note" x="100" y="569">古菌域</text>
+  <line x1="56" y1="585" x2="90" y2="585" class="trunk eukarya" stroke-width="3"/>
+  <text class="label note" x="100" y="589">真核（嵌套）</text>
+  <line x1="56" y1="605" x2="90" y2="605" class="trunk virus"/>
+  <text class="label note" x="100" y="609">病毒（多起源側枝）</text>
+</svg>

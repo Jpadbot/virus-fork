@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 720" width="1100" height="720" role="img" aria-labelledby="title desc">
+  <title id="title">生命樹與內共生（中等細節）</title>
+  <desc id="desc">LUCA 根部；細菌／古菌二分；真核來自古菌（如阿斯加德相關）並經細菌內共生；病毒為多起源側群。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#f5a524"/>
+    </marker>
+    <style>
+      .bg { fill: #f7f5f0; }
+      .trunk { stroke: #2c333a; stroke-width: 3.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .bacteria { stroke: #1f8a5b; }
+      .archaea { stroke: #2b6cb0; }
+      .eukarya { stroke: #c05621; stroke-width: 3.5; }
+      .virus { stroke: #c53030; stroke-dasharray: 5 4; stroke-width: 2.2; }
+      .endo { stroke: #c05621; stroke-dasharray: 4 3; stroke-width: 2; fill: none; }
+      .label { font-family: "Noto Sans CJK TC", "Noto Serif CJK TC", "Noto Sans CJK SC", sans-serif; fill: #1a202c; }
+      .title { font-size: 22px; font-weight: 700; }
+      .h1 { font-size: 15px; font-weight: 700; }
+      .h2 { font-size: 12px; fill: #4a5568; }
+      .note { font-size: 11px; fill: #718096; }
+      .panel { fill: #fff; stroke: #e2e8f0; }
+    </style>
+  </defs>
+  <rect class="bg" width="1100" height="720"/>
+  <text class="label title" x="36" y="42">版本 B｜內共生與域結構（適合課程／說明頁）</text>
+  <text class="label note" x="36" y="64">科學重點：細胞生命並非「三域並列」；真核嵌於古菌枝；病毒不構成單一生命域</text>
+
+  <!-- Root LUCA -->
+  <circle cx="200" cy="360" r="12" fill="#2c333a"/>
+  <text class="label h1" x="200" y="395" text-anchor="middle">LUCA</text>
+  <text class="label h2" x="200" y="414" text-anchor="middle">最後共同祖先</text>
+
+  <!-- Split -->
+  <path class="trunk" d="M212 360 H300"/>
+  <path class="trunk bacteria" d="M300 360 C360 360 400 260 520 200"/>
+  <path class="trunk archaea" d="M300 360 C360 360 400 460 520 520"/>
+
+  <!-- Bacteria clade -->
+  <path class="trunk bacteria" d="M520 200 C580 170 640 150 720 140"/>
+  <path class="trunk bacteria" d="M520 200 C580 210 640 230 720 250"/>
+  <path class="trunk bacteria" d="M520 200 C560 190 600 175 650 160"/>
+  <circle cx="720" cy="140" r="6" fill="#1f8a5b"/>
+  <circle cx="720" cy="250" r="6" fill="#1f8a5b"/>
+  <circle cx="650" cy="160" r="5" fill="#1f8a5b"/>
+  <text class="label h1" x="740" y="144" fill="#1f8a5b">藍菌／質體祖先相關</text>
+  <text class="label h1" x="740" y="254" fill="#1f8a5b">α-變形菌（粒線體祖先）</text>
+  <text class="label h2" x="520" y="188">細菌域（示意大枝）</text>
+  <text class="label note" x="520" y="290">另含厚壁菌、擬桿菌等眾多門（本圖省略）</text>
+
+  <!-- Archaea + Asgard-like -->
+  <path class="trunk archaea" d="M520 520 C600 540 680 560 760 580"/>
+  <path class="trunk archaea" d="M520 520 C600 500 680 470 760 450"/>
+  <circle cx="760" cy="580" r="6" fill="#2b6cb0"/>
+  <circle cx="760" cy="450" r="6" fill="#2b6cb0"/>
+  <text class="label h1" x="780" y="584" fill="#2b6cb0">其他古菌</text>
+  <text class="label h1" x="780" y="454" fill="#2b6cb0">阿斯加德古菌相關</text>
+  <text class="label h2" x="520" y="505">古菌域</text>
+
+  <!-- Eukarya from Asgard-like -->
+  <path class="trunk eukarya" d="M760 450 C820 420 880 360 940 300"/>
+  <circle cx="940" cy="300" r="8" fill="#c05621"/>
+  <text class="label h1" x="940" y="275" text-anchor="middle" fill="#c05621">真核生物</text>
+  <text class="label h2" x="940" y="255" text-anchor="middle">細胞核 · 複雜細胞器</text>
+
+  <!-- Endosymbiosis arrows -->
+  <path class="endo" d="M720 250 C800 270 880 290 930 300" marker-end="url(#arrow)"/>
+  <text class="label note" x="820" y="275">內共生 → 粒線體</text>
+  <path class="endo" d="M720 140 C800 180 880 240 930 285" marker-end="url(#arrow)"/>
+  <text class="label note" x="800" y="175">部分譜系：內共生 → 質體／葉綠體</text>
+
+  <!-- Virus side groups -->
+  <path class="trunk virus" d="M260 330 C280 250 300 180 340 120"/>
+  <path class="trunk virus" d="M260 390 C300 470 360 540 420 600"/>
+  <path class="trunk virus" d="M280 360 C360 340 440 300 500 280"/>
+  <text class="label h1" x="340" y="105" fill="#c53030">DNA 病毒群（示意）</text>
+  <text class="label h1" x="430" y="620" fill="#c53030">RNA 病毒群（示意）</text>
+  <text class="label h1" x="510" y="270" fill="#c53030">巨型病毒等側枝</text>
+  <text class="label note" x="36" y="690">虛線＝病毒多起源側群（宿主轉換、基因流動頻繁，不宜畫成單一「病毒域」）</text>
+
+  <rect class="panel" x="36" y="90" width="280" height="120" rx="8"/>
+  <text class="label h1" x="52" y="118">本版新增</text>
+  <text class="label h2" x="52" y="142">· 真核嵌套於古菌側</text>
+  <text class="label h2" x="52" y="162">· 粒線體／質體內共生箭頭</text>
+  <text class="label h2" x="52" y="182">· 病毒分群示意（仍非單系）</text>
+  <text class="label note" x="52" y="198">拓樸示意，非精準分支長度</text>
+</svg>

@@ -1,5 +1,14 @@
 # virus-fork-cli — 決策紀錄
 
+## 2026-10-28 現實環境時間軸持續生長（feat/env-time-grow-persist）
+- John：波間「生長中…」動畫結束後大小／外表**還原**＝meaningless。要時間從 0 走、持續累積、選後有後果、思考更長。
+- **持久體型** `state.bodyScale`（起 0.55、上限 2.4）；`setLiveGrow(false)`／`endEnvGapGrow` **不得**清 transform 回 1。
+- **時間軸** `envT0`／`envElapsed`；`ENV_MILESTONE_MS=10000`（`?envGap=`／`ENV_OPTION_GAP_MS` 別名可覆寫）一波選項。
+- **思考** `ENV_THINK_MS=12000`：env 門階段 `fallSpeed = dist/(THINK_MS/1000)`，可讀完 2–4 選項。
+- **選項期間**生長 ×0.25（不暫停）；選定後 `applyChoiceGrowth(delta)` 調 `growthRate`／微調 bodyScale＋色澤；**不會變回選前 bodyScale**。
+- 波間改「時間累積」；假 gap 表演 reset 路徑移除。保留置中、A cosmos／B 場所、classic／mc、無數值 HUD。
+- 路徑 A 直寫；證據 v16。
+
 ## 2026-10-28 波間明顯生長＋Minecraft 外表並存（feat/gap-grow-visible-mc-style）
 - John：前版 10 秒波間「見唔到變化」→ 改為大幅縮放／色相／分裂芽體（`#colony`），一眼可見。
 - 外表：**預設原有**；可切 Minecraft 方塊風（標題 checkbox＋玩時 chip）；`localStorage` 鍵 `virus-fork-art-style`；舊 `draw()` 保留。

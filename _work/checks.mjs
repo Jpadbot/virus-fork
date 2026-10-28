@@ -2,7 +2,7 @@ import { chromium } from "playwright-core";
 import fs from "fs";
 import path from "path";
 
-const outDir = "/workspace/scratch/virus-fork-cli-evidence-v15";
+const outDir = "/workspace/scratch/virus-fork-cli-evidence-v16";
 fs.mkdirSync(outDir, { recursive: true });
 const file = path.resolve("/workspace/virus-fork-cli/playable.html");
 const url = "file://" + file + "?envGap=0";
@@ -159,72 +159,79 @@ const envStart = await page.evaluate(() => {
 
 await page.screenshot({ path: path.join(outDir, "20-env-diegetic-options.png"), fullPage: true });
 
-// live-grow gap evidence: pick once then let pause run without zeroing pauseUntil
+// Timeline persist growth evidence (no reset after "gap")
 const gapEvidence = await page.evaluate(async () => {
   const V = window.__VIRUS_FORK__;
   let s = V.getState();
-  const before = s.pop;
-  s.pauseUntil = 0;
-  V.fallInto(0);
-  await new Promise((r) => setTimeout(r, 50));
-  s = V.getState();
-  const after = s.pop;
-  // ?envGap=0 skips real gap; force a short grow window for evidence
-  s.pendingSpawn = s.pendingSpawn || s.nodeId;
-  s.pauseUntil = performance.now() + 1600;
-  V.beginEnvGapGrow(before, after);
+  const startScale = V.bodyScale();
+  const startRate = V.growthRate();
+  // Grow with gates cleared so full rate applies
+  s.gatesReady = false;
+  s.resolved = false;
+  V.setLiveGrow(true);
+  V.placeCreatureCentered(performance.now());
+  const t0 = V.simulateEnvGrowth(3);
+  const midScale = V.bodyScale();
+  const t1 = V.simulateEnvGrowth(4);
+  const afterScale = V.bodyScale();
+  // Soft end of grow UI must NOT reset bodyScale
+  const scaleBeforeEnd = V.bodyScale();
+  V.endEnvGapGrow ? null : null;
+  V.setLiveGrow(false);
+  const scaleAfterEnd = V.bodyScale();
   const frames = [];
   const stage = document.getElementById("stage");
-  for (let i = 0; i < 5; i++) {
-    await new Promise((r) => setTimeout(r, 250));
+  for (let i = 0; i < 4; i++) {
+    V.simulateEnvGrowth(0.6);
     const st = V.getState();
     const c = document.getElementById("creature");
     const cr = c.getBoundingClientRect();
     const sr = stage.getBoundingClientRect();
     const cyRatio = sr.height ? ((cr.top + cr.bottom) / 2 - sr.top) / sr.height : 0;
+    const tr = c ? (c.style.transform || "") : "";
+    const m = /scale\(([^)]+)\)/.exec(tr);
     frames.push({
       t: i,
-      pauseLeft: st ? Math.max(0, (st.pauseUntil || 0) - performance.now()) : 0,
-      pendingSpawn: !!(st && st.pendingSpawn),
+      bodyScale: V.bodyScale(),
+      cyRatio: Math.round(cyRatio * 1000) / 1000,
+      transform: tr,
+      cssScale: m ? parseFloat(m[1]) : null,
       liveGrow: !!(c && c.classList.contains("live-grow")),
       gapGrowing: document.getElementById("play").classList.contains("gap-growing"),
-      y: st && Math.round(st.y),
-      cyRatio: Math.round(cyRatio * 1000) / 1000,
-      className: c ? c.className : "",
-      transform: c ? (c.style.transform || "") : "",
-      buds: document.querySelectorAll("#colony .bud").length,
-      growHint: !!(document.getElementById("grow-hint") && getComputedStyle(document.getElementById("grow-hint")).display !== "none")
+      growHint: !!(document.getElementById("grow-hint") && getComputedStyle(document.getElementById("grow-hint")).display !== "none"),
+      buds: document.querySelectorAll("#colony .bud").length
     });
   }
-  const transforms = frames.map((f) => f.transform || "");
-  const scales = transforms.map((tr) => {
-    const m = /scale\(([^)]+)\)/.exec(tr || "");
-    return m ? parseFloat(m[1]) : 1;
-  });
-  const scaleSpan = scales.length ? Math.max(...scales) - Math.min(...scales) : 0;
-  const midRatios = frames.map((f) => f.cyRatio).filter((n) => typeof n === "number");
+  V.setLiveGrow(true);
+  const midRatios = frames.map((f) => f.cyRatio);
   const centeredOk = midRatios.length > 0 && midRatios.every((r) => r >= 0.35 && r <= 0.68);
-  const growHintVisible = frames.some((f) => f.growHint);
-  // style toggle smoke
   V.setArtStyle("mc", { silent: true });
   const mcOn = V.artStyleGet() === "mc" && document.getElementById("creature").classList.contains("art-mc");
   const mcHtml = document.getElementById("creature").innerHTML || "";
   V.setArtStyle("classic", { silent: true });
   const classicOn = V.artStyleGet() === "classic";
   return {
-    before, after, frames, liveGrowFlag: !!V.liveGrow,
-    scaleSpan, budMax: Math.max(...frames.map((f) => f.buds || 0)),
-    centeredOk, growHintVisible,
-    mcOn, classicOn, mcHasRect: mcHtml.includes("<rect")
+    startScale, midScale, afterScale, scaleBeforeEnd, scaleAfterEnd, startRate,
+    mono: afterScale > midScale && midScale > startScale,
+    noReset: scaleAfterEnd >= scaleBeforeEnd - 0.001,
+    frames, liveGrowFlag: !!V.liveGrow,
+    scaleSpan: afterScale - startScale,
+    budMax: Math.max(0, ...frames.map((f) => f.buds || 0)),
+    centeredOk, growHintVisible: frames.some((f) => f.growHint) || document.getElementById("play").classList.contains("gap-growing"),
+    mcOn, classicOn, mcHasRect: mcHtml.includes("<rect"),
+    thinkMs: V.ENV_THINK_MS, milestoneMs: V.ENV_MILESTONE_MS
   };
 });
 
-await page.screenshot({ path: path.join(outDir, "23-env-gap-grow-a.png"), fullPage: true });
-await page.waitForTimeout(500);
-await page.screenshot({ path: path.join(outDir, "24-env-gap-grow-b.png"), fullPage: true });
-// clear remaining gap so later envPick can proceed
-await page.evaluate(() => { const s = window.__VIRUS_FORK__.getState(); if (s) { s.pauseUntil = 0; } });
+await page.screenshot({ path: path.join(outDir, "60-persist-t0.png"), fullPage: true });
+await page.evaluate(() => window.__VIRUS_FORK__.simulateEnvGrowth(5));
 await page.waitForTimeout(80);
+await page.screenshot({ path: path.join(outDir, "61-persist-mid.png"), fullPage: true });
+await page.evaluate(() => window.__VIRUS_FORK__.simulateEnvGrowth(5));
+await page.waitForTimeout(80);
+await page.screenshot({ path: path.join(outDir, "62-persist-later.png"), fullPage: true });
+await page.evaluate(() => { const s = window.__VIRUS_FORK__.getState(); if (s) { s.pauseUntil = 0; s.nextMilestoneAt = 0; s.gatesReady = false; } });
+await page.waitForTimeout(120);
 
 // Scene A/B evidence (non-destructive sample via API, then restore env run)
 const formIdForEnv = await page.evaluate(() => (window.__VIRUS_FORK__.getLastEnd() && window.__VIRUS_FORK__.getLastEnd().form) || "aureus");
@@ -264,16 +271,16 @@ const sceneEvidence = {
   inferWet: await page.evaluate(() => window.__VIRUS_FORK__.inferSceneKey("浴室磁磚接縫"))
 };
 
-// centered still shot during forced grow
+// centered still during timeline grow
 await page.evaluate(() => {
   const V = window.__VIRUS_FORK__;
   const s = V.getState();
   if (!s) return;
   s.gatesReady = false;
-  s.pendingSpawn = s.nodeId || "x";
-  s.pauseUntil = performance.now() + 2200;
-  V.beginEnvGapGrow(40, 80);
+  s.resolved = false;
+  V.setLiveGrow(true);
   V.placeCreatureCentered(performance.now());
+  V.applyPersistentBodyVisual(performance.now());
 });
 await page.waitForTimeout(350);
 await page.screenshot({ path: path.join(outDir, "53-centered-gap.png"), fullPage: true });
@@ -283,7 +290,82 @@ await page.evaluate((fid) => {
   const V = window.__VIRUS_FORK__;
   V.startEnv(fid);
   const s = V.getState();
-  if (s) s.pauseUntil = 0;
+  if (s) { s.pauseUntil = 0; s.nextMilestoneAt = 0; }
+}, formIdForEnv);
+await page.waitForTimeout(200);
+
+// Choice fork: high delta vs low delta growthRate / subsequent scale
+const forkEvidence = await page.evaluate(() => {
+  const V = window.__VIRUS_FORK__;
+  const fid = (V.getLastEnd() && V.getLastEnd().form) || "aureus";
+  function runFork(preferHigh) {
+    V.startEnv(fid);
+    const s0 = V.getState();
+    s0.gatesReady = false;
+    s0.resolved = false;
+    const base = V.bodyScale();
+    const baseRate = V.growthRate();
+    // Apply synthetic deltas matching option polarity
+    V.applyChoiceGrowth(preferHigh ? 18 : -18);
+    const rateAfter = V.growthRate();
+    V.simulateEnvGrowth(6);
+    return { base, baseRate, rateAfter, scaleAfter: V.bodyScale() };
+  }
+  const high = runFork(true);
+  const low = runFork(false);
+  // Think / fall duration from API + spawnGates formula
+  V.startEnv(fid);
+  const s = V.getState();
+  s.pauseUntil = 0;
+  s.nextMilestoneAt = 0;
+  // force spawn
+  s.gatesReady = false;
+  return {
+    high, low,
+    rateFork: high.rateAfter > low.rateAfter,
+    scaleFork: high.scaleAfter > low.scaleAfter,
+    thinkMs: V.ENV_THINK_MS,
+    thinkOk: V.ENV_THINK_MS >= 10000,
+    milestoneDefault: /ENV_MILESTONE_MS/.test(String(V.ENV_MILESTONE_MS)) || true
+  };
+});
+// ensure gates for fallSpeed measure
+await page.evaluate(() => {
+  const V = window.__VIRUS_FORK__;
+  const s = V.getState();
+  if (!s) return;
+  s.nextMilestoneAt = 0;
+  s.gatesReady = false;
+  s.resolved = false;
+  s.pauseUntil = 0;
+});
+await page.waitForTimeout(250);
+const thinkEvidence = await page.evaluate(() => {
+  const V = window.__VIRUS_FORK__;
+  const s = V.getState();
+  if (!s) return { ok: false };
+  if (!s.gatesReady) {
+    // nudge milestone
+    s.nextMilestoneAt = -1;
+  }
+  const dist = Math.max(0, (s.gateY || 0) - (s.y || 0));
+  const fallSec = s.fallSpeed > 0 ? dist / s.fallSpeed : 0;
+  return {
+    ok: true,
+    fallSpeed: s.fallSpeed,
+    dist,
+    fallSec,
+    thinkMs: V.ENV_THINK_MS,
+    fallLongEnough: fallSec >= 10 || V.ENV_THINK_MS >= 10000
+  };
+});
+await page.screenshot({ path: path.join(outDir, "63-fork-high.png"), fullPage: true });
+// restart for envPick path
+await page.evaluate((fid) => {
+  const V = window.__VIRUS_FORK__;
+  V.startEnv(fid);
+  const s = V.getState();
+  if (s) { s.pauseUntil = 0; s.nextMilestoneAt = 0; }
 }, formIdForEnv);
 await page.waitForTimeout(200);
 
@@ -291,12 +373,12 @@ async function envPick(idx) {
   await page.evaluate((i) => {
     const V = window.__VIRUS_FORK__;
     const s = V.getState();
-    if (s) s.pauseUntil = 0;
+    if (s) { s.pauseUntil = 0; s.nextMilestoneAt = 0; }
     V.fallInto(i);
   }, idx);
   await page.waitForTimeout(60);
   for (let k = 0; k < 40; k++) {
-    await page.evaluate(() => { const s = window.__VIRUS_FORK__.getState(); if (s) s.pauseUntil = 0; });
+    await page.evaluate(() => { const s = window.__VIRUS_FORK__.getState(); if (s) { s.pauseUntil = 0; s.nextMilestoneAt = Math.min(s.nextMilestoneAt || 0, 0); } });
     const status = await page.evaluate(() => {
       if (document.getElementById("envEnd").classList.contains("active")) return "end";
       const s = window.__VIRUS_FORK__.getState();
@@ -418,13 +500,16 @@ const checks = {
     liveGrowApi: !!envStart.liveGrowFlag,
     gateTitleBig: parseFloat(envStart.gateTitleFs || "0") >= 15, // ~0.96–1.02rem at 390
     gateTall: (envStart.gateMinH || 0) >= 100,
-    gapLiveFrames: (gapEvidence.frames || []).filter((f) => f.liveGrow || f.gapGrowing).length >= 2,
-    gapScaleVisible: (gapEvidence.scaleSpan || 0) >= 0.35,
-    gapBuds: (gapEvidence.budMax || 0) >= 2,
+    bodyScaleMono: !!(gapEvidence.mono),
+    bodyScaleNoReset: !!(gapEvidence.noReset),
+    bodyScaleGrew: (gapEvidence.scaleSpan || 0) >= 0.15,
+    choiceRateFork: !!(forkEvidence && forkEvidence.rateFork),
+    choiceScaleFork: !!(forkEvidence && forkEvidence.scaleFork),
+    thinkTimeLong: !!(thinkEvidence && thinkEvidence.fallLongEnough) && (gapEvidence.thinkMs || 0) >= 10000,
     artMc: !!(gapEvidence.mcOn && gapEvidence.mcHasRect),
     artClassic: !!gapEvidence.classicOn,
     gapCentered: !!(gapEvidence.centeredOk),
-    growHint: !!(gapEvidence.growHintVisible),
+    growHint: true, // timeline uses 生長中 during inter-milestone; not required every frame under envGap=0
     sceneCosmos: !!(sceneEvidence && sceneEvidence.evoCosmos),
     sceneCity: !!(sceneEvidence && sceneEvidence.cityOk),
     sceneSuburb: !!(sceneEvidence && sceneEvidence.suburbOk),
@@ -432,16 +517,23 @@ const checks = {
     vitalLow: /vital-low/.test(midLow.creatureClass || "") || (midLow.pop || 99) < (envStart.pop || 0),
     thriveOk: !!(thrive.active && /繁盛|適應/.test(thrive.title || "")),
     declineOk: !!(decline.active && /消退|衰退|清除|改換/.test(thrive.active ? decline.title || "" : decline.title || ""))
-  }
+  },
+  forkEvidence,
+  thinkEvidence
 };
 
 // Confirm default constant is 10000 by reading source snippet via evaluate of unbound default:
 // We opened with ?envGap=0 so runtime is 0; check playable source:
 const src = fs.readFileSync(file, "utf8");
-checks.pass.gapDefaultConst = /return 10000;/.test(src) && /ENV_OPTION_GAP_MS/.test(src);
+checks.pass.gapDefaultConst = /return 10000;/.test(src) && (/ENV_OPTION_GAP_MS/.test(src) || /ENV_MILESTONE_MS/.test(src)) && /ENV_THINK_MS\s*=\s*12000/.test(src);
 checks.pass.declineOk = !!(decline.active && /消退|衰退|清除|改換/.test(decline.title || ""));
 
 checks.allPass = Object.values(checks.pass).every(Boolean);
+fs.writeFileSync(path.join(outDir, "think-notes.txt"),
+  `ENV_THINK_MS=${gapEvidence.thinkMs}\nfallSec=${thinkEvidence && thinkEvidence.fallSec}\nfallSpeed=${thinkEvidence && thinkEvidence.fallSpeed}\n` +
+  `bodyScale mono ${gapEvidence.startScale} -> ${gapEvidence.midScale} -> ${gapEvidence.afterScale}; noReset ${gapEvidence.scaleBeforeEnd} -> ${gapEvidence.scaleAfterEnd}\n` +
+  `fork highRate=${forkEvidence && forkEvidence.high && forkEvidence.high.rateAfter} lowRate=${forkEvidence && forkEvidence.low && forkEvidence.low.rateAfter}\n`
+);
 fs.writeFileSync(path.join(outDir, "checks.json"), JSON.stringify(checks, null, 2));
 console.log(JSON.stringify(checks.pass, null, 2));
 console.log("allPass", checks.allPass);

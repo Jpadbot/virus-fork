@@ -4032,7 +4032,8 @@ function svg(inner, vb) {
     return ENV_BASE_POP[formId] != null ? ENV_BASE_POP[formId] : 52;
   }
 
-  var ENV_OPTION_GAP_MS = (function () {
+  /* 現實環境時間軸：里程碑間隔（可 ?envGap= 覆寫）與思考時間 */
+  var ENV_MILESTONE_MS = (function () {
     try {
       if (typeof window !== "undefined" && typeof window.__ENV_GAP_MS__ === "number") {
         return window.__ENV_GAP_MS__;
@@ -4042,6 +4043,12 @@ function svg(inner, vb) {
     } catch (e) {}
     return 10000;
   })();
+  var ENV_OPTION_GAP_MS = ENV_MILESTONE_MS; /* 相容別名 */
+  var ENV_THINK_MS = 12000; /* 選項門階段有效下落約 12s */
+  var BODY_SCALE_START = 0.55;
+  var BODY_SCALE_MAX = 2.4;
+  var BODY_SCALE_MIN = 0.35;
+  var GROWTH_RATE_BASE = 0.045; /* /秒；選項期間 ×0.25 */
 
   const el = {
     title: document.getElementById("title"),
@@ -4157,10 +4164,57 @@ function svg(inner, vb) {
     el.play.classList.toggle("gap-growing", !!on);
     if (el.growHint) el.growHint.setAttribute("aria-hidden", on ? "false" : "true");
     if (!on) {
-      el.creature.style.transform = "";
-      el.creature.style.filter = "";
       clearColony();
+      /* 不得把視覺縮放清回 1／選前——env 持續累積 bodyScale */
+      if (state && state.phase === "env") {
+        applyPersistentBodyVisual(performance.now());
+      } else {
+        el.creature.style.transform = "";
+        el.creature.style.filter = "";
+      }
     }
+  }
+
+  function applyPersistentBodyVisual(ts) {
+    if (!el.creature || !state) return;
+    var scale = typeof state.bodyScale === "number" ? state.bodyScale : BODY_SCALE_START;
+    var breath = Math.sin((ts || 0) / 380) * 0.035 + Math.sin((ts || 0) / 210) * 0.02;
+    var s = Math.max(BODY_SCALE_MIN, Math.min(BODY_SCALE_MAX + 0.08, scale + breath));
+    var rot = Math.sin((ts || 0) / 900) * 4;
+    var rate = typeof state.growthRate === "number" ? state.growthRate : GROWTH_RATE_BASE;
+    var rateRatio = rate / GROWTH_RATE_BASE;
+    var hue = (rateRatio - 1) * 38 + (visualPop - 50) * 0.35;
+    var sat = Math.max(0.55, Math.min(1.6, 0.88 + (rateRatio - 1) * 0.42 + (visualPop - 50) * 0.007));
+    var bright = Math.max(0.68, Math.min(1.38, 0.92 + (rateRatio - 1) * 0.28 + (visualPop - 50) * 0.004));
+    var glow = 8 + scale * 12;
+    el.creature.style.transform = "scale(" + s.toFixed(3) + ") rotate(" + rot.toFixed(1) + "deg)";
+    el.creature.style.filter = "hue-rotate(" + hue.toFixed(1) + "deg) saturate(" + sat.toFixed(2) + ") brightness(" + bright.toFixed(2) + ") drop-shadow(0 0 " + glow.toFixed(0) + "px rgba(140,230,160," + (0.22 + scale * 0.18).toFixed(2) + "))";
+  }
+
+  function applyEnvGrowthTick(dt, ts) {
+    if (!state || state.phase !== "env") return;
+    var choosing = !!(state.gatesReady && !state.resolved);
+    var rate = typeof state.growthRate === "number" ? state.growthRate : GROWTH_RATE_BASE;
+    if (choosing) rate *= 0.25;
+    state.bodyScale = Math.max(BODY_SCALE_MIN, Math.min(BODY_SCALE_MAX, (state.bodyScale || BODY_SCALE_START) + rate * dt));
+    applyPersistentBodyVisual(ts);
+  }
+
+  function applyChoiceGrowth(delta) {
+    if (!state || state.phase !== "env") return;
+    var d = delta || 0;
+    var cur = typeof state.growthRate === "number" ? state.growthRate : GROWTH_RATE_BASE;
+    var factor = 1 + Math.max(-0.55, Math.min(0.85, d / 40));
+    state.growthRate = Math.max(0.008, Math.min(0.12, cur * factor + d * 0.0012));
+    if (d > 0) state.bodyScale = Math.min(BODY_SCALE_MAX, (state.bodyScale || BODY_SCALE_START) + d * 0.004);
+    else if (d < 0) state.bodyScale = Math.max(BODY_SCALE_MIN, (state.bodyScale || BODY_SCALE_START) + d * 0.003);
+    applyPersistentBodyVisual(performance.now());
+  }
+
+  function scheduleNextMilestone() {
+    if (!state) return;
+    var elapsed = typeof state.envElapsed === "number" ? state.envElapsed : 0;
+    state.nextMilestoneAt = elapsed + Math.max(0, ENV_MILESTONE_MS);
   }
 
   function inferSceneKey(text) {
@@ -4215,16 +4269,17 @@ function svg(inner, vb) {
   }
 
   function beginEnvGapGrow(fromPop, toPop) {
+    /* 相容 API：開啟「生長中」提示，但不再把 bodyScale 當表演插值後 reset */
     if (!state) return;
     state.growFrom = fromPop;
     state.growTo = toPop;
     state.growStart = performance.now();
-    state.growEnd = state.pauseUntil || (performance.now() + ENV_OPTION_GAP_MS);
+    state.growEnd = state.pauseUntil || (performance.now() + Math.max(600, ENV_MILESTONE_MS || 600));
     state.growBudAt = 0;
     setLiveGrow(true);
-    applyVisualPop(fromPop, true);
-    clearColony();
+    applyVisualPop(typeof toPop === "number" ? toPop : (typeof fromPop === "number" ? fromPop : state.pop), true);
     placeCreatureCentered(state.growStart);
+    applyPersistentBodyVisual(state.growStart);
   }
 
   function spawnGrowBud(ts, scaleHint) {
@@ -4256,37 +4311,19 @@ function svg(inner, vb) {
   }
 
   function updateEnvLiveGrow(ts, dt) {
+    /* 改為時間軸累積：不再用假插值表演後 reset */
     if (!state || state.phase !== "env") return;
-    var from = typeof state.growFrom === "number" ? state.growFrom : visualPop;
-    var to = typeof state.growTo === "number" ? state.growTo : state.pop;
-    var t0 = state.growStart || (ts - 1);
-    var t1 = state.growEnd || (ts + 1);
-    var u = Math.max(0, Math.min(1, (ts - t0) / Math.max(1, t1 - t0)));
-    var e = 1 - Math.pow(1 - u, 3);
-    var target = from + (to - from) * e;
-    var rising = to >= from;
-    /* 無可辯駁：縮放約 0.4↔1.9、旋轉、色相、芽體、光環 */
-    var breath = Math.sin(ts / 170) * 0.55 + Math.sin(ts / 90) * 0.28;
-    var baseScale = rising ? (0.40 + e * 1.35) : (1.90 - e * 1.25);
-    var scale = Math.max(0.38, Math.min(1.95, baseScale + breath));
-    var rot = Math.sin(ts / 240) * 28 + Math.sin(ts / 130) * 14;
-    var hue = rising ? (e * 70 + Math.sin(ts / 200) * 18) : (-e * 55 + Math.sin(ts / 200) * 14);
-    var sat = rising ? (1 + e * 0.75) : (1 - e * 0.45);
-    var bright = rising ? (0.88 + e * 0.42 + Math.sin(ts / 160) * 0.08) : (1.12 - e * 0.35 + Math.sin(ts / 160) * 0.06);
-    el.creature.style.transform = "scale(" + scale.toFixed(3) + ") rotate(" + rot.toFixed(1) + "deg)";
-    el.creature.style.filter = "hue-rotate(" + hue.toFixed(1) + "deg) saturate(" + sat.toFixed(2) + ") brightness(" + bright.toFixed(2) + ") drop-shadow(0 0 " + (12 + e * 28).toFixed(0) + "px rgba(140,230,160," + (0.35 + e * 0.5).toFixed(2) + "))";
-    applyVisualPop(target + Math.sin(ts / 220) * 8, false);
+    applyEnvGrowthTick(dt, ts);
     if (!state.gatesReady) {
       placeCreatureCentered(ts);
-      syncColonyToCreature(ts, e);
+      syncColonyToCreature(ts, Math.min(1, (state.bodyScale || BODY_SCALE_START) / BODY_SCALE_MAX));
     }
     growTickAccum += dt;
-    if (growTickAccum > 0.28) {
+    if (growTickAccum > 0.45) {
       growTickAccum = 0;
-      applyVisualPop(target, true);
-      spawnGrowBud(ts, e);
-      /* 顆粒明顯增減 */
-      var bump = 10 + Math.round(Math.abs(Math.sin(ts / 300)) * 28) + Math.round(e * 16);
+      applyVisualPop(state.pop, false);
+      if (!state.gatesReady) spawnGrowBud(ts, Math.min(1, ((state.bodyScale || BODY_SCALE_START) - BODY_SCALE_START) / (BODY_SCALE_MAX - BODY_SCALE_START)));
+      var bump = 8 + Math.round(((state.bodyScale || BODY_SCALE_START) / BODY_SCALE_MAX) * 34);
       rebuildParticles(bump);
     }
   }
@@ -4296,7 +4333,8 @@ function svg(inner, vb) {
     applyVisualPop(state.pop, true);
     state.growFrom = state.growTo = null;
     state.growStart = state.growEnd = 0;
-    setLiveGrow(false);
+    setLiveGrow(false); /* 內部會保留 bodyScale 視覺 */
+    applyPersistentBodyVisual(performance.now());
   }
 
   var state = null;
@@ -4412,7 +4450,13 @@ function svg(inner, vb) {
     state.resolved = false;
     /* 下落可自偏上開始；波間置中另由 placeCreatureCentered 負責 */
     state.y = Math.max(100, sh * 0.22);
-    state.fallSpeed = Math.min(170, 115 + state.segment * 8);
+    if (state.phase === "env") {
+      var dist = Math.max(60, (state.gateY || sh * 0.60) - state.y);
+      state.fallSpeed = dist / Math.max(1, ENV_THINK_MS / 1000);
+      setLiveGrow(false); /* 選項期間隱藏「生長中」提示；生長仍以 25% 繼續 */
+    } else {
+      state.fallSpeed = Math.min(170, 115 + state.segment * 8);
+    }
     refreshSceneFromLevel(level, null);
   }
 
@@ -4491,7 +4535,6 @@ function svg(inner, vb) {
   function startEnv(formId) {
     cancelAnimationFrame(raf);
     clearGates();
-    setLiveGrow(false);
     lastParticleBucket = -1;
     var startId = getEnvStartId(formId);
     if (!startId) { toast("此物種尚無環境關卡", 1200); return; }
@@ -4499,25 +4542,40 @@ function svg(inner, vb) {
     setSceneKey("suburb");
     var base = getEnvBasePop(formId);
     var form = FORMS[formId];
+    var tNow = performance.now();
     state = {
       phase: "env", envFormId: formId, pop: base,
       nodeId: startId, segment: 0, x: 0.5, y: 100, vx: 0, fallSpeed: 120,
       path: [{ label: form.name, choice: "進入現實環境" }],
       gatesReady: false, resolved: false, pauseUntil: 0, domain: null,
-      pendingEnd: null, pendingEnvEnd: null, pendingSpawn: null
+      pendingEnd: null, pendingEnvEnd: null, pendingSpawn: null,
+      bodyScale: BODY_SCALE_START,
+      growthRate: GROWTH_RATE_BASE,
+      envT0: tNow,
+      envElapsed: 0,
+      nextMilestoneAt: Math.max(0, ENV_MILESTONE_MS)
     };
     showScreen("play");
     setForm(formId);
     el.hudBlurb.textContent = "現實環境示意：選場所與宿主處境；外表與顆粒疏密會跟著變。非醫療。";
     state.x = el.stage.clientWidth / 2;
     updatePopUI();
-    spawnGatesForCurrent();
     refreshSceneFromLevel(currentLevel(), null);
+    placeCreatureCentered(tNow);
+    applyPersistentBodyVisual(tNow);
+    setLiveGrow(true);
     lastTs = 0;
     pointerActive = false;
+    /* 測試 ?envGap=0：立刻出第一波；否則等時間軸里程碑 */
+    if (ENV_MILESTONE_MS <= 0) {
+      state.nextMilestoneAt = 0;
+      spawnGatesForCurrent();
+      var lv0 = currentLevel();
+      toast((lv0 && lv0.prompt) || "現實環境", 1200);
+    } else {
+      toast("生長中…約每 10 秒出現處境選項", 1400);
+    }
     raf = requestAnimationFrame(tick);
-    var lv = currentLevel();
-    toast((lv && lv.prompt) || "現實環境", 1200);
   }
 
   function applyPopDelta(delta) {
@@ -4580,10 +4638,15 @@ function svg(inner, vb) {
       state.path.push({ label: formName, choice: opt.title });
       var popBefore = state.pop;
       applyPopDelta(opt.delta || 0);
+      applyChoiceGrowth(opt.delta || 0);
       toast(opt.title, 900);
       setSceneKey(inferSceneKey(opt.title + " " + (opt.sub || "")));
       clearGates();
       state.gatesReady = false;
+      scheduleNextMilestone();
+      setLiveGrow(true);
+      applyPersistentBodyVisual(performance.now());
+      placeCreatureCentered(performance.now());
       if (state.pop <= 0) {
         state.pauseUntil = performance.now() + 900;
         beginEnvGapGrow(popBefore, 0);
@@ -4605,9 +4668,12 @@ function svg(inner, vb) {
       }
       state.nodeId = nextId;
       state.segment += 1;
-      state.pauseUntil = performance.now() + ENV_OPTION_GAP_MS;
-      state.pendingSpawn = nextId;
-      beginEnvGapGrow(popBefore, state.pop);
+      /* 不再 pause＋假 gap reset；時間軸繼續走到下一里程碑再出選項 */
+      state.pendingSpawn = null;
+      state.resolved = false; /* 允許下一里程碑 spawnGates */
+      if (ENV_MILESTONE_MS <= 0) {
+        state.nextMilestoneAt = state.envElapsed || 0;
+      }
       return;
     }
 
@@ -4818,16 +4884,28 @@ function svg(inner, vb) {
     var dt = Math.min(0.05, (ts - lastTs) / 1000);
     lastTs = ts;
 
-    if (ts < state.pauseUntil) {
-      if (state.phase === "env" && (state.pendingSpawn || state.pendingEnvEnd)) {
+    if (state.phase === "env") {
+      state.envElapsed = Math.max(0, ts - (state.envT0 || ts));
+      if (!state.pendingEnvEnd) {
+        applyEnvGrowthTick(dt, ts);
+      } else {
         updateEnvLiveGrow(ts, dt);
+      }
+    }
+
+    if (ts < state.pauseUntil) {
+      if (state.phase === "env") {
+        if (!state.gatesReady) placeCreatureCentered(ts);
       } else if (!state.gatesReady) {
         placeCreatureCentered(ts);
       }
       raf = requestAnimationFrame(tick);
       return;
     }
-    if (state.phase === "env") endEnvGapGrow();
+    if (state.phase === "env" && (state.growStart || state.growEnd)) {
+      /* 短結局提示結束：保留 bodyScale，只關提示 */
+      if (!state.pendingEnvEnd) endEnvGapGrow();
+    }
     if (state.pendingEnd) {
       var e = state.pendingEnd; state.pendingEnd = null; finish(e); return;
     }
@@ -4844,6 +4922,20 @@ function svg(inner, vb) {
       } else {
         spawnGates(LEVELS[id]);
         toast(LEVELS[id].prompt, 1000);
+      }
+    }
+
+    /* env 時間軸里程碑：到點出選項（非「空等演假動作」） */
+    if (state.phase === "env" && !state.gatesReady && !state.pendingEnvEnd && !state.pendingSpawn) {
+      var needAt = typeof state.nextMilestoneAt === "number" ? state.nextMilestoneAt : ENV_MILESTONE_MS;
+      if ((state.envElapsed || 0) >= needAt) {
+        hiIdx = -1;
+        spawnGatesForCurrent();
+        var lvM = currentLevel();
+        toast((lvM && lvM.prompt) || "", 1000);
+      } else {
+        placeCreatureCentered(ts);
+        if (!el.play.classList.contains("gap-growing")) setLiveGrow(true);
       }
     }
 
@@ -4866,6 +4958,7 @@ function svg(inner, vb) {
     if (state.gatesReady && !state.resolved) {
       state.y += state.fallSpeed * dt;
       highlightGate();
+      if (state.phase === "env") applyPersistentBodyVisual(ts);
       if (state.y >= state.gateY + 10) pickOption(nearestGateIndex());
       if (state.y > sh + 40 && !state.resolved) pickOption(nearestGateIndex());
     }
@@ -5107,7 +5200,29 @@ function svg(inner, vb) {
   })();
   window.__VIRUS_FORK__ = {
     FORMS: FORMS, LEVELS: LEVELS, DEX: DEX, PROOF: PROOF,
-    ENV_POOLS: ENV_POOLS, ENV_POOL_OF: ENV_POOL_OF, ENV_OPTION_GAP_MS: ENV_OPTION_GAP_MS, liveGrow: true, beginEnvGapGrow: beginEnvGapGrow, setLiveGrow: setLiveGrow, applyVisualPop: applyVisualPop, artStyleGet: function () { return artStyle; }, setArtStyle: setArtStyle, drawMinecraft: drawMinecraft, inferSceneKey: inferSceneKey, setSceneKey: setSceneKey, getSceneKey: function () { return currentSceneKey || (el.play && el.play.getAttribute("data-scene")) || ""; }, placeCreatureCentered: placeCreatureCentered,
+    ENV_POOLS: ENV_POOLS, ENV_POOL_OF: ENV_POOL_OF, ENV_OPTION_GAP_MS: ENV_OPTION_GAP_MS,
+    ENV_MILESTONE_MS: ENV_MILESTONE_MS, ENV_THINK_MS: ENV_THINK_MS,
+    BODY_SCALE_START: BODY_SCALE_START, BODY_SCALE_MAX: BODY_SCALE_MAX, GROWTH_RATE_BASE: GROWTH_RATE_BASE,
+    liveGrow: true, beginEnvGapGrow: beginEnvGapGrow, setLiveGrow: setLiveGrow, applyVisualPop: applyVisualPop,
+    applyPersistentBodyVisual: applyPersistentBodyVisual, applyChoiceGrowth: applyChoiceGrowth,
+    artStyleGet: function () { return artStyle; }, setArtStyle: setArtStyle, drawMinecraft: drawMinecraft, inferSceneKey: inferSceneKey, setSceneKey: setSceneKey, getSceneKey: function () { return currentSceneKey || (el.play && el.play.getAttribute("data-scene")) || ""; }, placeCreatureCentered: placeCreatureCentered,
+    bodyScale: function () { return state && state.bodyScale; },
+    growthRate: function () { return state && state.growthRate; },
+    envElapsed: function () { return state && state.envElapsed; },
+    simulateEnvGrowth: function (seconds) {
+      if (!state || state.phase !== "env") return null;
+      var dt = 1 / 30;
+      var n = Math.max(1, Math.round((seconds || 0) * 30));
+      for (var i = 0; i < n; i++) {
+        var choosing = !!(state.gatesReady && !state.resolved);
+        var rate = typeof state.growthRate === "number" ? state.growthRate : GROWTH_RATE_BASE;
+        if (choosing) rate *= 0.25;
+        state.bodyScale = Math.max(BODY_SCALE_MIN, Math.min(BODY_SCALE_MAX, (state.bodyScale || BODY_SCALE_START) + rate * dt));
+        state.envElapsed = (state.envElapsed || 0) + dt * 1000;
+      }
+      applyPersistentBodyVisual(performance.now());
+      return state.bodyScale;
+    },
     startGame: startGame, startEnv: startEnv, openDex: openDex, renderDex: renderDex,
     loadUnlocked: loadUnlocked, unlockSpecies: unlockSpecies,
     saveUnlocked: saveUnlocked, probeStorage: probeStorage,

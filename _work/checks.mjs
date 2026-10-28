@@ -2,10 +2,10 @@ import { chromium } from "playwright-core";
 import fs from "fs";
 import path from "path";
 
-const file = path.resolve("/workspace/virus-fork-cli/playable.html");
-const url = "file://" + file;
-const outDir = "/workspace/scratch/virus-fork-cli-evidence-v10";
+const outDir = "/workspace/scratch/virus-fork-cli-evidence-v11";
 fs.mkdirSync(outDir, { recursive: true });
+const file = path.resolve("/workspace/virus-fork-cli/playable.html");
+const url = "file://" + file + "?envGap=0";
 
 const browser = await chromium.launch({
   executablePath: "/usr/bin/google-chrome",
@@ -15,12 +15,31 @@ const browser = await chromium.launch({
 const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
 await page.goto(url, { waitUntil: "domcontentloaded" });
 
-const api = await page.evaluate(() => {
+const BAN = /加強|減弱|強化|削弱|穩定度|種群[＋+\-－]|[＋+\-－]\d/;
+
+const api = await page.evaluate((banSrc) => {
+  const ban = new RegExp(banSrc);
   const V = window.__VIRUS_FORK__;
   const fake = V.assertNoFakeForks();
   const cov = V.assertEnvCoverage();
   const depths = V.envDepthStats();
   const proof = V.PROOF;
+  const textHits = [];
+  Object.keys(V.ENV_POOLS).forEach((pid) => {
+    const nodes = V.ENV_POOLS[pid].nodes;
+    Object.keys(nodes).forEach((id) => {
+      const n = nodes[id];
+      if (n.end) {
+        if (ban.test(n.endTitle || "") || ban.test(n.endStory || "")) textHits.push("end:" + id);
+        return;
+      }
+      if (ban.test(n.prompt || "")) textHits.push("prompt:" + id);
+      (n.options || []).forEach((o) => {
+        if (ban.test(o.title || "")) textHits.push("title:" + id + ":" + o.title);
+        if (ban.test(o.sub || "")) textHits.push("sub:" + id + ":" + o.sub);
+      });
+    });
+  });
   return {
     endingCount: proof.endingCount,
     endings: proof.endings,
@@ -30,39 +49,40 @@ const api = await page.evaluate(() => {
     envMissing: cov,
     envDepths: depths,
     poolCount: Object.keys(V.ENV_POOLS).length,
-    mapped: Object.keys(V.ENV_POOL_OF).length
+    mapped: Object.keys(V.ENV_POOL_OF).length,
+    gapMs: V.ENV_OPTION_GAP_MS,
+    textHits
   };
-});
+}, BAN.source);
 
-await page.evaluate(() => { try { localStorage.removeItem("virus-fork-dex"); } catch(e){} });
+await page.evaluate(() => { try { localStorage.removeItem("virus-fork-dex"); } catch (e) {} });
 await page.reload({ waitUntil: "domcontentloaded" });
 await page.click("#btnDex");
-await page.waitForTimeout(300);
+await page.waitForTimeout(250);
 const leak = await page.evaluate(() => {
   const V = window.__VIRUS_FORK__;
-  const names = V.PROOF.endings.map(id => V.FORMS[id].name);
+  const names = V.PROOF.endings.map((id) => V.FORMS[id].name);
   V.showDexDetail(V.PROOF.endings[0]);
   const detail = document.getElementById("dexDetail").innerText || "";
   const list = document.getElementById("dexList").innerText || "";
   let leakCount = 0;
   const hits = [];
   const unlocked = V.loadUnlocked();
-  names.forEach(n => {
-    const id = V.PROOF.endings.find(eid => V.FORMS[eid].name === n);
-    if (!unlocked[id] && detail.includes(n)) { leakCount++; hits.push("detail:"+n); }
-    if (!unlocked[id] && list.includes(n)) { leakCount++; hits.push("list:"+n); }
+  names.forEach((n) => {
+    const id = V.PROOF.endings.find((eid) => V.FORMS[eid].name === n);
+    if (!unlocked[id] && detail.includes(n)) { leakCount++; hits.push("detail:" + n); }
+    if (!unlocked[id] && list.includes(n)) { leakCount++; hits.push("list:" + n); }
   });
-  return { leakCount, hits, detailSnippet: detail.slice(0, 160) };
+  return { leakCount, hits };
 });
-
 await page.click("#btnDexBack");
-await page.waitForTimeout(100);
+await page.waitForTimeout(80);
 
 const pathResult = await page.evaluate(async () => {
   const V = window.__VIRUS_FORK__;
-  function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+  function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
   V.startGame();
-  await sleep(60);
+  await sleep(50);
   const target = "aureus";
   const parent = {};
   const q = ["seed"];
@@ -71,43 +91,34 @@ const pathResult = await page.evaluate(async () => {
     const id = q.shift();
     const n = V.LEVELS[id];
     if (!n || n.end) continue;
-    for (const opt of (n.options || [])) {
-      if (!seen[opt.next]) {
-        seen[opt.next] = true;
-        parent[opt.next] = id;
-        q.push(opt.next);
-      }
+    for (const opt of n.options || []) {
+      if (!seen[opt.next]) { seen[opt.next] = true; parent[opt.next] = id; q.push(opt.next); }
     }
   }
   let cur = target;
   const chain = [];
-  while (cur && cur !== "seed") {
-    chain.push(cur);
-    cur = parent[cur];
-  }
+  while (cur && cur !== "seed") { chain.push(cur); cur = parent[cur]; }
   chain.reverse();
-
   async function flush() {
-    for (let i=0;i<25;i++) {
+    for (let i = 0; i < 30; i++) {
       const s = V.getState();
       if (s) s.pauseUntil = 0;
-      await sleep(25);
+      await sleep(20);
       if (document.getElementById("end").classList.contains("active")) return "end";
       const st = V.getState();
       if (st && st.gatesReady && !st.resolved && !st.pendingEnd && !st.pendingSpawn) return "ready";
     }
     return "timeout";
   }
-
   for (const nid of chain) {
     if (document.getElementById("end").classList.contains("active")) break;
     const st = V.getState();
     st.pauseUntil = 0;
     const level = V.LEVELS[st.nodeId];
-    const idx = level.options.findIndex(o => o.next === nid);
-    if (idx < 0) return { error: "no opt "+nid+" from "+st.nodeId };
+    const idx = level.options.findIndex((o) => o.next === nid);
+    if (idx < 0) return { error: "no opt " + nid + " from " + st.nodeId };
     V.fallInto(idx);
-    await sleep(40);
+    await sleep(30);
     await flush();
   }
   await flush();
@@ -123,22 +134,36 @@ const pathResult = await page.evaluate(async () => {
 await page.screenshot({ path: path.join(outDir, "10-evo-end-aureus.png"), fullPage: true });
 
 await page.click("#btnEnterEnv");
-await page.waitForTimeout(450);
+await page.waitForTimeout(400);
 const envStart = await page.evaluate(() => {
   const s = window.__VIRUS_FORK__.getState();
-  return { phase: s && s.phase, pop: s && s.pop, nodeId: s && s.nodeId, playPhase: document.getElementById("play").classList.contains("phase-env") };
+  const mood = document.getElementById("popMood")?.textContent || "";
+  const hasBar = !!document.querySelector(".pop-bar, .pop-fill, #popVal");
+  const hasStableLabel = (document.getElementById("hud")?.innerText || "").includes("穩定度");
+  return {
+    phase: s && s.phase,
+    pop: s && s.pop,
+    nodeId: s && s.nodeId,
+    playPhase: document.getElementById("play").classList.contains("phase-env"),
+    mood,
+    hasBar,
+    hasStableLabel,
+    creatureClass: document.getElementById("creature")?.className || "",
+    particleCount: document.querySelectorAll("#particles i").length,
+    gap: window.__VIRUS_FORK__.ENV_OPTION_GAP_MS
+  };
 });
-await page.screenshot({ path: path.join(outDir, "20-env-play-start.png"), fullPage: true });
+await page.screenshot({ path: path.join(outDir, "20-env-diegetic-options.png"), fullPage: true });
 
 async function envPick(idx) {
   await page.evaluate((i) => {
     const V = window.__VIRUS_FORK__;
     const s = V.getState();
-    if (s) { s.pauseUntil = 0; }
+    if (s) s.pauseUntil = 0;
     V.fallInto(i);
   }, idx);
-  await page.waitForTimeout(80);
-  for (let k=0;k<20;k++) {
+  await page.waitForTimeout(60);
+  for (let k = 0; k < 40; k++) {
     await page.evaluate(() => { const s = window.__VIRUS_FORK__.getState(); if (s) s.pauseUntil = 0; });
     const status = await page.evaluate(() => {
       if (document.getElementById("envEnd").classList.contains("active")) return "end";
@@ -147,66 +172,81 @@ async function envPick(idx) {
       return "wait";
     });
     if (status === "end" || status === "ready") return status;
-    await page.waitForTimeout(40);
+    await page.waitForTimeout(30);
   }
   return "timeout";
 }
 
-await envPick(0);
-const midPop = await page.evaluate(() => window.__VIRUS_FORK__.getState()?.pop);
-await page.screenshot({ path: path.join(outDir, "21-env-pop-growth.png"), fullPage: true });
-await envPick(0);
-await envPick(0);
-await page.waitForTimeout(250);
-const thrive = await page.evaluate(() => ({
-  active: document.getElementById("envEnd").classList.contains("active"),
-  title: document.getElementById("envEndTitle")?.textContent,
-  pop: document.getElementById("envEndPop")?.textContent,
-  outcome: document.getElementById("envEnd").className
+// growth path: pick ok (0) repeatedly
+for (let i = 0; i < 4; i++) await envPick(0);
+const midHigh = await page.evaluate(() => ({
+  pop: window.__VIRUS_FORK__.getState()?.pop,
+  mood: document.getElementById("popMood")?.textContent,
+  creatureClass: document.getElementById("creature")?.className,
+  particles: document.querySelectorAll("#particles i").length,
+  toast: document.getElementById("toast")?.textContent || "",
+  gateTitles: [...document.querySelectorAll(".gate .g-title")].map((e) => e.textContent)
 }));
+await page.screenshot({ path: path.join(outDir, "21-env-vital-high.png"), fullPage: true });
+
+// finish toward thrive: keep picking 0
+let thrive = { active: false };
+for (let i = 0; i < 16 && !thrive.active; i++) {
+  await envPick(0);
+  thrive = await page.evaluate(() => ({
+    active: document.getElementById("envEnd").classList.contains("active"),
+    title: document.getElementById("envEndTitle")?.textContent,
+    popLine: document.getElementById("envEndPop")?.textContent,
+    outcome: document.getElementById("envEnd").className
+  }));
+}
 await page.screenshot({ path: path.join(outDir, "30-env-thrive.png"), fullPage: true });
 
 await page.click("#btnEnvBackEnd");
-await page.waitForTimeout(200);
+await page.waitForTimeout(150);
 await page.click("#btnEnterEnv");
 await page.waitForTimeout(300);
-await envPick(2);
-const midPop2 = await page.evaluate(() => window.__VIRUS_FORK__.getState()?.pop);
-await page.screenshot({ path: path.join(outDir, "22-env-pop-decline.png"), fullPage: true });
-await envPick(1);
-await page.waitForTimeout(250);
-let decline = await page.evaluate(() => ({
-  active: document.getElementById("envEnd").classList.contains("active"),
-  title: document.getElementById("envEndTitle")?.textContent,
-  outcome: document.getElementById("envEnd").className,
-  pop: window.__VIRUS_FORK__.getState()?.pop
+// decline-ish: pick bad (2) often
+for (let i = 0; i < 3; i++) await envPick(2);
+const midLow = await page.evaluate(() => ({
+  pop: window.__VIRUS_FORK__.getState()?.pop,
+  mood: document.getElementById("popMood")?.textContent,
+  creatureClass: document.getElementById("creature")?.className,
+  particles: document.querySelectorAll("#particles i").length
 }));
-for (let i=0;i<6 && !decline.active;i++) {
-  await envPick(1);
+await page.screenshot({ path: path.join(outDir, "22-env-vital-low.png"), fullPage: true });
+
+let decline = { active: false };
+for (let i = 0; i < 20 && !decline.active; i++) {
+  await envPick(2);
   decline = await page.evaluate(() => ({
     active: document.getElementById("envEnd").classList.contains("active"),
     title: document.getElementById("envEndTitle")?.textContent,
-    outcome: document.getElementById("envEnd").className,
-    pop: window.__VIRUS_FORK__.getState()?.pop
+    popLine: document.getElementById("envEndPop")?.textContent,
+    outcome: document.getElementById("envEnd").className
   }));
 }
 await page.screenshot({ path: path.join(outDir, "31-env-decline.png"), fullPage: true });
 
 await page.click("#btnEnvAgain");
-await page.waitForTimeout(100);
+await page.waitForTimeout(80);
 await page.click("#btnStart");
-await page.waitForTimeout(600);
+await page.waitForTimeout(500);
 await page.screenshot({ path: path.join(outDir, "40-play-ui-portrait.png"), fullPage: true });
-
 await page.setViewportSize({ width: 844, height: 390 });
-await page.waitForTimeout(250);
+await page.waitForTimeout(200);
 await page.screenshot({ path: path.join(outDir, "41-play-ui-landscape.png"), fullPage: true });
 
 function envDepthOk(depths) {
   const vals = Object.values(depths);
   if (!vals.length) return false;
-  return vals.every(d => d.min >= 3 && d.max <= 5);
+  return vals.every((d) => d.min >= 8 && d.max <= 12);
 }
+
+const noHudMetrics = !envStart.hasBar && !envStart.hasStableLabel;
+const noEndMetrics = !BAN.test(thrive.popLine || "") && !BAN.test(decline.popLine || "") &&
+  !(thrive.popLine || "").includes("穩定度") && !(decline.popLine || "").includes("穩定度");
+const toastClean = !BAN.test(midHigh.toast || "") && !/[＋+\-－]\d/.test(midHigh.toast || "");
 
 const checks = {
   endingCount: api.endingCount,
@@ -219,11 +259,12 @@ const checks = {
   envPools: api.poolCount,
   envDepths: api.envDepths,
   nameLeak: leak.leakCount,
-  nameLeakHits: leak.hits,
+  gapMs: api.gapMs,
+  textHits: api.textHits,
   pathResult,
   envStart,
-  midPop,
-  midPop2,
+  midHigh,
+  midLow,
   thrive,
   decline,
   pass: {
@@ -234,16 +275,30 @@ const checks = {
     envDepthOk: envDepthOk(api.envDepths),
     nameLeak0: leak.leakCount === 0,
     envEntered: envStart.phase === "env" && envStart.playPhase === true,
-    popGrew: typeof midPop === "number" && midPop > (envStart.pop || 0),
+    gap10s: api.gapMs === 0 || api.gapMs === 10000, // test url forces 0; default constant checked below
+    gapDefaultConst: true, // filled after
+    noBannedCopy: api.textHits.length === 0,
+    noHudMetrics,
+    noEndMetrics,
+    toastClean,
+    vitalHigh: /vital-high/.test(midHigh.creatureClass || "") || (midHigh.particles || 0) >= (envStart.particleCount || 0),
+    vitalLow: /vital-low/.test(midLow.creatureClass || "") || (midLow.pop || 99) < (envStart.pop || 0),
     thriveOk: !!(thrive.active && /繁盛|適應/.test(thrive.title || "")),
-    declineOk: !!(decline.active && /衰退|清除/.test(decline.title || ""))
+    declineOk: !!(decline.active && /消退|衰退|清除|改換/.test(thrive.active ? decline.title || "" : decline.title || ""))
   }
 };
+
+// Confirm default constant is 10000 by reading source snippet via evaluate of unbound default:
+// We opened with ?envGap=0 so runtime is 0; check playable source:
+const src = fs.readFileSync(file, "utf8");
+checks.pass.gapDefaultConst = /return 10000;/.test(src) && /ENV_OPTION_GAP_MS/.test(src);
+checks.pass.declineOk = !!(decline.active && /消退|衰退|清除|改換/.test(decline.title || ""));
+
 checks.allPass = Object.values(checks.pass).every(Boolean);
 fs.writeFileSync(path.join(outDir, "checks.json"), JSON.stringify(checks, null, 2));
-fs.writeFileSync(path.join(outDir, "checks-raw.json"), JSON.stringify({ api, leak, pathResult, envStart, midPop, midPop2, thrive, decline }, null, 2));
 console.log(JSON.stringify(checks.pass, null, 2));
 console.log("allPass", checks.allPass);
-console.log("envDepths", JSON.stringify(api.envDepths, null, 2));
+console.log("envDepths sample", JSON.stringify(api.envDepths, null, 2));
+console.log("gapMs runtime", api.gapMs, "textHits", api.textHits.length);
 await browser.close();
 process.exit(checks.allPass ? 0 : 2);

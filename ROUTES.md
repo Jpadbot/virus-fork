@@ -1,51 +1,60 @@
-# 六終局逐步驗證（真分叉）
+# ≥21 終局逐步驗證（真分叉・零假分叉）
 
 可玩：`/workspace/virus-fork-cli/index.html`  
-分支：`feat/playtest-polish`  
-日期：2026-10-28（Asia/Hong_Kong）
+分支：`feat/evo-tree-20`  
+日期：2026-10-28（Asia/Hong_Kong）  
+Grok CLI：`1.0.72`／模型 `grok-4.7`（`--cwd` 直寫）
 
 ## 證明非假分叉
-- 第 1 關「築起細胞壁」鎖**細菌域**；「包進蛋白殼」鎖**病毒域**。兩域無匯合。
-- 細菌域內：球菌串 → **金黃葡萄球菌**；細桿 → 再分「腸道」→ **大腸桿菌** 或「厚脂質」→ **結核分枝桿菌**。
-- 病毒域內：有膜 → **流感病毒**；裸殼 → 再分「腸胃杯狀」→ **諾羅病毒** 或「小型鼻腔」→ **鼻病毒**。
-- 六終局物種名稱互斥；見 `window.__VIRUS_FORK__.PROOF.routes`。
+- 執行期 `window.__VIRUS_FORK__.assertNoFakeForks()` → `[]`
+- 每一關每個選項的 `next` 互異；無雙選同 next。
+- 21 個 `end: true` 節點、21 個互斥物種名稱、21 條可達 route（見 `PROOF.routes`）。
+- 選擇關 11；其中 ≥3 選項者 7（占比 63.6%）；含 4 選關 2（`vir_capsid`、`vir_env_rna`）。
 
-## 路線 A：金黃葡萄球菌
-1. 開始下落 → 原始微粒＋門槽。
-2. 落入「築起細胞壁」→ 原核雛形。
-3. 落入「聚成球菌串」→ 球菌團。
-4. 落入「金黃色素」→ 金黃前體。
-5. 落入「人體鼻腔／皮膚」→ **你已成為「金黃葡萄球菌」細菌**。  
-證據：`04-end-aureus.png`
+## 樹狀概要（幕後；畫面不畫科技樹）
+```
+seed(3)：細胞壁 | 彎曲體壁 | 蛋白殼
+├─ bact_wall(3)
+│  ├─ bact_cocci(3) → 金黃葡萄球菌 | 表皮葡萄球菌 | 肺炎鏈球菌
+│  ├─ bact_rod(2) → enteric(2)→大腸桿菌|沙門氏菌 | 結核分枝桿菌
+│  └─ bact_spore(3) → 破傷風梭菌 | 炭疽芽孢桿菌 | 肉毒桿菌
+├─ curve_wall(2) → 幽門螺旋桿菌 | 霍亂弧菌
+└─ vir_capsid(4)
+   ├─ vir_env_rna(4) → 流感 | 麻疹 | 狂犬病 | 登革
+   ├─ vir_naked(3) → 諾羅 | 鼻病毒 | 輪狀病毒
+   ├─ vir_dna(2) → 腺病毒 | 疱疹病毒
+   └─ HIV
+```
 
-## 路線 B：大腸桿菌
-1. 築起細胞壁 → 拉成細桿 → 腸道定植 → 大腸黏膜。  
-→ **你已成為「大腸桿菌」細菌**。  
-證據：`06-end-ecoli.png`
+## 細菌終局（11）
+1. 金黃葡萄球菌 — seed→bact_wall→bact_cocci→aureus  
+2. 表皮葡萄球菌 — …→bact_cocci→epidermidis  
+3. 肺炎鏈球菌 — …→bact_cocci→pneumoniae  
+4. 大腸桿菌 — …→bact_rod→enteric→ecoli  
+5. 沙門氏菌 — …→bact_rod→enteric→salmonella  
+6. 結核分枝桿菌 — …→bact_rod→tuberculosis  
+7. 破傷風梭菌 — …→bact_spore→tetani  
+8. 炭疽芽孢桿菌 — …→bact_spore→anthracis  
+9. 肉毒桿菌 — …→bact_spore→botulinum  
+10. 幽門螺旋桿菌 — seed→curve_wall→helicobacter  
+11. 霍亂弧菌 — seed→curve_wall→vibrio  
 
-## 路線 C：結核分枝桿菌
-1. 築起細胞壁 → 拉成細桿 → 厚脂質外壁 → 肺內慢殖。  
-→ **你已成為「結核分枝桿菌」細菌**。  
-證據：`07-end-tuberculosis.png`
-
-## 路線 D：流感病毒
-1. 包進蛋白殼 → 加一層脂膜 → 長出突刺蛋白 → 呼吸道上皮。  
-→ **你已成為「流感病毒」病毒**。  
-證據：`09-end-influenza.png`
-
-## 路線 E：諾羅病毒
-1. 包進蛋白殼 → 堅固裸殼 → 腸胃杯狀殼 → 腸道黏膜。  
-→ **你已成為「諾羅病毒」病毒**。  
-證據：`10-end-norovirus.png`
-
-## 路線 F：鼻病毒
-1. 包進蛋白殼 → 堅固裸殼 → 小型鼻腔殼 → 鼻腔上皮。  
-→ **你已成為「鼻病毒」病毒**。  
-證據：`11-end-rhinovirus.png`
+## 病毒終局（10）
+12. 流感病毒 — seed→vir_capsid→vir_env_rna→influenza  
+13. 麻疹病毒 — …→vir_env_rna→measles  
+14. 狂犬病病毒 — …→vir_env_rna→rabies  
+15. 登革病毒 — …→vir_env_rna→dengue  
+16. 諾羅病毒 — …→vir_naked→norovirus  
+17. 鼻病毒 — …→vir_naked→rhinovirus  
+18. 輪狀病毒 — …→vir_naked→rotavirus  
+19. 腺病毒 — …→vir_dna→adenovirus  
+20. 疱疹病毒 — …→vir_dna→herpes  
+21. 人類免疫缺乏病毒 — seed→vir_capsid→hiv  
 
 ## 操作
-- 鍵盤 ← → 或 A D
-- 觸控：點螢幕左半／右半，或左右拖移（禁選字 CSS／preventDefault **不**擋此操作）
+- 鍵盤 ← → 或 A D（水平移動；`nearestGateIndex` 對 N>2）
+- 觸控：點／拖到門槽（均分寬度對應門；**非**寫死左右半＝2 選）
+- 禁選字 CSS／preventDefault **不**擋選門
 
 ## 備註（簡化／假設）
 終局物種為休閒探索命名；科普句標「簡化科普／假設」；非醫療建議。

@@ -105,9 +105,11 @@
   #hud .latin { font-size: 0.76rem; color: var(--muted); font-style: italic; margin: 2px 0 0; }
   #hud .blurb { font-size: 0.74rem; color: var(--muted); margin: 6px 0 0; max-width: 95%; }
   #stage {
-    flex: 1; position: relative; overflow: hidden; touch-action: none;
+    flex: 1; position: relative; overflow: hidden;
+    touch-action: none; -ms-touch-action: none;
     cursor: pointer;
   }
+  #creature { touch-action: none; pointer-events: none; }
   .particles {
     position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
   }
@@ -218,108 +220,98 @@
     font-size: 0.72rem; color: #6a7a74; margin: 0; text-align: left;
   }
 
-  /* —— 演化圖鑑（非對局 HUD） —— */
+  
+  .gate-row.gates-1 { padding: 0 28px; }
+  .gate-row.gates-1 .gate { min-height: 92px; }
+  .gate-row.gates-1 .g-title { font-size: 0.9rem; }
+
+  /* —— 物種圖鑑 —— */
   .btn-secondary {
     background: linear-gradient(180deg, #243038 0%, #1a242c 100%);
     border-color: #3a4a54; color: #c8d8e0;
     box-shadow: none; font-weight: 650; font-size: 0.98rem;
   }
-  #atlas {
+  #dex {
     padding: 0; background: #0a1016;
     overflow: hidden;
   }
-  .atlas-bar {
+  .dex-bar {
     flex-shrink: 0;
     display: flex; align-items: center; gap: 8px;
-    padding: 10px 12px calc(6px);
+    padding: 10px 12px 6px;
     background: rgba(10,16,22,0.96);
     border-bottom: 1px solid var(--line);
   }
-  .atlas-bar h2 {
+  .dex-bar h2 {
     margin: 0; flex: 1; font-size: 1.05rem; letter-spacing: 0.06em; color: #f0d78a;
   }
-  .atlas-bar .btn-mini {
+  .dex-bar .btn-mini {
     min-height: 40px; min-width: 64px; max-width: none; width: auto;
-    margin: 0; padding: 8px 12px; font-size: 0.88rem;
-    border-radius: 10px;
+    margin: 0; padding: 8px 12px; font-size: 0.88rem; border-radius: 10px;
   }
-  .atlas-rule {
-    flex-shrink: 0;
-    margin: 0; padding: 8px 12px 4px;
-    font-size: 0.72rem; color: #8fa09a; line-height: 1.35; text-align: left;
+  .dex-summary {
+    flex-shrink: 0; margin: 0; padding: 8px 12px 6px;
+    font-size: 0.8rem; color: #c8d8e0; text-align: left;
   }
-  .atlas-tabs {
-    flex-shrink: 0;
-    display: flex; gap: 6px; padding: 6px 12px 8px;
+  .dex-summary strong { color: #f0d78a; }
+  .dex-rule {
+    flex-shrink: 0; margin: 0; padding: 0 12px 8px;
+    font-size: 0.7rem; color: #6a7a74; line-height: 1.35; text-align: left;
   }
-  .atlas-tabs button {
-    flex: 1; min-height: 40px; padding: 8px 6px;
-    border: 1px solid var(--line); border-radius: 10px;
-    background: var(--panel); color: var(--muted);
-    font-family: inherit; font-size: 0.82rem; font-weight: 650;
-    cursor: pointer;
-  }
-  .atlas-tabs button.active {
-    border-color: #6a5a30; color: #f5e6b8;
-    background: linear-gradient(180deg, #3a3220 0%, #2a2418 100%);
-  }
-  .atlas-zoom {
-    flex-shrink: 0;
-    display: flex; gap: 6px; padding: 0 12px 8px; align-items: center;
-  }
-  .atlas-zoom button {
-    min-height: 36px; min-width: 40px; padding: 6px 10px;
-    border: 1px solid var(--line); border-radius: 8px;
-    background: var(--bg2); color: var(--ink);
-    font-family: inherit; font-size: 0.9rem; cursor: pointer;
-  }
-  .atlas-zoom .zoom-label {
-    margin-left: auto; font-size: 0.72rem; color: var(--muted);
-  }
-  .atlas-viewport {
-    flex: 1; min-height: 0;
-    overflow: auto;
+  .dex-list {
+    flex: 1; min-height: 0; overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-x pan-y;
-    padding: 0 8px 8px;
-    overscroll-behavior: contain;
+    padding: 4px 10px 8px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    align-content: start;
   }
-  .atlas-canvas {
-    transform-origin: 0 0;
-    width: max-content; min-width: 100%;
-    margin: 0 auto;
+  .dex-card {
+    border: 1px solid var(--line); border-radius: 12px;
+    background: var(--panel); padding: 10px 8px;
+    text-align: center; cursor: pointer;
+    min-height: 108px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    font-family: inherit; color: var(--ink);
   }
-  .atlas-canvas object, .atlas-canvas img {
-    display: block; width: min(100vw, 440px); max-width: none;
-    height: auto; background: #0f1419; border-radius: 8px;
-    pointer-events: auto;
+  .dex-card:active { filter: brightness(1.12); }
+  .dex-card .dex-icon { width: 44px; height: 44px; }
+  .dex-card .dex-icon.locked {
+    filter: brightness(0.25) contrast(1.2);
+    opacity: 0.85;
   }
-  .atlas-leaves {
+  .dex-card .dex-name { font-size: 0.78rem; font-weight: 700; line-height: 1.2; }
+  .dex-card .dex-tag {
+    font-size: 0.65rem; padding: 2px 6px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted);
+  }
+  .dex-card .dex-tag.bact { border-color: #6a5a30; color: #e0a83a; }
+  .dex-card .dex-tag.vir { border-color: #3a5a68; color: #5ec8e8; }
+  .dex-card.locked .dex-name { color: var(--muted); letter-spacing: 0.12em; }
+  .dex-detail {
     flex-shrink: 0;
-    display: flex; flex-wrap: wrap; gap: 6px;
-    padding: 4px 12px 8px;
-    max-height: 88px; overflow-y: auto;
-  }
-  .atlas-leaves button {
-    min-height: 34px; padding: 6px 10px;
-    border: 1px solid var(--line); border-radius: 999px;
-    background: #152028; color: #c8d8e0;
-    font-family: inherit; font-size: 0.72rem; cursor: pointer;
-  }
-  .atlas-leaves button.active {
-    border-color: #e0a83a; color: #f5e6b8; background: #2a2418;
-  }
-  .atlas-detail {
-    flex-shrink: 0;
-    margin: 0 12px calc(12px + var(--safe-bottom));
-    padding: 10px 12px;
-    border: 1px solid var(--line); border-radius: 10px;
+    max-height: 42%;
+    overflow-y: auto;
+    margin: 0 10px calc(10px + var(--safe-bottom));
+    padding: 12px;
+    border: 1px solid var(--line); border-radius: 12px;
     background: var(--panel);
-    font-size: 0.8rem; color: var(--ink); text-align: left; line-height: 1.4;
+    text-align: left; font-size: 0.8rem; line-height: 1.4;
     display: none;
   }
-  .atlas-detail.show { display: block; }
-  .atlas-detail strong { color: #f0d78a; }
+  .dex-detail.show { display: block; }
+  .dex-detail .dd-top { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+  .dex-detail .dd-icon { width: 56px; height: 56px; flex-shrink: 0; }
+  .dex-detail h3 { margin: 0; font-size: 1rem; color: #f0d78a; }
+  .dex-detail .dd-latin { margin: 2px 0 0; font-size: 0.72rem; color: var(--muted); font-style: italic; }
+  .dex-detail .dd-sec { margin: 8px 0 0; }
+  .dex-detail .dd-sec strong { color: #c8d8e0; display: block; margin-bottom: 2px; font-size: 0.75rem; }
+  .dex-locked-msg { color: var(--muted); margin: 0; }
+
+  #end .dex-note {
+    margin: 0; font-size: 0.82rem; color: #c8e8a0;
+    padding: 8px 10px; border-radius: 10px;
+    background: rgba(40,60,30,0.45); border: 1px solid #4a6a38;
+  }
 
   body.hide-subs .gate .g-sub { display: none !important; }
   .settings-row {
@@ -347,13 +339,13 @@
     <div class="title-body">
       <h1>微粒進化</h1>
       <p class="sub">Proto → Real Species</p>
-      <p class="hint">多門選擇・成為誰　｜　簡化科普／假設・路線深度依物種・≥20 終局</p>
+      <p class="hint">多門選擇・成為誰　｜　解鎖圖鑑・路線加深・≥29 終局</p>
       <div class="settings-row">
         <input type="checkbox" id="chkShowSubs" checked />
         <label for="chkShowSubs">顯示選擇結果（按鈕第二行）</label>
       </div>
       <button type="button" class="btn" id="btnStart">開始下落</button>
-      <button type="button" class="btn btn-secondary" id="btnAtlas">演化圖鑑</button>
+      <button type="button" class="btn btn-secondary" id="btnDex">物種圖鑑</button>
     </div>
   </section>
 
@@ -368,7 +360,7 @@
       <div class="lane-hint" id="laneHint" aria-hidden="true"><span></span><span></span></div>
       <div id="creature" aria-hidden="true"></div>
       <div id="toast" role="status"></div>
-      <div id="controls-hint">點／拖到門槽　鍵盤 ← →　支援 2–4 門</div>
+      <div id="controls-hint">拖移跟指選門　鍵盤 ← →　支援 1–4 門</div>
     </div>
   </section>
 
@@ -376,6 +368,7 @@
     <div class="end-mascot" id="endMascot"></div>
     <h2 id="endTitle">你已成為……</h2>
     <p class="latin" id="endLatin"></p>
+    <p class="dex-note" id="endDexNote">已記入圖鑑</p>
     <p class="story" id="endStory"></p>
     <p class="disclaimer">簡化科普／假設・休閒探索；非醫療建議或診斷依據。</p>
     <div class="path">
@@ -383,41 +376,25 @@
       <ol id="endPath"></ol>
     </div>
     <button type="button" class="btn" id="btnAgain">再玩一次</button>
-    <button type="button" class="btn btn-secondary" id="btnAtlasEnd">演化圖鑑</button>
+    <button type="button" class="btn btn-secondary" id="btnDexEnd">物種圖鑑</button>
   </section>
 
-  <section id="atlas" class="screen" aria-label="演化圖鑑">
-    <div class="atlas-bar">
-      <button type="button" class="btn btn-ghost btn-mini" id="btnAtlasBack">返回</button>
-      <h2>演化圖鑑</h2>
+  <section id="dex" class="screen" aria-label="物種圖鑑">
+    <div class="dex-bar">
+      <button type="button" class="btn btn-ghost btn-mini" id="btnDexBack">返回</button>
+      <h2>物種圖鑑</h2>
     </div>
-    <p class="atlas-rule">簡化科普／假設：根＝LUCA；細菌域／古菌域二分；真核＝古菌系衍生＋內共生（非第三域）；病毒＝多起源側枝。</p>
-    <div class="atlas-tabs" role="tablist" aria-label="圖鑑版本">
-      <button type="button" role="tab" data-ver="v1" class="active" id="tabV1">v1 概覽</button>
-      <button type="button" role="tab" data-ver="v2" id="tabV2">v2 內共生</button>
-      <button type="button" role="tab" data-ver="v3" id="tabV3">v3 深入</button>
-    </div>
-    <div class="atlas-zoom">
-      <button type="button" id="btnZoomOut" aria-label="縮小">−</button>
-      <button type="button" id="btnZoomIn" aria-label="放大">＋</button>
-      <button type="button" id="btnZoomReset" aria-label="重置縮放">重置</button>
-      <span class="zoom-label" id="zoomLabel">100%</span>
-    </div>
-    <div class="atlas-viewport" id="atlasViewport">
-      <div class="atlas-canvas" id="atlasCanvas">
-        <img id="atlasObject" src="assets/evolution-trees/v1-overview.svg" alt="演化樹概覽（簡化科普／假設）" width="960" height="640" decoding="async" />
-      </div>
-    </div>
-    <div class="atlas-leaves" id="atlasLeaves" aria-label="葉片說明"></div>
-    <div class="atlas-detail" id="atlasDetail" role="status"></div>
+    <p class="dex-summary" id="dexSummary">已解鎖 <strong>0</strong>／總數 <strong>0</strong>　｜　未知 <strong>0</strong></p>
+    <p class="dex-rule">走到終局即解鎖。特徵／歷史為簡化科普／假設，非醫療建議。</p>
+    <div class="dex-list" id="dexList" role="list"></div>
+    <div class="dex-detail" id="dexDetail" role="status"></div>
   </section>
 </div>
 
 <script>
 (function () {
   "use strict";
-
-  function svg(inner, vb) {
+function svg(inner, vb) {
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + (vb || "0 0 64 64") +
       '" width="100%" height="100%" aria-hidden="true">' + inner + "</svg>";
   }
@@ -856,6 +833,175 @@
       blurb: "簡化科普／假設：疱疹病毒科、淋巴嗜性示意；非醫療建議。",
       draw: function () { return virion("#7080b0", "#d0d8f0", true); }
     },
+
+    staph_line: {
+      id: "staph_line", name: "葡萄球菌向", latin: "Staphylococcus line（簡化／假設）",
+      blurb: "簡化科普／假設：葡萄串狀球菌聚集；可再分金黃或表皮共生。",
+      draw: function () { return cocci("#c8a030", "#e8d070", 3); }
+    },
+    strep_line: {
+      id: "strep_line", name: "鏈球菌向", latin: "Streptococcus line（簡化／假設）",
+      blurb: "簡化科普／假設：鏈狀排列球菌；朝呼吸道相關種。",
+      draw: function () {
+        return svg(
+          '<circle cx="16" cy="32" r="8" fill="#d4a840" stroke="#f0d060" stroke-width="2"/>' +
+          '<circle cx="30" cy="32" r="8" fill="#c99830" stroke="#f0d060" stroke-width="2"/>' +
+          '<circle cx="44" cy="32" r="8" fill="#d4a840" stroke="#f0d060" stroke-width="2"/>'
+        );
+      }
+    },
+    gut_colonize: {
+      id: "gut_colonize", name: "腸道定植態", latin: "Gut colonization（簡化／假設）",
+      blurb: "簡化科普／假設：在腸道黏膜定植、利用黏液／營養的桿菌向。",
+      draw: function () { return rod("#d4b048", "#ffe08a", true); }
+    },
+    gut_invade: {
+      id: "gut_invade", name: "腸道入侵態", latin: "Gut invasion（簡化／假設）",
+      blurb: "簡化科普／假設：傾向入侵上皮／巨噬的腸道桿菌向。",
+      draw: function () { return rod("#c89038", "#e8b850", true); }
+    },
+    tb_entry: {
+      id: "tb_entry", name: "吸入定植", latin: "Airborne niche（簡化／假設）",
+      blurb: "簡化科普／假設：經氣道進入肺泡巨噬附近的抗酸菌示意關。",
+      draw: function () {
+        return svg(
+          '<ellipse cx="32" cy="40" rx="20" ry="10" fill="#3a4838" opacity="0.5"/>' +
+          '<rect x="22" y="18" width="12" height="26" rx="6" fill="#b09038" stroke="#e8c84a" stroke-width="2"/>'
+        );
+      }
+    },
+    tb_granuloma: {
+      id: "tb_granuloma", name: "肉芽腫樣巢", latin: "Granuloma-like（簡化／假設）",
+      blurb: "簡化科普／假設：被免疫細胞圍成的持存微環境示意；非病理診斷。",
+      draw: function () {
+        return svg(
+          '<circle cx="32" cy="32" r="22" fill="#4a4030" stroke="#a09060" stroke-width="2" opacity="0.75"/>' +
+          '<rect x="24" y="20" width="10" height="24" rx="5" fill="#b09038" stroke="#e8c84a" stroke-width="2"/>' +
+          '<circle cx="40" cy="28" r="4" fill="#c8b870" opacity="0.5"/>'
+        );
+      }
+    },
+    leprae_skin: {
+      id: "leprae_skin", name: "皮膚嗜性", latin: "Dermotropic draft（簡化／假設）",
+      blurb: "簡化科普／假設：偏較低溫皮膚／神經組織的分枝桿菌適應示意。",
+      draw: function () {
+        return svg(
+          '<ellipse cx="32" cy="36" rx="18" ry="14" fill="#8a7060" opacity="0.4"/>' +
+          '<rect x="20" y="20" width="12" height="26" rx="6" fill="#a88840" stroke="#d4b860" stroke-width="2"/>'
+        );
+      }
+    },
+    clostrid_line: {
+      id: "clostrid_line", name: "梭菌向", latin: "Clostridium line（簡化／假設）",
+      blurb: "簡化科普／假設：厭氧、產芽孢的梭菌屬方向。",
+      draw: function () { return sporeRod("#8a7020", "#c9a040"); }
+    },
+    bacillus_line: {
+      id: "bacillus_line", name: "芽孢桿菌向", latin: "Bacillus line（簡化／假設）",
+      blurb: "簡化科普／假設：偏需氧／兼性、土壤芽孢桿菌屬方向。",
+      draw: function () { return sporeRod("#b89840", "#e8d070"); }
+    },
+    spiral_motility: {
+      id: "spiral_motility", name: "螺旋運動", latin: "Spiral motility（簡化／假設）",
+      blurb: "簡化科普／假設：螺旋體態＋鞭毛驅動，穿透黏稠環境。",
+      draw: function () { return spiral("#c9a040", "#f0d060"); }
+    },
+    gastric_adapt: {
+      id: "gastric_adapt", name: "胃黏膜適應", latin: "Gastric niche（簡化／假設）",
+      blurb: "簡化科普／假設：耐酸／尿素酶等胃環境適應示意關。",
+      draw: function () { return spiral("#d4b050", "#f8e080"); }
+    },
+    vibrio_curve: {
+      id: "vibrio_curve", name: "弧形鞭毛", latin: "Vibrio curve（簡化／假設）",
+      blurb: "簡化科普／假設：弧菌形態與單極鞭毛運動示意。",
+      draw: function () {
+        return svg(
+          '<path d="M10 40 Q28 10 52 34" fill="none" stroke="#e8c84a" stroke-width="9" stroke-linecap="round"/>' +
+          '<path d="M10 40 Q28 10 52 34" fill="none" stroke="#b89830" stroke-width="5" stroke-linecap="round"/>'
+        );
+      }
+    },
+    aquatic_adapt: {
+      id: "aquatic_adapt", name: "水生適應", latin: "Aquatic niche（簡化／假設）",
+      blurb: "簡化科普／假設：淡鹹水環境存活與腸道路徑銜接示意。",
+      draw: function () {
+        return svg(
+          '<path d="M8 38 Q30 8 56 36" fill="none" stroke="#90c8d8" stroke-width="3" opacity="0.5"/>' +
+          '<path d="M10 40 Q28 10 54 36" fill="none" stroke="#e8c84a" stroke-width="8" stroke-linecap="round"/>' +
+          '<path d="M10 40 Q28 10 54 36" fill="none" stroke="#b89830" stroke-width="5" stroke-linecap="round"/>'
+        );
+      }
+    },
+    resp_env: {
+      id: "resp_env", name: "呼吸道有膜", latin: "Respiratory enveloped（簡化／假設）",
+      blurb: "簡化科普／假設：嗜呼吸道黏膜的有膜 RNA 病毒向。",
+      draw: function () { return virion("#5a98b0", "#c8e8f8", true); }
+    },
+    systemic_env: {
+      id: "systemic_env", name: "系統性有膜", latin: "Systemic enveloped（簡化／假設）",
+      blurb: "簡化科普／假設：神經或蟲媒等系統性傳播有膜 RNA 向。",
+      draw: function () { return virion("#4a8898", "#b0e0f0", true); }
+    },
+    measles_fuse: {
+      id: "measles_fuse", name: "融合蛋白態", latin: "Fusion protein draft（簡化／假設）",
+      blurb: "簡化科普／假設：膜融合蛋白協助進入宿主細胞的示意關。",
+      draw: function () { return virion("#5a88a8", "#c0e0f8", true); }
+    },
+    neuro_tropic: {
+      id: "neuro_tropic", name: "神經嗜性", latin: "Neurotropic draft（簡化／假設）",
+      blurb: "簡化科普／假設：沿神經通路傳播的彈狀病毒向示意。",
+      draw: function () {
+        return svg(
+          '<ellipse cx="34" cy="32" rx="16" ry="9" fill="#5a90a8" stroke="#c8e8f8" stroke-width="2.5"/>' +
+          '<path d="M18 32 L8 24 L8 40 Z" fill="#4a7890" stroke="#c8e8f8" stroke-width="1.5"/>'
+        );
+      }
+    },
+    arbo_cycle: {
+      id: "arbo_cycle", name: "蟲媒循環", latin: "Arbovirus cycle（簡化／假設）",
+      blurb: "簡化科普／假設：節肢動物媒介與脊椎宿主之間的循環示意。",
+      draw: function () { return virion("#3a8898", "#a0e0f0", true); }
+    },
+    gut_naked: {
+      id: "gut_naked", name: "腸胃裸殼", latin: "Enteric naked（簡化／假設）",
+      blurb: "簡化科普／假設：耐酸／環境穩定的無膜腸胃道病毒向。",
+      draw: function () { return naked("#2a7890", "#90d0e8"); }
+    },
+    cold_naked: {
+      id: "cold_naked", name: "感冒樣裸殼", latin: "Cold-like naked（簡化／假設）",
+      blurb: "簡化科普／假設：鼻腔最適的小型裸殼 RNA 病毒向。",
+      draw: function () { return naked("#58a0b8", "#d0f0ff"); }
+    },
+    adeno_line: {
+      id: "adeno_line", name: "腺樣粒子", latin: "Adeno-like（簡化／假設）",
+      blurb: "簡化科普／假設：二十面體 DNA 殼＋纖維突起吸附示意。",
+      draw: function () { return hexVir("#4a88a0", "#c0e8f8"); }
+    },
+    herpes_site: {
+      id: "herpes_site", name: "潛伏部位選擇", latin: "Latency site（簡化／假設）",
+      blurb: "簡化科普／假設：神經節或淋巴組織作為潛伏庫的示意分岔。",
+      draw: function () { return virion("#6878a0", "#c8d0f0", true); }
+    },
+    retro_uncoat: {
+      id: "retro_uncoat", name: "脫殼／釋放", latin: "Uncoating（簡化／假設）",
+      blurb: "簡化科普／假設：進入後衣殼部分拆解、露出基因組的示意關。",
+      draw: function () {
+        return svg(
+          '<ellipse cx="32" cy="36" rx="14" ry="11" fill="#6a5080" stroke="#d0b0e8" stroke-width="2" stroke-dasharray="4 2"/>' +
+          '<ellipse cx="32" cy="36" rx="6" ry="4" fill="#e8d0f8" opacity="0.6"/>'
+        );
+      }
+    },
+    deltaretro: {
+      id: "deltaretro", name: "δ 反轉錄向", latin: "Deltaretrovirus draft（簡化／假設）",
+      blurb: "簡化科普／假設：嗜 T 淋巴、調節蛋白路徑異於慢病毒的示意。",
+      draw: function () {
+        return svg(
+          '<ellipse cx="32" cy="34" rx="15" ry="12" fill="#705090" stroke="#e0c8f0" stroke-width="2.5"/>' +
+          '<path d="M20 34 Q32 20 44 34" fill="none" stroke="#f0e0ff" stroke-width="2"/>'
+        );
+      }
+    },
     foamy: {
       id: "foamy", name: "泡沫病毒", latin: "Spumavirus / Foamy virus（簡化）",
       blurb: "簡化科普／假設：反轉錄病毒科、核內複製特徵示意；非醫療。",
@@ -884,262 +1030,390 @@
   }
 
   function endNode(formId, kind, title, story) {
+    var d = DEX[formId] || null;
     return {
       form: formId, end: true, endKind: kind,
       endTitle: title,
-      endStory: story
+      endStory: story,
+      dex: d
     };
   }
 
-/* —— 真分叉 ≥20 互斥終局；複雜物種加關；畫面不畫樹 ——
-     深度例：球菌終局≈3 關；流感 HA→NA≈5；HIV 進入→反轉錄→整合≈5–6
-     seed(3)
-     ├─ bact_wall(3)
-     │  ├─ bact_cocci(3) → aureus | epidermidis | pneumoniae
-     │  ├─ bact_rod(2) → enteric(2)→ecoli|salmonella
-     │  │              → tb_acid(2)→tb_intra(2)→tuberculosis|mavium | leprae
-     │  └─ bact_spore(3) → tetani | anthracis | botulinum
-     ├─ curve_wall(2) → helicobacter | vibrio
-     └─ vir_capsid(4)
-        ├─ vir_env_rna(4) → flu_ha(2)→flu_na(2)→influenza|parainfluenza | influenza_b
-        │                   | measles | rabies | dengue
-        ├─ vir_naked(3) → norovirus | rhinovirus | rotavirus
-        ├─ vir_dna(2) → adenovirus | herpes_lat(2)→herpes|ebv
-        └─ retro_entry(2) → retro_rt(2)→retro_int→hiv | hiv2 | htlv
-  */
+
+  const DEX = {
+  "aureus": {
+    "kind": "bact",
+    "name": "金黃葡萄球菌",
+    "traits": "球菌、常成葡萄串狀聚集。細胞壁厚、革蘭氏陽性示意。可產生金黃色色素（遊戲簡化）。皮膚／鼻腔常見相關命名。",
+    "history": "葡萄球菌屬在分類上屬厚壁菌相關。金黃色素曾作鑑別特徵之一（簡化科普／假設）。本遊戲僅休閒探索，非醫療建議。"
+  },
+  "epidermidis": {
+    "kind": "bact",
+    "name": "表皮葡萄球菌",
+    "traits": "球菌、皮膚常見共生向。毒力通常低於金黃株示意。生物膜相關能力在真實世界更複雜。",
+    "history": "長期被視為皮膚常駐菌之一。與植入物相關議題屬臨床範疇，本遊戲不涉及（簡化科普／假設）。"
+  },
+  "pneumoniae": {
+    "kind": "bact",
+    "name": "肺炎鏈球菌",
+    "traits": "鏈狀球菌、具莢膜示意。與呼吸道黏膜定植相關命名。革蘭氏陽性球菌向。",
+    "history": "鏈球菌屬分歧後出現多種人類相關種。莢膜分型是真實微生物學重點；此處僅示意（簡化科普／假設・非醫療）。"
+  },
+  "ecoli": {
+    "kind": "bact",
+    "name": "大腸桿菌",
+    "traits": "桿狀、常具鞭毛。腸道定植與代謝多樣性示意。革蘭氏陰性腸道菌向。",
+    "history": "腸道桿菌科代表之一，模式生物地位重要。菌株差異極大；遊戲不區分致病型（簡化科普／假設）。"
+  },
+  "salmonella": {
+    "kind": "bact",
+    "name": "沙門氏菌",
+    "traits": "腸道桿菌、入侵宿主細胞能力示意。鞭毛與抗原分型在真實分類很重要。",
+    "history": "與食源性傳播研究密切相關。種／血清型極多；此處僅屬級示意（簡化科普／假設・非醫療）。"
+  },
+  "tuberculosis": {
+    "kind": "bact",
+    "name": "結核分枝桿菌",
+    "traits": "抗酸桿菌、厚脂質外壁（分枝菌酸樣）示意。可在巨噬細胞內持存的生活史示意。生長相對緩慢。",
+    "history": "分枝桿菌屬；人類結核相關研究歷史悠久。肉芽腫樣持存為簡化關卡隱喻（簡化科普／假設・非診斷／醫療）。"
+  },
+  "leprae": {
+    "kind": "bact",
+    "name": "麻風分枝桿菌",
+    "traits": "分枝桿菌、偏皮膚與外周神經嗜性示意。體外培養極困難（真實特徵）。",
+    "history": "與結核同屬但生態位不同。歷史上與慢性皮膚病聯想；本遊戲僅命名探索（簡化科普／假設・非醫療）。"
+  },
+  "mavium": {
+    "kind": "bact",
+    "name": "鳥分枝桿菌",
+    "traits": "非結核分枝桿菌（NTM）環境相關示意。可於水／土壤等環境出現（簡化）。",
+    "history": "Mycobacterium avium complex 為臨床常見 NTM 群之一；此處合併簡名（簡化科普／假設・非醫療）。"
+  },
+  "tetani": {
+    "kind": "bact",
+    "name": "破傷風梭菌",
+    "traits": "厭氧芽孢梭菌。芽孢抗逆境能力示意。神經毒素相關為真實特徵，遊戲不模擬毒性。",
+    "history": "梭菌屬厭氧菌；芽孢使環境存活久。疫苗史屬公衛範疇，非本遊戲內容（簡化科普／假設・非醫療）。"
+  },
+  "anthracis": {
+    "kind": "bact",
+    "name": "炭疽芽孢桿菌",
+    "traits": "需氧／兼性芽孢桿菌。土壤相關芽孢示意。莢膜與毒素為真實毒力因子，遊戲不模擬。",
+    "history": "芽孢桿菌屬經典種之一。歷史上與農牧相關；本遊戲僅形態／分類示意（簡化科普／假設・非醫療）。"
+  },
+  "botulinum": {
+    "kind": "bact",
+    "name": "肉毒桿菌",
+    "traits": "厭氧芽孢梭菌。產芽孢、厭氧代謝示意。神經毒素型別多，遊戲不涉及。",
+    "history": "與破傷風同為梭菌屬但生態與毒素型不同。食品相關議題屬安全範疇（簡化科普／假設・非醫療）。"
+  },
+  "helicobacter": {
+    "kind": "bact",
+    "name": "幽門螺旋桿菌",
+    "traits": "螺旋形、具鞭毛。胃黏膜定植與尿素酶相關適應示意。微需氧。",
+    "history": "1980 年代起改變胃潰瘍病因觀。螺旋形態助穿透黏液層（簡化科普／假設・非醫療建議）。"
+  },
+  "vibrio": {
+    "kind": "bact",
+    "name": "霍亂弧菌",
+    "traits": "弧形桿菌、單極鞭毛示意。水生／腸道相關命名。革蘭氏陰性弧菌向。",
+    "history": "弧菌屬；霍亂相關研究推動衛生改革。血清群差異重要；遊戲不區分（簡化科普／假設・非醫療）。"
+  },
+  "influenza": {
+    "kind": "vir",
+    "name": "流感病毒",
+    "traits": "有膜分節段 RNA 病毒示意。表面 HA／NA 糖蛋白為吸附與釋放關鍵（簡化）。A 型宿主範圍廣。",
+    "history": "正黏液病毒科。抗原漂移／轉換解釋季節性與大流行（簡化科普／假設・非醫療／疫苗建議）。"
+  },
+  "influenza_b": {
+    "kind": "vir",
+    "name": "流感病毒 B 型",
+    "traits": "有膜 RNA、主要在人群循環示意。無穩定動物庫的簡化對比（相對 A 型）。",
+    "history": "與 A 型同科但演化動態不同。分系（Victoria／Yamagata）曾並存；遊戲不細分（簡化科普／假設）。"
+  },
+  "parainfluenza": {
+    "kind": "vir",
+    "name": "副流感病毒",
+    "traits": "副黏液病毒科、有膜 RNA。呼吸道融合蛋白相關示意。與流感「類似名」但不同科。",
+    "history": "常見兒童呼吸道感染相關命名之一。分型 HPIV1–4；此處合併示意（簡化科普／假設・非醫療）。"
+  },
+  "measles": {
+    "kind": "vir",
+    "name": "麻疹病毒",
+    "traits": "有膜 RNA、麻疹病毒屬。高度傳染、皮疹相關生活史示意。單一血清型利於疫苗。",
+    "history": "副黏液病毒科。疫苗出現前為主要兒童疾病之一；遊戲僅命名（簡化科普／假設・非醫療）。"
+  },
+  "rabies": {
+    "kind": "vir",
+    "name": "狂犬病病毒",
+    "traits": "彈狀病毒、有膜 RNA。神經嗜性示意。子彈形粒子為經典形態。",
+    "history": "人畜共通；巴斯德時代即有減毒探索。暴露後處置屬醫療，本遊戲不涉及（簡化科普／假設）。"
+  },
+  "dengue": {
+    "kind": "vir",
+    "name": "登革病毒",
+    "traits": "黃病毒科、有膜 RNA。蚊媒傳播循環示意。四種血清型（簡化提及）。",
+    "history": "熱帶／亞熱帶蟲媒病毒代表。都市化與媒介擴散影響流行；非醫療指引（簡化科普／假設）。"
+  },
+  "norovirus": {
+    "kind": "vir",
+    "name": "諾羅病毒",
+    "traits": "杯狀病毒科、無膜（裸殼）RNA。環境穩定、腸胃道相關示意。低劑量即可傳染（真實特徵簡述）。",
+    "history": "諾瓦克病毒相關命名演變。群聚與食品／接觸傳播常見討論主題（簡化科普／假設・非醫療）。"
+  },
+  "rhinovirus": {
+    "kind": "vir",
+    "name": "鼻病毒",
+    "traits": "小 RNA 病毒科、裸殼。鼻腔最適溫度略低於核心體溫的示意。血清型極多。",
+    "history": "普通感冒最常見病原之一。多樣性使「單一疫苗」困難；遊戲不談治療（簡化科普／假設）。"
+  },
+  "rotavirus": {
+    "kind": "vir",
+    "name": "輪狀病毒",
+    "traits": "呼腸孤病毒科、雙層／三層殼示意。輪狀電子顯微鏡外觀得名。幼兒腸胃相關命名。",
+    "history": "口服疫苗大幅改變流行病學。分群／基因型複雜；此處僅示意（簡化科普／假設・非醫療）。"
+  },
+  "adenovirus": {
+    "kind": "vir",
+    "name": "腺病毒",
+    "traits": "無膜雙鏈 DNA、二十面體。纖維突起吸附示意。可感染呼吸道／結膜等（簡化）。",
+    "history": "腺病毒科；亦常用作基因載體研究平台。型別眾多（簡化科普／假設・非醫療）。"
+  },
+  "herpes": {
+    "kind": "vir",
+    "name": "疱疹病毒",
+    "traits": "有膜雙鏈 DNA。可在神經節潛伏的生活史示意。原發後可再激活（簡化）。",
+    "history": "疱疹病毒科（如 HSV）為潛伏感染經典模型。本遊戲合併「疱疹」示意種（簡化科普／假設・非醫療）。"
+  },
+  "ebv": {
+    "kind": "vir",
+    "name": "艾伯斯坦－巴爾病毒",
+    "traits": "疱疹病毒科（HHV-4）、淋巴嗜性示意。可潛伏於 B 淋巴細胞。有膜 DNA。",
+    "history": "與傳染性單核球增多症等相關命名。腫瘤病毒學研究重要；非診斷依據（簡化科普／假設・非醫療）。"
+  },
+  "hiv": {
+    "kind": "vir",
+    "name": "人類免疫缺乏病毒",
+    "traits": "慢病毒、有膜 RNA。進入→反轉錄→整合入宿主基因組的示意路徑。嗜 CD4 細胞（簡化）。",
+    "history": "20 世紀後期識別；抗反轉錄療法改變預後。本遊戲僅分子生活史示意（簡化科普／假設・非醫療／診斷）。"
+  },
+  "hiv2": {
+    "kind": "vir",
+    "name": "人類免疫缺乏病毒第二型",
+    "traits": "另一型慢病毒示意。地理分布與傳播效率與 HIV-1 有差異（簡化）。同樣反轉錄生活史。",
+    "history": "西非相關發現史較 HIV-1 晚。仍屬慢病毒亞科；遊戲分開終局以示分型（簡化科普／假設・非醫療）。"
+  },
+  "htlv": {
+    "kind": "vir",
+    "name": "人類 T 淋巴病毒",
+    "traits": "δ 反轉錄病毒、嗜 T 淋巴示意。可整合但生活史細節異於慢病毒。",
+    "history": "人類第一個確認的反轉錄病毒相關命名之一。與 HIV 不同屬；勿混為一談（簡化科普／假設・非醫療）。"
+  },
+  "foamy": {
+    "kind": "vir",
+    "name": "泡沫病毒",
+    "traits": "泡沫病毒亞科、反轉錄。核內複製特徵較明顯、整合模式不同於慢病毒示意。",
+    "history": "因細胞病變呈泡沫樣得名。人畜感染多但致病性討論複雜；僅分類示意（簡化科普／假設・非醫療）。"
+  }
+};
+
   const LEVELS = {
-    seed: {
-      form: "seed",
-      prompt: "你要往哪種結構長？",
-      options: [
-        { title: "築起細胞壁", sub: "獨立代謝・細菌向", next: "bact_wall", tint: "bact" },
-        { title: "彎曲體壁", sub: "螺旋／弧菌向", next: "curve_wall", tint: "bact" },
-        { title: "包進蛋白殼", sub: "寄生複製・病毒向", next: "vir_capsid", tint: "vir" }
-      ]
-    },
-    bact_wall: {
-      form: "bact_wall",
-      prompt: "細胞形態？",
-      options: [
-        { title: "聚成球菌串", sub: "朝球菌屬", next: "bact_cocci", tint: "bact" },
-        { title: "拉成細桿", sub: "朝桿菌／抗酸菌", next: "bact_rod", tint: "bact" },
-        { title: "帶芽孢的桿", sub: "朝芽孢桿菌", next: "bact_spore", tint: "bact" }
-      ]
-    },
-    bact_cocci: {
-      form: "bact_cocci",
-      prompt: "球菌往哪定植？",
-      options: [
-        { title: "金黃色素", sub: "金黃葡萄球菌", next: "aureus", tint: "bact" },
-        { title: "表皮共生", sub: "表皮葡萄球菌", next: "epidermidis", tint: "bact" },
-        { title: "鏈狀・呼吸道", sub: "肺炎鏈球菌", next: "pneumoniae", tint: "bact" }
-      ]
-    },
-    aureus: endNode("aureus", "bact", "你已成為「金黃葡萄球菌」細菌",
-      "本局走細菌・球菌・金黃色素向（較短路線）。金黃葡萄球菌在此僅作休閒探索命名。"),
-    epidermidis: endNode("epidermidis", "bact", "你已成為「表皮葡萄球菌」細菌",
-      "本局走細菌・球菌・表皮共生向（較短路線）。表皮葡萄球菌在此僅作休閒探索命名。"),
-    pneumoniae: endNode("pneumoniae", "bact", "你已成為「肺炎鏈球菌」細菌",
-      "本局走細菌・球菌・鏈狀呼吸道向。肺炎鏈球菌在此僅作休閒探索命名。"),
-
-    bact_rod: {
-      form: "bact_rod",
-      prompt: "桿菌往哪適應？",
-      options: [
-        { title: "腸道定植", sub: "朝腸道桿菌", next: "enteric", tint: "bact" },
-        { title: "厚脂質抗酸壁", sub: "朝分枝桿菌・加關", next: "tb_acid", tint: "bact" }
-      ]
-    },
-    enteric: {
-      form: "enteric",
-      prompt: "腸道桿菌分支？",
-      options: [
-        { title: "大腸黏膜", sub: "大腸桿菌", next: "ecoli", tint: "bact" },
-        { title: "腸道入侵", sub: "沙門氏菌", next: "salmonella", tint: "bact" }
-      ]
-    },
-    ecoli: endNode("ecoli", "bact", "你已成為「大腸桿菌」細菌",
-      "本局走細菌・腸道桿菌向。大腸桿菌在此僅作休閒探索命名。"),
-    salmonella: endNode("salmonella", "bact", "你已成為「沙門氏菌」細菌",
-      "本局走細菌・腸道入侵向。沙門氏菌在此僅作休閒探索命名。"),
-
-    tb_acid: {
-      form: "tb_acid",
-      prompt: "抗酸菌下一步？",
-      options: [
-        { title: "進入巨噬細胞", sub: "細胞內持存・加關", next: "tb_intra", tint: "bact" },
-        { title: "皮膚／神經嗜性", sub: "麻風分枝桿菌", next: "leprae", tint: "bact" }
-      ]
-    },
-    tb_intra: {
-      form: "tb_intra",
-      prompt: "巨噬內策略？",
-      options: [
-        { title: "肉芽腫樣持存", sub: "結核分枝桿菌", next: "tuberculosis", tint: "bact" },
-        { title: "環境非結核向", sub: "鳥分枝桿菌", next: "mavium", tint: "bact" }
-      ]
-    },
-    tuberculosis: endNode("tuberculosis", "bact", "你已成為「結核分枝桿菌」細菌",
-      "本局走細菌・抗酸壁→巨噬內持存（較深路線）。結核分枝桿菌在此僅作休閒探索命名；非醫療建議。"),
-    leprae: endNode("leprae", "bact", "你已成為「麻風分枝桿菌」細菌",
-      "本局走細菌・抗酸・皮膚／神經嗜性向。麻風分枝桿菌在此僅作休閒探索命名；非醫療建議。"),
-    mavium: endNode("mavium", "bact", "你已成為「鳥分枝桿菌」細菌",
-      "本局走細菌・抗酸・非結核環境向。鳥分枝桿菌複合群在此僅作休閒探索命名。"),
-
-    bact_spore: {
-      form: "bact_spore",
-      prompt: "芽孢策略？",
-      options: [
-        { title: "厭氧・破傷風樣", sub: "破傷風梭菌", next: "tetani", tint: "bact" },
-        { title: "土壤芽孢", sub: "炭疽芽孢桿菌", next: "anthracis", tint: "bact" },
-        { title: "厭氧・肉毒樣", sub: "肉毒桿菌", next: "botulinum", tint: "bact" }
-      ]
-    },
-    tetani: endNode("tetani", "bact", "你已成為「破傷風梭菌」細菌",
-      "本局走細菌・芽孢・厭氧破傷風樣向。破傷風梭菌在此僅作休閒探索命名。"),
-    anthracis: endNode("anthracis", "bact", "你已成為「炭疽芽孢桿菌」細菌",
-      "本局走細菌・芽孢・土壤向。炭疽芽孢桿菌在此僅作休閒探索命名。"),
-    botulinum: endNode("botulinum", "bact", "你已成為「肉毒桿菌」細菌",
-      "本局走細菌・芽孢・厭氧肉毒樣向。肉毒桿菌在此僅作休閒探索命名。"),
-
-    curve_wall: {
-      form: "curve_wall",
-      prompt: "彎曲形態往哪？",
-      options: [
-        { title: "螺旋・胃黏膜", sub: "幽門螺旋桿菌", next: "helicobacter", tint: "bact" },
-        { title: "弧形・腸道", sub: "霍亂弧菌", next: "vibrio", tint: "bact" }
-      ]
-    },
-    helicobacter: endNode("helicobacter", "bact", "你已成為「幽門螺旋桿菌」細菌",
-      "本局走彎曲體・螺旋胃黏膜向。幽門螺旋桿菌在此僅作休閒探索命名。"),
-    vibrio: endNode("vibrio", "bact", "你已成為「霍亂弧菌」細菌",
-      "本局走彎曲體・弧形腸道向。霍亂弧菌在此僅作休閒探索命名。"),
-
-    vir_capsid: {
-      form: "vir_capsid",
-      prompt: "殼體與基因组策略？",
-      options: [
-        { title: "有膜 RNA", sub: "朝流感／麻疹等", next: "vir_env_rna", tint: "vir" },
-        { title: "堅固裸殼", sub: "朝諾羅／鼻病毒等", next: "vir_naked", tint: "vir" },
-        { title: "DNA 殼", sub: "朝腺病毒／疱疹", next: "vir_dna", tint: "vir" },
-        { title: "反轉錄酶", sub: "進入→反轉錄→整合・加關", next: "retro_entry", tint: "vir" }
-      ]
-    },
-    vir_env_rna: {
-      form: "vir_env_rna",
-      prompt: "有膜 RNA 往哪適應？",
-      options: [
-        { title: "呼吸道突刺", sub: "朝流感 HA／NA・加關", next: "flu_ha", tint: "vir" },
-        { title: "皮疹融合", sub: "麻疹病毒", next: "measles", tint: "vir" },
-        { title: "神經嗜性", sub: "狂犬病病毒", next: "rabies", tint: "vir" },
-        { title: "蟲媒循環", sub: "登革病毒", next: "dengue", tint: "vir" }
-      ]
-    },
-    flu_ha: {
-      form: "flu_ha",
-      prompt: "血球凝集素之後？",
-      options: [
-        { title: "加上神經胺酸酶", sub: "HA＋NA・續關", next: "flu_na", tint: "vir" },
-        { title: "乙型流感特徵", sub: "流感病毒 B 型", next: "influenza_b", tint: "vir" }
-      ]
-    },
-    flu_na: {
-      form: "flu_na",
-      prompt: "HA／NA 完備後？",
-      options: [
-        { title: "NA 釋放子代", sub: "流感病毒", next: "influenza", tint: "vir" },
-        { title: "副黏液樣呼吸道", sub: "副流感病毒", next: "parainfluenza", tint: "vir" }
-      ]
-    },
-    influenza: endNode("influenza", "vir", "你已成為「流感病毒」病毒",
-      "本局走病毒・有膜 RNA・HA→NA（較深路線）。流感病毒在此僅作休閒探索命名。"),
-    influenza_b: endNode("influenza_b", "vir", "你已成為「流感病毒 B 型」病毒",
-      "本局走病毒・有膜 RNA・乙型特徵。流感 B 型在此僅作休閒探索命名。"),
-    parainfluenza: endNode("parainfluenza", "vir", "你已成為「副流感病毒」病毒",
-      "本局走病毒・呼吸道有膜 RNA・副黏液樣。副流感病毒在此僅作休閒探索命名。"),
-    measles: endNode("measles", "vir", "你已成為「麻疹病毒」病毒",
-      "本局走病毒・有膜 RNA・皮疹向（較短路線）。麻疹病毒在此僅作休閒探索命名。"),
-    rabies: endNode("rabies", "vir", "你已成為「狂犬病病毒」病毒",
-      "本局走病毒・有膜 RNA・神經嗜性向。狂犬病病毒在此僅作休閒探索命名。"),
-    dengue: endNode("dengue", "vir", "你已成為「登革病毒」病毒",
-      "本局走病毒・有膜 RNA・蟲媒向。登革病毒在此僅作休閒探索命名。"),
-
-    vir_naked: {
-      form: "vir_naked",
-      prompt: "裸殼往哪適應？",
-      options: [
-        { title: "腸胃杯狀殼", sub: "諾羅病毒", next: "norovirus", tint: "vir" },
-        { title: "小型鼻腔殼", sub: "鼻病毒", next: "rhinovirus", tint: "vir" },
-        { title: "輪狀雙殼", sub: "輪狀病毒", next: "rotavirus", tint: "vir" }
-      ]
-    },
-    norovirus: endNode("norovirus", "vir", "你已成為「諾羅病毒」病毒",
-      "本局走病毒・裸殼・腸胃向。諾羅病毒在此僅作休閒探索命名。"),
-    rhinovirus: endNode("rhinovirus", "vir", "你已成為「鼻病毒」病毒",
-      "本局走病毒・裸殼・鼻腔向。鼻病毒在此僅作休閒探索命名。"),
-    rotavirus: endNode("rotavirus", "vir", "你已成為「輪狀病毒」病毒",
-      "本局走病毒・裸殼・輪狀雙殼向。輪狀病毒在此僅作休閒探索命名。"),
-
-    vir_dna: {
-      form: "vir_dna",
-      prompt: "DNA 病毒分支？",
-      options: [
-        { title: "腺樣二十面體", sub: "腺病毒", next: "adenovirus", tint: "vir" },
-        { title: "有膜・可潛伏", sub: "朝疱疹科・加關", next: "herpes_lat", tint: "vir" }
-      ]
-    },
-    adenovirus: endNode("adenovirus", "vir", "你已成為「腺病毒」病毒",
-      "本局走病毒・DNA・腺樣向。腺病毒在此僅作休閒探索命名。"),
-    herpes_lat: {
-      form: "herpes_lat",
-      prompt: "疱疹科潛伏策略？",
-      options: [
-        { title: "潛伏於神經節", sub: "疱疹病毒", next: "herpes", tint: "vir" },
-        { title: "淋巴嗜性", sub: "艾伯斯坦－巴爾病毒", next: "ebv", tint: "vir" }
-      ]
-    },
-    herpes: endNode("herpes", "vir", "你已成為「疱疹病毒」病毒",
-      "本局走病毒・DNA・神經潛伏向。疱疹病毒在此僅作休閒探索命名。"),
-    ebv: endNode("ebv", "vir", "你已成為「艾伯斯坦－巴爾病毒」病毒",
-      "本局走病毒・DNA・淋巴嗜性向。EBV 在此僅作休閒探索命名；非醫療建議。"),
-
-    retro_entry: {
-      form: "retro_entry",
-      prompt: "反轉錄病毒如何進入？",
-      options: [
-        { title: "吸附／膜融合進入", sub: "朝反轉錄・續關", next: "retro_rt", tint: "vir" },
-        { title: "嗜 T 淋巴定殖", sub: "人類 T 淋巴病毒", next: "htlv", tint: "vir" }
-      ]
-    },
-    retro_rt: {
-      form: "retro_rt",
-      prompt: "進入後基因组策略？",
-      options: [
-        { title: "反轉錄成 DNA", sub: "朝整合・續關", next: "retro_int", tint: "vir" },
-        { title: "第二型慢病毒向", sub: "HIV-2", next: "hiv2", tint: "vir" }
-      ]
-    },
-    retro_int: {
-      form: "retro_int",
-      prompt: "整合策略？",
-      options: [
-        { title: "整合入宿主基因組", sub: "人類免疫缺乏病毒", next: "hiv", tint: "vir" },
-        { title: "核內複製・少整合", sub: "泡沫病毒", next: "foamy", tint: "vir" }
-      ]
-    },
-    hiv: endNode("hiv", "vir", "你已成為「人類免疫缺乏病毒」病毒",
-      "本局走病毒・進入→反轉錄→整合（最深路線之一）。HIV 在此僅作休閒探索命名；非醫療建議或診斷依據。"),
-    foamy: endNode("foamy", "vir", "你已成為「泡沫病毒」病毒",
-      "本局走病毒・反轉錄・核內複製／少整合向。泡沫病毒（Spumavirus）在此僅作休閒探索命名。"),
-    hiv2: endNode("hiv2", "vir", "你已成為「人類免疫缺乏病毒第二型」病毒",
-      "本局走病毒・反轉錄・HIV-2 向（略淺於完整整合關）。HIV-2 在此僅作休閒探索命名。"),
-    htlv: endNode("htlv", "vir", "你已成為「人類 T 淋巴病毒」病毒",
-      "本局走病毒・反轉錄・嗜 T 淋巴向。HTLV 在此僅作休閒探索命名；非醫療建議。")
+    seed: { form: "seed", prompt: "你要往哪種結構長？", options: [
+      { title: "築起細胞壁", sub: "獨立代謝・細菌向", next: "bact_wall", tint: "bact" },
+      { title: "彎曲體壁", sub: "螺旋／弧菌向", next: "curve_wall", tint: "bact" },
+      { title: "包進蛋白殼", sub: "寄生複製・病毒向", next: "vir_capsid", tint: "vir" }
+    ]},
+    bact_wall: { form: "bact_wall", prompt: "細胞形態？", options: [
+      { title: "聚成球菌串", sub: "朝球菌・加關", next: "bact_cocci", tint: "bact" },
+      { title: "拉成細桿", sub: "朝桿菌／抗酸・加深", next: "bact_rod", tint: "bact" },
+      { title: "帶芽孢的桿", sub: "朝芽孢菌・加關", next: "bact_spore", tint: "bact" }
+    ]},
+    bact_cocci: { form: "bact_cocci", prompt: "球菌怎麼排？", options: [
+      { title: "葡萄串狀", sub: "朝葡萄球菌", next: "staph_line", tint: "bact" },
+      { title: "拉成鏈狀", sub: "朝鏈球菌・加關", next: "strep_line", tint: "bact" }
+    ]},
+    staph_line: { form: "staph_line", prompt: "葡萄球菌生態位？", options: [
+      { title: "金黃色素", sub: "金黃葡萄球菌", next: "aureus", tint: "bact" },
+      { title: "表皮共生", sub: "表皮葡萄球菌", next: "epidermidis", tint: "bact" }
+    ]},
+    strep_line: { form: "strep_line", prompt: "鏈球菌下一步？", options: [
+      { title: "加厚莢膜", sub: "呼吸道適應", next: "strep_capsule", tint: "bact" }
+    ]},
+    strep_capsule: { form: "strep_line", prompt: "莢膜定型？", options: [
+      { title: "肺炎鏈球菌", sub: "鏈球菌終局", next: "pneumoniae", tint: "bact" }
+    ]},
+    aureus: endNode("aureus","bact","你已成為「金黃葡萄球菌」細菌","本局走細菌・球菌・葡萄串・金黃向（≥4 關）。僅作休閒探索命名。"),
+    epidermidis: endNode("epidermidis","bact","你已成為「表皮葡萄球菌」細菌","本局走細菌・球菌・葡萄串・表皮向（≥4 關）。僅作休閒探索命名。"),
+    pneumoniae: endNode("pneumoniae","bact","你已成為「肺炎鏈球菌」細菌","本局走細菌・球菌・鏈狀・莢膜向（加深）。僅作休閒探索命名。"),
+    bact_rod: { form: "bact_rod", prompt: "桿菌往哪適應？", options: [
+      { title: "腸道環境", sub: "朝腸道桿菌・加關", next: "enteric", tint: "bact" },
+      { title: "厚脂質抗酸壁", sub: "朝分枝桿菌・加深", next: "tb_acid", tint: "bact" }
+    ]},
+    enteric: { form: "enteric", prompt: "腸道策略？", options: [
+      { title: "黏膜定植", sub: "常駐／代謝向", next: "gut_colonize", tint: "bact" },
+      { title: "入侵上皮", sub: "入侵示意向", next: "gut_invade", tint: "bact" }
+    ]},
+    gut_colonize: { form: "gut_colonize", prompt: "定植終局？", options: [
+      { title: "大腸桿菌", sub: "腸道常駐示意", next: "ecoli", tint: "bact" }
+    ]},
+    gut_invade: { form: "gut_invade", prompt: "入侵終局？", options: [
+      { title: "沙門氏菌", sub: "腸道入侵示意", next: "salmonella", tint: "bact" }
+    ]},
+    ecoli: endNode("ecoli","bact","你已成為「大腸桿菌」細菌","本局走桿菌・腸道定植（加深≥5）。僅作休閒探索命名。"),
+    salmonella: endNode("salmonella","bact","你已成為「沙門氏菌」細菌","本局走桿菌・腸道入侵（加深≥5）。僅作休閒探索命名。"),
+    tb_acid: { form: "tb_acid", prompt: "抗酸菌路徑？", options: [
+      { title: "氣道吸入", sub: "朝結核複合・加深", next: "tb_entry", tint: "bact" },
+      { title: "皮膚／低溫嗜性", sub: "朝麻風・加關", next: "leprae_skin", tint: "bact" }
+    ]},
+    tb_entry: { form: "tb_entry", prompt: "進入肺泡後？", options: [
+      { title: "被巨噬吞入", sub: "細胞內路徑", next: "tb_intra", tint: "bact" }
+    ]},
+    tb_intra: { form: "tb_intra", prompt: "巨噬內命運？", options: [
+      { title: "圍成肉芽腫樣", sub: "持存微環境", next: "tb_granuloma", tint: "bact" },
+      { title: "環境非結核向", sub: "鳥分枝桿菌", next: "mavium", tint: "bact" }
+    ]},
+    tb_granuloma: { form: "tb_granuloma", prompt: "肉芽腫內？", options: [
+      { title: "結核分枝桿菌", sub: "持存終局", next: "tuberculosis", tint: "bact" }
+    ]},
+    leprae_skin: { form: "leprae_skin", prompt: "皮膚嗜性？", options: [
+      { title: "麻風分枝桿菌", sub: "神經／皮膚示意", next: "leprae", tint: "bact" }
+    ]},
+    tuberculosis: endNode("tuberculosis","bact","你已成為「結核分枝桿菌」細菌","本局走抗酸→吸入→巨噬→肉芽腫（深約 7 關）。非醫療建議或診斷依據。"),
+    leprae: endNode("leprae","bact","你已成為「麻風分枝桿菌」細菌","本局走抗酸・皮膚嗜性向。非醫療建議。"),
+    mavium: endNode("mavium","bact","你已成為「鳥分枝桿菌」細菌","本局走抗酸・巨噬・環境非結核向。非醫療建議。"),
+    bact_spore: { form: "bact_spore", prompt: "芽孢菌代謝？", options: [
+      { title: "厭氧梭菌向", sub: "破傷風／肉毒", next: "clostrid_line", tint: "bact" },
+      { title: "土壤芽孢桿向", sub: "炭疽・加關", next: "bacillus_line", tint: "bact" }
+    ]},
+    clostrid_line: { form: "clostrid_line", prompt: "梭菌示意型？", options: [
+      { title: "破傷風樣", sub: "破傷風梭菌", next: "tetani", tint: "bact" },
+      { title: "肉毒樣", sub: "肉毒桿菌", next: "botulinum", tint: "bact" }
+    ]},
+    bacillus_line: { form: "bacillus_line", prompt: "土壤芽孢？", options: [
+      { title: "炭疽芽孢桿菌", sub: "芽孢桿菌屬", next: "anthracis", tint: "bact" }
+    ]},
+    tetani: endNode("tetani","bact","你已成為「破傷風梭菌」細菌","本局走芽孢・厭氧梭菌向（≥4）。非醫療建議。"),
+    botulinum: endNode("botulinum","bact","你已成為「肉毒桿菌」細菌","本局走芽孢・厭氧梭菌・肉毒向（≥4）。非醫療建議。"),
+    anthracis: endNode("anthracis","bact","你已成為「炭疽芽孢桿菌」細菌","本局走芽孢・土壤芽孢桿向（≥4）。非醫療建議。"),
+    curve_wall: { form: "curve_wall", prompt: "彎曲體怎麼動？", options: [
+      { title: "螺旋鞭毛", sub: "朝螺旋桿・加關", next: "spiral_motility", tint: "bact" },
+      { title: "弧形單鞭毛", sub: "朝弧菌・加關", next: "vibrio_curve", tint: "bact" }
+    ]},
+    spiral_motility: { form: "spiral_motility", prompt: "螺旋菌下一步？", options: [
+      { title: "胃黏膜路徑", sub: "耐酸適應", next: "gastric_adapt", tint: "bact" }
+    ]},
+    gastric_adapt: { form: "gastric_adapt", prompt: "胃適應終局？", options: [
+      { title: "幽門螺旋桿菌", sub: "尿素酶示意", next: "helicobacter", tint: "bact" }
+    ]},
+    vibrio_curve: { form: "vibrio_curve", prompt: "弧菌下一步？", options: [
+      { title: "水生適應", sub: "淡鹹水生態", next: "aquatic_adapt", tint: "bact" }
+    ]},
+    aquatic_adapt: { form: "aquatic_adapt", prompt: "水生終局？", options: [
+      { title: "霍亂弧菌", sub: "腸道弧菌", next: "vibrio", tint: "bact" }
+    ]},
+    helicobacter: endNode("helicobacter","bact","你已成為「幽門螺旋桿菌」細菌","本局走彎曲・螺旋・胃適應（≥4 關）。非醫療建議。"),
+    vibrio: endNode("vibrio","bact","你已成為「霍亂弧菌」細菌","本局走彎曲・弧形・水生適應（≥4 關）。非醫療建議。"),
+    vir_capsid: { form: "vir_capsid", prompt: "病毒基因組與殼？", options: [
+      { title: "有膜 RNA", sub: "朝流感／麻疹等", next: "vir_env_rna", tint: "vir" },
+      { title: "堅固裸殼", sub: "朝諾羅／鼻病毒", next: "vir_naked", tint: "vir" },
+      { title: "DNA 殼", sub: "朝腺病毒／疱疹", next: "vir_dna", tint: "vir" },
+      { title: "反轉錄酶", sub: "脫殼→反轉錄・加深", next: "retro_entry", tint: "vir" }
+    ]},
+    vir_env_rna: { form: "vir_env_rna", prompt: "有膜 RNA 傳播位？", options: [
+      { title: "呼吸道黏膜", sub: "流感／麻疹向", next: "resp_env", tint: "vir" },
+      { title: "系統性循環", sub: "神經／蟲媒向", next: "systemic_env", tint: "vir" }
+    ]},
+    resp_env: { form: "resp_env", prompt: "呼吸道有膜？", options: [
+      { title: "HA 突刺路徑", sub: "朝流感・加深", next: "flu_ha", tint: "vir" },
+      { title: "融合蛋白路徑", sub: "朝麻疹・加關", next: "measles_fuse", tint: "vir" }
+    ]},
+    flu_ha: { form: "flu_ha", prompt: "HA 之後？", options: [
+      { title: "加上 NA 釋放", sub: "HA＋NA・續", next: "flu_na", tint: "vir" },
+      { title: "乙型流感特徵", sub: "流感 B 型", next: "influenza_b", tint: "vir" }
+    ]},
+    flu_na: { form: "flu_na", prompt: "HA＋NA 特化？", options: [
+      { title: "A 型季節性", sub: "流感病毒", next: "influenza", tint: "vir" },
+      { title: "副黏液樣", sub: "副流感病毒", next: "parainfluenza", tint: "vir" }
+    ]},
+    measles_fuse: { form: "measles_fuse", prompt: "融合後？", options: [
+      { title: "麻疹病毒", sub: "高傳染示意", next: "measles", tint: "vir" }
+    ]},
+    systemic_env: { form: "systemic_env", prompt: "系統性路徑？", options: [
+      { title: "神經嗜性", sub: "朝狂犬病", next: "neuro_tropic", tint: "vir" },
+      { title: "蟲媒循環", sub: "朝登革", next: "arbo_cycle", tint: "vir" }
+    ]},
+    neuro_tropic: { form: "neuro_tropic", prompt: "神經嗜性？", options: [
+      { title: "狂犬病病毒", sub: "彈狀病毒", next: "rabies", tint: "vir" }
+    ]},
+    arbo_cycle: { form: "arbo_cycle", prompt: "蟲媒終局？", options: [
+      { title: "登革病毒", sub: "黃病毒科", next: "dengue", tint: "vir" }
+    ]},
+    influenza: endNode("influenza","vir","你已成為「流感病毒」病毒","本局走有膜 RNA・呼吸道・HA→NA（深約 6 關）。非醫療建議。"),
+    influenza_b: endNode("influenza_b","vir","你已成為「流感病毒 B 型」病毒","本局走有膜 RNA・呼吸道・乙型向。非醫療建議。"),
+    parainfluenza: endNode("parainfluenza","vir","你已成為「副流感病毒」病毒","本局走有膜 RNA・呼吸道・副黏液向。非醫療建議。"),
+    measles: endNode("measles","vir","你已成為「麻疹病毒」病毒","本局走有膜 RNA・融合蛋白向（加深）。非醫療建議。"),
+    rabies: endNode("rabies","vir","你已成為「狂犬病病毒」病毒","本局走系統性・神經嗜性向（加深）。非醫療建議。"),
+    dengue: endNode("dengue","vir","你已成為「登革病毒」病毒","本局走系統性・蟲媒循環向（加深）。非醫療建議。"),
+    vir_naked: { form: "vir_naked", prompt: "裸殼生態位？", options: [
+      { title: "腸胃穩定殼", sub: "諾羅／輪狀", next: "gut_naked", tint: "vir" },
+      { title: "鼻腔最適", sub: "朝鼻病毒・加關", next: "cold_naked", tint: "vir" }
+    ]},
+    gut_naked: { form: "gut_naked", prompt: "腸胃裸殼？", options: [
+      { title: "杯狀殼", sub: "諾羅病毒", next: "norovirus", tint: "vir" },
+      { title: "輪狀雙殼", sub: "輪狀病毒", next: "rotavirus", tint: "vir" }
+    ]},
+    cold_naked: { form: "cold_naked", prompt: "感冒樣？", options: [
+      { title: "鼻病毒", sub: "小 RNA 病毒科", next: "rhinovirus", tint: "vir" }
+    ]},
+    norovirus: endNode("norovirus","vir","你已成為「諾羅病毒」病毒","本局走裸殼・腸胃向（≥4）。非醫療建議。"),
+    rotavirus: endNode("rotavirus","vir","你已成為「輪狀病毒」病毒","本局走裸殼・腸胃輪狀向（≥4）。非醫療建議。"),
+    rhinovirus: endNode("rhinovirus","vir","你已成為「鼻病毒」病毒","本局走裸殼・鼻腔最適向（≥4）。非醫療建議。"),
+    vir_dna: { form: "vir_dna", prompt: "DNA 病毒策略？", options: [
+      { title: "腺樣二十面體", sub: "朝腺病毒・加關", next: "adeno_line", tint: "vir" },
+      { title: "有膜・可潛伏", sub: "朝疱疹・加深", next: "herpes_lat", tint: "vir" }
+    ]},
+    adeno_line: { form: "adeno_line", prompt: "腺樣終局？", options: [
+      { title: "腺病毒", sub: "無膜 DNA", next: "adenovirus", tint: "vir" }
+    ]},
+    herpes_lat: { form: "herpes_lat", prompt: "潛伏建立？", options: [
+      { title: "選擇潛伏庫", sub: "神經／淋巴", next: "herpes_site", tint: "vir" }
+    ]},
+    herpes_site: { form: "herpes_site", prompt: "潛伏於何處？", options: [
+      { title: "神經節潛伏", sub: "疱疹病毒", next: "herpes", tint: "vir" },
+      { title: "淋巴嗜性", sub: "EBV", next: "ebv", tint: "vir" }
+    ]},
+    adenovirus: endNode("adenovirus","vir","你已成為「腺病毒」病毒","本局走 DNA・腺樣向（≥4）。非醫療建議。"),
+    herpes: endNode("herpes","vir","你已成為「疱疹病毒」病毒","本局走 DNA・潛伏・神經節（加深≥5）。非醫療建議。"),
+    ebv: endNode("ebv","vir","你已成為「艾伯斯坦－巴爾病毒」病毒","本局走 DNA・潛伏・淋巴嗜性（加深）。非醫療建議。"),
+    retro_entry: { form: "retro_entry", prompt: "反轉錄病毒分支？", options: [
+      { title: "慢病毒路徑", sub: "脫殼→反轉錄・加深", next: "retro_uncoat", tint: "vir" },
+      { title: "δ 反轉錄向", sub: "朝 HTLV・加關", next: "deltaretro", tint: "vir" }
+    ]},
+    retro_uncoat: { form: "retro_uncoat", prompt: "脫殼之後？", options: [
+      { title: "反轉錄成 DNA", sub: "RT 酶示意", next: "retro_rt", tint: "vir" }
+    ]},
+    retro_rt: { form: "retro_rt", prompt: "反轉錄產物？", options: [
+      { title: "準備整合", sub: "朝整合酶", next: "retro_int", tint: "vir" },
+      { title: "第二型慢病毒", sub: "HIV-2", next: "hiv2", tint: "vir" }
+    ]},
+    retro_int: { form: "retro_int", prompt: "整合策略？", options: [
+      { title: "整合入宿主基因組", sub: "HIV-1 示意", next: "hiv", tint: "vir" },
+      { title: "核內複製・少整合", sub: "泡沫病毒", next: "foamy", tint: "vir" }
+    ]},
+    deltaretro: { form: "deltaretro", prompt: "δ 反轉錄？", options: [
+      { title: "人類 T 淋巴病毒", sub: "嗜 T 淋巴", next: "htlv", tint: "vir" }
+    ]},
+    hiv: endNode("hiv","vir","你已成為「人類免疫缺乏病毒」病毒","本局走進入→脫殼→反轉錄→整合（深約 6–7 關）。非醫療／診斷依據。"),
+    foamy: endNode("foamy","vir","你已成為「泡沫病毒」病毒","本局走反轉錄・核內複製向。非醫療建議。"),
+    hiv2: endNode("hiv2","vir","你已成為「人類免疫缺乏病毒第二型」病毒","本局走反轉錄・HIV-2 向。非醫療建議。"),
+    htlv: endNode("htlv","vir","你已成為「人類 T 淋巴病毒」病毒","本局走 δ 反轉錄向（≥4）。非醫療建議。")
   };
+
 
   function buildProof() {
     var endings = [];
     var routes = {};
+    var depths = {};
     Object.keys(LEVELS).forEach(function (id) {
       if (LEVELS[id].end) endings.push(id);
     });
@@ -1148,6 +1422,7 @@
       if (!n) return;
       if (n.end) {
         routes[nodeId] = path.slice();
+        depths[nodeId] = path.length;
         return;
       }
       (n.options || []).forEach(function (opt) {
@@ -1155,11 +1430,16 @@
       });
     }
     walk("seed", []);
+    var vals = Object.keys(depths).map(function (k) { return depths[k]; });
+    var minD = vals.length ? Math.min.apply(null, vals) : 0;
+    var maxD = vals.length ? Math.max.apply(null, vals) : 0;
     return {
       endings: endings,
       endingCount: endings.length,
-      note: "路線深度依物種：球菌短路線；結核經抗酸→巨噬內；流感經 HA→NA；HIV 經進入→反轉錄→整合。全部選項 next 互異，無假分叉。簡化科普／假設・非醫療。",
-      routes: routes
+      depths: depths,
+      depthMin: minD,
+      depthMax: maxD,
+      note: "路線加深：多數≥4 關；結核／流感／HIV 約 6–7。全部選項 next 互異，無假分叉。簡化科普／假設・非醫療。"
     };
   }
   const PROOF = buildProof();
@@ -1168,7 +1448,7 @@
     title: document.getElementById("title"),
     play: document.getElementById("play"),
     end: document.getElementById("end"),
-    atlas: document.getElementById("atlas"),
+    dex: document.getElementById("dex"),
     stage: document.getElementById("stage"),
     creature: document.getElementById("creature"),
     toast: document.getElementById("toast"),
@@ -1180,19 +1460,16 @@
     endLatin: document.getElementById("endLatin"),
     endStory: document.getElementById("endStory"),
     endPath: document.getElementById("endPath"),
+    endDexNote: document.getElementById("endDexNote"),
     particles: document.getElementById("particles"),
     laneHint: document.getElementById("laneHint"),
-    atlasObject: document.getElementById("atlasObject"),
-    atlasCanvas: document.getElementById("atlasCanvas"),
-    atlasViewport: document.getElementById("atlasViewport"),
-    atlasLeaves: document.getElementById("atlasLeaves"),
-    atlasDetail: document.getElementById("atlasDetail"),
-    zoomLabel: document.getElementById("zoomLabel")
+    dexList: document.getElementById("dexList"),
+    dexDetail: document.getElementById("dexDetail"),
+    dexSummary: document.getElementById("dexSummary")
   };
 
   (function spawnParticles() {
-    var n = 18;
-    for (var i = 0; i < n; i++) {
+    for (var i = 0; i < 18; i++) {
       var d = document.createElement("i");
       d.style.left = (Math.random() * 100) + "%";
       d.style.animationDuration = (8 + Math.random() * 14) + "s";
@@ -1207,12 +1484,14 @@
   var lastTs = 0;
   var keys = { left: false, right: false };
   var gateRowEl = null;
+  var pointerActive = false;
+  var dexReturnTo = "title";
 
   function showScreen(name) {
     el.title.classList.toggle("active", name === "title");
     el.play.classList.toggle("active", name === "play");
     el.end.classList.toggle("active", name === "end");
-    el.atlas.classList.toggle("active", name === "atlas");
+    el.dex.classList.toggle("active", name === "dex");
   }
 
   function setForm(formId) {
@@ -1239,9 +1518,7 @@
 
   function setLaneCount(n) {
     el.laneHint.innerHTML = "";
-    for (var i = 0; i < n; i++) {
-      el.laneHint.appendChild(document.createElement("span"));
-    }
+    for (var i = 0; i < n; i++) el.laneHint.appendChild(document.createElement("span"));
   }
 
   function spawnGates(level) {
@@ -1271,30 +1548,23 @@
     state.gatesReady = true;
     state.resolved = false;
     state.y = Math.max(90, sh * 0.16);
-    state.fallSpeed = Math.min(170, 115 + state.segment * 10);
+    state.fallSpeed = Math.min(170, 115 + state.segment * 8);
   }
 
   function startGame() {
     cancelAnimationFrame(raf);
     clearGates();
     state = {
-      nodeId: "seed",
-      segment: 0,
-      x: 0.5,
-      y: 100,
-      vx: 0,
-      fallSpeed: 120,
+      nodeId: "seed", segment: 0, x: 0.5, y: 100, vx: 0, fallSpeed: 120,
       path: [{ label: "原始微粒", choice: "開局" }],
-      gatesReady: false,
-      resolved: false,
-      pauseUntil: 0,
-      domain: null
+      gatesReady: false, resolved: false, pauseUntil: 0, domain: null
     };
     showScreen("play");
     setForm("seed");
     state.x = el.stage.clientWidth / 2;
     spawnGates(LEVELS.seed);
     lastTs = 0;
+    pointerActive = false;
     raf = requestAnimationFrame(tick);
     toast(LEVELS.seed.prompt, 1200);
   }
@@ -1307,41 +1577,68 @@
     if (!opt) return;
     state.resolved = true;
     state.path.push({ label: FORMS[level.form].name, choice: opt.title });
-
     if (opt.next === "bact_wall" || opt.next === "curve_wall") state.domain = "bact";
     if (opt.next === "vir_capsid" || opt.next === "retro_entry") state.domain = "vir";
-
     var nextId = opt.next;
     var nextNode = LEVELS[nextId];
-
     toast(opt.title, 700);
     clearGates();
     state.gatesReady = false;
-
     if (nextNode && nextNode.end) {
-      var formId = nextNode.form;
-      setForm(formId);
-      state.path.push({ label: FORMS[formId].name, choice: "終局" });
+      setForm(nextNode.form);
+      state.path.push({ label: FORMS[nextNode.form].name, choice: "終局" });
       state.pauseUntil = performance.now() + 600;
       state.pendingEnd = nextNode;
       return;
     }
-
     state.nodeId = nextId;
     state.segment += 1;
     setForm(nextNode.form);
-    state.pauseUntil = performance.now() + 500;
+    state.pauseUntil = performance.now() + 450;
     state.pendingSpawn = nextId;
+  }
+
+  /* —— 物種圖鑑 localStorage —— */
+  var DEX_KEY = "virus-fork-dex";
+  function loadUnlocked() {
+    try {
+      var raw = localStorage.getItem(DEX_KEY);
+      if (!raw) return {};
+      var arr = JSON.parse(raw);
+      var map = {};
+      if (Array.isArray(arr)) arr.forEach(function (id) { map[id] = true; });
+      else if (arr && typeof arr === "object") map = arr;
+      return map;
+    } catch (e) { return {}; }
+  }
+  function saveUnlocked(map) {
+    try {
+      var arr = Object.keys(map).filter(function (k) { return map[k]; });
+      localStorage.setItem(DEX_KEY, JSON.stringify(arr));
+    } catch (e) {}
+  }
+  function unlockSpecies(formId) {
+    var map = loadUnlocked();
+    var fresh = !map[formId];
+    map[formId] = true;
+    saveUnlocked(map);
+    return fresh;
+  }
+  function endingIds() {
+    return PROOF.endings.slice();
   }
 
   function finish(endNode) {
     cancelAnimationFrame(raf);
     clearGates();
+    pointerActive = false;
     var form = FORMS[endNode.form];
+    var fresh = unlockSpecies(endNode.form);
     el.endMascot.innerHTML = form.draw();
     el.endTitle.textContent = endNode.endTitle;
     el.endLatin.textContent = form.latin;
     el.endStory.textContent = endNode.endStory + " " + PROOF.note;
+    el.endDexNote.textContent = fresh ? "已記入圖鑑（新解鎖）" : "已記入圖鑑";
     el.endPath.innerHTML = "";
     state.path.forEach(function (p) {
       var li = document.createElement("li");
@@ -1366,7 +1663,6 @@
     return best;
   }
 
-  /** 依水平位置均分寬度對應門槽（N>2） */
   function gateIndexFromClientX(clientX) {
     if (!gateRowEl || !state) return 0;
     var gates = gateRowEl.querySelectorAll(".gate");
@@ -1378,13 +1674,22 @@
     return Math.min(n - 1, Math.floor(ratio * n));
   }
 
+  var hiIdx = -1;
   function highlightGate() {
     if (!gateRowEl) return;
     var idx = nearestGateIndex();
+    if (idx === hiIdx) return;
+    hiIdx = idx;
     gateRowEl.querySelectorAll(".gate").forEach(function (g, i) {
       g.style.outline = i === idx ? "2px solid #e8efe8" : "none";
       g.style.outlineOffset = "2px";
     });
+  }
+
+  function syncCreatureX() {
+    if (!state) return;
+    el.creature.style.left = state.x + "px";
+    el.creature.style.top = state.y + "px";
   }
 
   function tick(ts) {
@@ -1398,26 +1703,27 @@
       return;
     }
     if (state.pendingEnd) {
-      var e = state.pendingEnd;
-      state.pendingEnd = null;
-      finish(e);
-      return;
+      var e = state.pendingEnd; state.pendingEnd = null; finish(e); return;
     }
     if (state.pendingSpawn) {
-      var id = state.pendingSpawn;
-      state.pendingSpawn = null;
+      var id = state.pendingSpawn; state.pendingSpawn = null;
+      hiIdx = -1;
       spawnGates(LEVELS[id]);
       toast(LEVELS[id].prompt, 1000);
     }
 
     var sw = el.stage.clientWidth;
     var sh = el.stage.clientHeight;
-    var speed = 300;
-    if (keys.left) state.vx = -speed;
-    else if (keys.right) state.vx = speed;
-    else state.vx *= 0.82;
-
-    state.x += state.vx * dt;
+    var speed = 320;
+    /* 拖動中：水平完全跟指，不套用鍵盤 vx，避免拉扯卡頓 */
+    if (!pointerActive) {
+      if (keys.left) state.vx = -speed;
+      else if (keys.right) state.vx = speed;
+      else state.vx *= 0.78;
+      state.x += state.vx * dt;
+    } else {
+      state.vx = 0;
+    }
     var margin = 28;
     if (state.x < margin) { state.x = margin; state.vx = 0; }
     if (state.x > sw - margin) { state.x = sw - margin; state.vx = 0; }
@@ -1425,152 +1731,78 @@
     if (state.gatesReady && !state.resolved) {
       state.y += state.fallSpeed * dt;
       highlightGate();
-      if (state.y >= state.gateY + 10) {
-        pickOption(nearestGateIndex());
-      }
-      if (state.y > sh + 40 && !state.resolved) {
-        pickOption(nearestGateIndex());
-      }
+      if (state.y >= state.gateY + 10) pickOption(nearestGateIndex());
+      if (state.y > sh + 40 && !state.resolved) pickOption(nearestGateIndex());
     }
 
-    el.creature.style.left = state.x + "px";
-    el.creature.style.top = state.y + "px";
-
+    syncCreatureX();
     raf = requestAnimationFrame(tick);
   }
 
-
-  /* —— 演化圖鑑（title／終局入口；對局內不顯示） —— */
-  var ATLAS = {
-    v1: {
-      src: "assets/evolution-trees/v1-overview.svg",
-      fallback: "assets/evolution-trees/v1-overview.png",
-      label: "v1 概覽",
-      leaves: [
-        { id: "luca", title: "LUCA", body: "最後共同祖先：細胞生命之根（簡化科普／假設）。" },
-        { id: "bact", title: "細菌域", body: "原核、無核膜；與古菌二分之一側（非三域並列）。" },
-        { id: "arch", title: "古菌域", body: "另一側細胞生命域；真核由此系衍生。" },
-        { id: "euk", title: "真核生物", body: "古菌系衍生＋細菌內共生（粒線體等）；勿畫成第三域。" },
-        { id: "vir", title: "病毒側群", body: "多起源虛線側枝；依附細胞複製，非單一「病毒域」。" }
-      ]
-    },
-    v2: {
-      src: "assets/evolution-trees/v2-endosymbiosis.svg",
-      fallback: "assets/evolution-trees/v2-endosymbiosis.png",
-      label: "v2 內共生",
-      leaves: [
-        { id: "luca", title: "LUCA", body: "根部；由此分出細菌域與古菌域。" },
-        { id: "alpha", title: "α-變形菌", body: "內共生 → 粒線體（幾乎所有真核）。" },
-        { id: "cyano", title: "藍菌相關", body: "部分譜系內共生 → 質體／葉綠體。" },
-        { id: "asgard", title: "阿斯加德古菌", body: "與真核來源密切相關的古菌側枝（示意）。" },
-        { id: "euk", title: "真核生物", body: "嵌於古菌側；細胞核與複雜細胞器。" },
-        { id: "vir", title: "病毒分群", body: "DNA／RNA／巨型病毒等側枝示意；仍非單系域。" }
-      ]
-    },
-    v3: {
-      src: "assets/evolution-trees/v3-detailed.svg",
-      fallback: "assets/evolution-trees/v3-detailed.png",
-      label: "v3 深入",
-      leaves: [
-        { id: "luca", title: "LUCA", body: "細節教育圖之根；分支長度僅示意。" },
-        { id: "firm", title: "厚壁菌門", body: "細菌域示意葉片（芽孢桿菌等）；非完整目錄。" },
-        { id: "proteo", title: "變形菌門", body: "含 α 變形菌 → 粒線體祖先相關。" },
-        { id: "asgard", title: "阿斯加德古菌", body: "真核來源密切相關；真核掛在此側。" },
-        { id: "plant", title: "植物（含質體）", body: "真核葉片；質體來自藍菌相關內共生。" },
-        { id: "vir", title: "病毒側群", body: "雙鏈 DNA／RNA／反轉錄／衛星等；多起源、非細胞生命域。" }
-      ]
-    }
-  };
-  var atlasState = { ver: "v1", zoom: 1, returnTo: "title", leafId: null };
-
-  function setAtlasZoom(z) {
-    atlasState.zoom = Math.max(0.6, Math.min(2.8, Math.round(z * 100) / 100));
-    var img = el.atlasObject;
-    var base = el.atlasViewport.clientWidth || 360;
-    var w = Math.max(base, base * atlasState.zoom);
-    img.style.width = w + "px";
-    img.style.height = "auto";
-    el.atlasCanvas.style.transform = "none";
-    el.atlasCanvas.style.width = "max-content";
-    el.zoomLabel.textContent = Math.round(atlasState.zoom * 100) + "%";
-  }
-
-  function renderAtlasLeaves() {
-    var pack = ATLAS[atlasState.ver];
-    el.atlasLeaves.innerHTML = "";
-    pack.leaves.forEach(function (leaf) {
-      var b = document.createElement("button");
-      b.type = "button";
-      b.textContent = leaf.title;
-      b.dataset.leaf = leaf.id;
-      if (atlasState.leafId === leaf.id) b.classList.add("active");
-      b.addEventListener("click", function () { showLeafDetail(leaf.id); });
-      el.atlasLeaves.appendChild(b);
+  function renderDex() {
+    var unlocked = loadUnlocked();
+    var ids = endingIds();
+    var n = ids.length;
+    var u = ids.filter(function (id) { return unlocked[id]; }).length;
+    el.dexSummary.innerHTML = "已解鎖 <strong>" + u + "</strong>／總數 <strong>" + n + "</strong>　｜　未知 <strong>" + (n - u) + "</strong>";
+    el.dexList.innerHTML = "";
+    ids.forEach(function (id) {
+      var form = FORMS[id];
+      var d = DEX[id] || {};
+      var on = !!unlocked[id];
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "dex-card" + (on ? "" : " locked");
+      btn.setAttribute("role", "listitem");
+      var kind = (d.kind || (LEVELS[id] && LEVELS[id].endKind) || "");
+      btn.innerHTML = '<div class="dex-icon' + (on ? "" : " locked") + '"></div>' +
+        '<div class="dex-name"></div>' +
+        '<span class="dex-tag ' + kind + '"></span>';
+      btn.querySelector(".dex-icon").innerHTML = form.draw();
+      btn.querySelector(".dex-name").textContent = on ? form.name : "？？？";
+      btn.querySelector(".dex-tag").textContent = on ? (kind === "bact" ? "細菌" : kind === "vir" ? "病毒" : "") : "未知";
+      btn.addEventListener("click", function () { showDexDetail(id); });
+      el.dexList.appendChild(btn);
     });
   }
 
-  function showLeafDetail(leafId) {
-    var pack = ATLAS[atlasState.ver];
-    var leaf = null;
-    for (var i = 0; i < pack.leaves.length; i++) {
-      if (pack.leaves[i].id === leafId) { leaf = pack.leaves[i]; break; }
-    }
-    if (!leaf) {
-      el.atlasDetail.classList.remove("show");
-      el.atlasDetail.textContent = "";
-      atlasState.leafId = null;
-      renderAtlasLeaves();
+  function showDexDetail(id) {
+    var unlocked = loadUnlocked();
+    var form = FORMS[id];
+    var d = DEX[id] || {};
+    if (!unlocked[id]) {
+      el.dexDetail.innerHTML = '<p class="dex-locked-msg">尚未解鎖。走到「' + (d.name || form.name) + '」終局後即可記入圖鑑。</p>';
+      el.dexDetail.classList.add("show");
       return;
     }
-    atlasState.leafId = leafId;
-    el.atlasDetail.innerHTML = "<strong>" + leaf.title + "</strong> — " + leaf.body;
-    el.atlasDetail.classList.add("show");
-    renderAtlasLeaves();
+    var kind = d.kind || "";
+    el.dexDetail.innerHTML =
+      '<div class="dd-top"><div class="dd-icon"></div><div>' +
+      '<h3></h3><p class="dd-latin"></p>' +
+      '<span class="dex-tag ' + kind + '"></span></div></div>' +
+      '<div class="dd-sec"><strong>特徵</strong><span class="dd-traits"></span></div>' +
+      '<div class="dd-sec"><strong>歷史</strong><span class="dd-hist"></span></div>' +
+      '<p class="disclaimer" style="margin-top:8px">簡化科普／假設・非醫療建議。</p>';
+    el.dexDetail.querySelector(".dd-icon").innerHTML = form.draw();
+    el.dexDetail.querySelector("h3").textContent = form.name;
+    el.dexDetail.querySelector(".dd-latin").textContent = form.latin;
+    el.dexDetail.querySelector(".dex-tag").textContent = kind === "bact" ? "細菌" : kind === "vir" ? "病毒" : "";
+    el.dexDetail.querySelector(".dd-traits").textContent = d.traits || form.blurb;
+    el.dexDetail.querySelector(".dd-hist").textContent = d.history || "（簡化科普／假設）";
+    el.dexDetail.classList.add("show");
   }
 
-  function loadAtlasVersion(ver) {
-    if (!ATLAS[ver]) return;
-    atlasState.ver = ver;
-    atlasState.leafId = null;
-    document.querySelectorAll(".atlas-tabs button").forEach(function (btn) {
-      btn.classList.toggle("active", btn.getAttribute("data-ver") === ver);
-    });
-    var pack = ATLAS[ver];
-    var obj = el.atlasObject;
-    /* 相對路徑優先 SVG；onerror 後備 PNG */
-    obj.onerror = function () {
-      if (obj.dataset.fallbackApplied === pack.fallback) return;
-      obj.dataset.fallbackApplied = pack.fallback;
-      obj.src = pack.fallback;
-    };
-    obj.dataset.fallbackApplied = "";
-    obj.src = pack.src;
-    obj.alt = pack.label + "（簡化科普／假設）";
-    /* 依版本調整 intrinsic 提示寬高比 */
-    if (ver === "v1") { obj.width = 960; obj.height = 640; }
-    else if (ver === "v2") { obj.width = 1100; obj.height = 720; }
-    else { obj.width = 1280; obj.height = 860; }
-    el.atlasDetail.classList.remove("show");
-    el.atlasDetail.textContent = "";
-    renderAtlasLeaves();
-    setAtlasZoom(1);
-    el.atlasViewport.scrollLeft = 0;
-    el.atlasViewport.scrollTop = 0;
+  function openDex(from) {
+    dexReturnTo = from || "title";
+    el.dexDetail.classList.remove("show");
+    el.dexDetail.innerHTML = "";
+    renderDex();
+    showScreen("dex");
+  }
+  function closeDex() {
+    showScreen(dexReturnTo === "end" ? "end" : "title");
   }
 
-  function openAtlas(from) {
-    atlasState.returnTo = from || "title";
-    showScreen("atlas");
-    loadAtlasVersion(atlasState.ver || "v1");
-  }
-
-  function closeAtlas() {
-    showScreen(atlasState.returnTo === "end" ? "end" : "title");
-  }
-
-
-
-  /* —— 副標（第二行）開關；localStorage 持久化 —— */
   var SUBS_KEY = "virus-fork-show-subs";
   function getShowSubs() {
     try {
@@ -1586,26 +1818,16 @@
     try { localStorage.setItem(SUBS_KEY, on ? "1" : "0"); } catch (e) {}
   }
   applyShowSubs(getShowSubs());
-  (function bindSubsToggle() {
+  (function () {
     var chk = document.getElementById("chkShowSubs");
-    if (!chk) return;
-    chk.addEventListener("change", function () { applyShowSubs(chk.checked); });
+    if (chk) chk.addEventListener("change", function () { applyShowSubs(chk.checked); });
   })();
 
   document.getElementById("btnStart").addEventListener("click", startGame);
-  document.getElementById("btnAgain").addEventListener("click", function () {
-    showScreen("title");
-  });
-  document.getElementById("btnAtlas").addEventListener("click", function () { openAtlas("title"); });
-  document.getElementById("btnAtlasEnd").addEventListener("click", function () { openAtlas("end"); });
-  document.getElementById("btnAtlasBack").addEventListener("click", closeAtlas);
-  document.querySelectorAll(".atlas-tabs button").forEach(function (btn) {
-    btn.addEventListener("click", function () { loadAtlasVersion(btn.getAttribute("data-ver")); });
-  });
-  document.getElementById("btnZoomIn").addEventListener("click", function () { setAtlasZoom(atlasState.zoom + 0.2); });
-  document.getElementById("btnZoomOut").addEventListener("click", function () { setAtlasZoom(atlasState.zoom - 0.2); });
-  document.getElementById("btnZoomReset").addEventListener("click", function () { setAtlasZoom(1); });
-
+  document.getElementById("btnAgain").addEventListener("click", function () { showScreen("title"); });
+  document.getElementById("btnDex").addEventListener("click", function () { openDex("title"); });
+  document.getElementById("btnDexEnd").addEventListener("click", function () { openDex("end"); });
+  document.getElementById("btnDexBack").addEventListener("click", closeDex);
 
   window.addEventListener("keydown", function (e) {
     if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") { keys.left = true; e.preventDefault(); }
@@ -1616,8 +1838,7 @@
     if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = false;
   });
 
-  /* 觸控：preventDefault 擋長按選字；水平位置對應最近門／均分區（N>2） */
-  var touchX0 = null;
+  /* 拖動跟手：pointer 直接設 x＋立刻同步 DOM／高亮；拖動中不套用鍵盤 vx */
   el.stage.addEventListener("touchstart", function (e) {
     if (!state || !el.play.classList.contains("active")) return;
     e.preventDefault();
@@ -1627,40 +1848,37 @@
     e.preventDefault();
   }, { passive: false });
 
+  function applyPointerX(clientX) {
+    if (!state) return;
+    var rect = el.stage.getBoundingClientRect();
+    var x = clientX - rect.left;
+    var margin = 28;
+    state.x = Math.max(margin, Math.min(rect.width - margin, x));
+    state.vx = 0;
+    syncCreatureX();
+    highlightGate();
+  }
+
   el.stage.addEventListener("pointerdown", function (e) {
     if (!state || !el.play.classList.contains("active")) return;
-    if (e.pointerType === "touch") e.preventDefault();
-    touchX0 = e.clientX;
-    var rect = el.stage.getBoundingClientRect();
-    state.x = e.clientX - rect.left;
-    /* 不再寫死左右半＝2 選；以位置對齊門槽 */
-    var gi = gateIndexFromClientX(e.clientX);
-    if (gateRowEl) {
-      var gates = gateRowEl.querySelectorAll(".gate");
-      if (gates[gi]) {
-        var gr = gates[gi].getBoundingClientRect();
-        state.x = (gr.left + gr.right) / 2 - rect.left;
-      }
-    }
+    if (e.pointerType === "touch" || e.pointerType === "pen") e.preventDefault();
+    pointerActive = true;
+    keys.left = false; keys.right = false;
+    applyPointerX(e.clientX);
     try { el.stage.setPointerCapture(e.pointerId); } catch (err) {}
   });
   el.stage.addEventListener("pointermove", function (e) {
-    if (touchX0 == null || !state) return;
-    var rect = el.stage.getBoundingClientRect();
-    state.x = e.clientX - rect.left;
-    var dx = e.clientX - touchX0;
-    if (Math.abs(dx) > 8) {
-      keys.left = dx < 0;
-      keys.right = dx > 0;
-    }
+    if (!pointerActive || !state) return;
+    if (e.pointerType === "touch" || e.pointerType === "pen") e.preventDefault();
+    applyPointerX(e.clientX);
   });
   function clearPointer(e) {
-    keys.left = false; keys.right = false; touchX0 = null;
+    pointerActive = false;
+    keys.left = false; keys.right = false;
     try { el.stage.releasePointerCapture(e.pointerId); } catch (err) {}
   }
   el.stage.addEventListener("pointerup", clearPointer);
   el.stage.addEventListener("pointercancel", clearPointer);
-
   el.stage.addEventListener("contextmenu", function (e) { e.preventDefault(); });
   document.getElementById("app").addEventListener("contextmenu", function (e) {
     if (el.play.classList.contains("active")) e.preventDefault();
@@ -1673,7 +1891,7 @@
       if (!n.options) return;
       var seen = {};
       n.options.forEach(function (opt, i) {
-        if (seen[opt.next]) bad.push(id + " options[" + seen[opt.next] + "] and [" + i + "] share next=" + opt.next);
+        if (seen[opt.next] !== undefined) bad.push(id + " options[" + seen[opt.next] + "] and [" + i + "] share next=" + opt.next);
         seen[opt.next] = i;
       });
     });
@@ -1681,18 +1899,13 @@
   }
 
   window.__VIRUS_FORK__ = {
-    FORMS: FORMS,
-    LEVELS: LEVELS,
-    PROOF: PROOF,
-    ATLAS: ATLAS,
-    openAtlas: openAtlas,
-    loadAtlasVersion: loadAtlasVersion,
-    startGame: startGame,
+    FORMS: FORMS, LEVELS: LEVELS, DEX: DEX, PROOF: PROOF,
+    startGame: startGame, openDex: openDex, renderDex: renderDex,
+    loadUnlocked: loadUnlocked, unlockSpecies: unlockSpecies,
     getState: function () { return state; },
     forcePick: function (idx) { pickOption(idx); },
     assertNoFakeForks: assertNoFakeForks,
-    getShowSubs: getShowSubs,
-    applyShowSubs: applyShowSubs,
+    getShowSubs: getShowSubs, applyShowSubs: applyShowSubs,
     gateIndexFromClientX: gateIndexFromClientX,
     fallInto: function (idx) {
       if (!state || !gateRowEl) return false;

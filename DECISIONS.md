@@ -1,5 +1,14 @@
 # virus-fork-cli — 決策紀錄
 
+## 2026-10-28 現實環境第二段＋玩時畫面加強（feat/env-phase-ui）
+- 接手 CLI WIP `8dd89c3`；Grok CLI 無頭一度因權限中斷，改由本席直寫收尾。
+- **環境段**：終局「進入現實環境」→ 依物種分池 `ENV_POOLS`（13 池覆蓋 29 終局）；`pop` 0–100 消長；繁盛／持平／衰退柔和結局；零假分叉。
+- **cocci 加深**：最短線原 `0→1b→die`（depth 2）不符 3–5；改經 `e_cocci_2dry` 中繼，三路 next 互異（`2ok`／`die`／`2mid`）。`envDepthOk`：各池 min≥3、max≤5。
+- **玩時 UI**：沿 WIP 舞台層次／門卡／環境色溫；禁選字、副標、拖動跟手保留。
+- **單檔**：`index.html`＋inline cover → `playable.html`；無樹圖。
+- 自驗：`_work/checks.mjs` **allPass=true**；`verify-phone-html --also-landscape` **PASS**（含點進現實環境）。
+- 證據：`/workspace/scratch/virus-fork-cli-evidence-v10/`
+
 ## 2026-10-28 圖鑑解鎖修復＋未解鎖不露名＋真實形態（feat/dex-fix-morph）
 - Grok CLI `1.0.72`／模型 `grok-4.7`；`grok update`＋`grok models` 已確認。**直寫檔**修 `index.html`（非互動 TUI；路徑 A 禁止 Cloud Agent）。
 - **A 解鎖**：`sessionUnlocked` 記憶體 map 永遠先寫；`probeStorage` 偵測 localStorage；失敗時 Title／圖鑑頂部繁中提示（Safari／Chrome 開檔、勿用聊天預覽）；`catch` 不再空吞（`console.warn`＋畫面訊號）。通關後同一頁開圖鑑必見解鎖。

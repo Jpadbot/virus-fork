@@ -1633,8 +1633,13 @@ function svg(inner, vb) {
         ]},
         e_cocci_1b: { prompt: "乾燥之後遇到：", options: [
           envOpt("汗水／皮脂再度潤濕", "恢復生長", "e_cocci_2ok", 16, "bact"),
-          envOpt("持續風乾", "走向清除", "e_cocci_die", -22, "bact"),
+          envOpt("持續風乾", "危機加深", "e_cocci_2dry", -16, "bact"),
           envOpt("短暫接觸毛巾濕氣", "勉強持平", "e_cocci_2mid", 2, "bact")
+        ]},
+        e_cocci_2dry: { prompt: "風乾壓力持續：", options: [
+          envOpt("偶然接觸濕氣", "勉強回升", "e_cocci_2ok", 10, "bact"),
+          envOpt("完全脫水", "走向清除", "e_cocci_die", -24, "bact"),
+          envOpt("進入縫隙殘存", "持平略穩", "e_cocci_2mid", 3, "bact")
         ]},
         e_cocci_1c: { prompt: "清潔壓力後：", options: [
           envOpt("殘存於縫隙", "緩慢回升", "e_cocci_2mid", 8, "bact"),

@@ -1,5 +1,13 @@
 # virus-fork-cli — 決策紀錄
 
+## 2026-10-28 圖鑑解鎖修復＋未解鎖不露名＋真實形態（feat/dex-fix-morph）
+- Grok CLI `1.0.72`／模型 `grok-4.7`；`grok update`＋`grok models` 已確認。**直寫檔**修 `index.html`（非互動 TUI；路徑 A 禁止 Cloud Agent）。
+- **A 解鎖**：`sessionUnlocked` 記憶體 map 永遠先寫；`probeStorage` 偵測 localStorage；失敗時 Title／圖鑑頂部繁中提示（Safari／Chrome 開檔、勿用聊天預覽）；`catch` 不再空吞（`console.warn`＋畫面訊號）。通關後同一頁開圖鑑必見解鎖。
+- **B 不露名**：`showDexDetail` 鎖定改「尚未解鎖。走到對應終局後即可記入圖鑑。」；字串／DOM 掃描 29 終局 name／latin → leakCount=0。
+- **C 真實形態**：共用 helper（`cocci` 葡萄串、`strepto` 鏈、`rod`／`thickRod`、`spiral`、`vibrioArc`、`sporeRod`、`virion` 棘、`naked`／`hexVir` 二十面體、`adenoVir` 纖維、`herpesVir`、`hivVir` 圓錐核心、`rhabdo` 彈狀、`rotaVir`）；對局公仔與圖鑑同一套。
+- **保留**：29 終局、深度 4–7、副標開關、拖動跟手、零假分叉、單檔 playable（cover JPEG inline；無三張樹圖）。
+- verify-phone-html --also-landscape **PASS**；證據 `/workspace/scratch/virus-fork-cli-evidence-v9/`。
+
 ## 2026-10-28 解鎖式物種圖鑑＋拖動＋加深（feat/species-dex）
 - Grok CLI `1.0.72`／模型 `grok-4.7`；`--cwd` **直寫**（未開 TUI；路徑 A 禁止 Cloud Agent）。
 - **拿掉三張演化樹**：刪 atlas tab／縮放／SVG｜PNG inline；`assets/evolution-trees/` 留 repo 但不進 `playable.html`。

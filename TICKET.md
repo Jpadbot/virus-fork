@@ -1,59 +1,64 @@
-# virus-fork-cli — 解鎖式物種圖鑑（取代三張樹圖）（路徑 A／CLI only）
+# virus-fork-cli — 圖鑑解鎖修復＋未解鎖不露名＋真實形態（路徑 A／CLI only）
 
 日期：2026-10-28（Asia/Hong_Kong）  
-來源：John  
+來源：John 試玩回報（手機截圖）  
 路徑：A；路徑 B 仍暫緩  
-`--cwd /workspace/virus-fork-cli`。自 `feat/science-depth-hints` 開新分支（例 `feat/species-dex`）。
+`--cwd /workspace/virus-fork-cli`。自目前 Accept 分支 `feat/species-dex` 開新分支（例 `feat/dex-fix-morph`）。
 
 ## John 原文要點
-1. **新增圖鑑功能**；**不要**那三張演化樹圖（v1／v2／v3 overview／endosymbiosis／detailed）。
-2. 玩家解鎖一種細菌／病毒後，圖鑑才顯示該物種。
-3. 玩家要看得出**還有多少種未知**未解鎖。
-4. 解鎖後可看該物種的**特徵**與**歷史**（簡化科普／假設；非醫療）。
+1. **圖鑑 is not working** — 玩了兩次，圖鑑仍 **已解鎖 0／總數 29**。
+2. **Don’t show the name of the hidden item** — 未解鎖時不可露出物種名（截圖底欄寫「走到『狂犬病病毒』終局…」＝洩露）。
+3. **Shape and figure of the cell should follow the real shape in the real world** — 公仔／剪影須貼近真實微生物外形。
+
+John 截圖（本席已放 scratch，SendToAgent 不附圖，請自讀）：
+`/workspace/scratch/virus-fork-cli-john-notes-v9/dex-0-unlocked-leak-name.png`
+
+## 根因線索（供開工，勿盲改）
+- `unlockSpecies(endNode.form)` 與 `PROOF.endings` 鍵一致（29 終局 id＝form id），**邏輯鍵名本身對得上**。
+- `saveUnlocked` 的 `catch (e) {}` 會吞掉寫入失敗；手機若用**聊天／App 內「預覽」**開 `playable.html`（非 Safari／Chrome 固定路徑），`localStorage` 常無法持久 → 重開即 0。
+- `showDexDetail` 未解鎖文案用了 `d.name || form.name` → **確定 bug**，必須修。
 
 ## 做什麼（what）
 
-### A. 拿掉三張樹圖
-- 刪除／停用 atlas 的三版 tab、縮放樹圖、inline 的三張 SVG／PNG data URL（可大幅縮小單檔）。
-- `assets/evolution-trees/` 可留在 repo 但不進 `playable.html` 交付。
+### A. 圖鑑解鎖必須可用（主修）
+1. 通關 `finish` 後，**同一頁不重新載入**打開圖鑑，必須立刻顯示該物種已解鎖（即使 storage 失敗，至少本局 session 要有）。
+2. 偵測 `localStorage` 可否讀寫；失敗時在 Title／圖鑑頂部用繁中短提示，說明：
+   - 請用 **Safari 或 Chrome** 開啟本檔（**不要用聊天內預覽／原始碼切換頁**）；
+   - 將檔案存到「檔案」後固定用同一路徑開啟，圖鑑才會記住。
+3. 寫入失敗不可靜默：至少 `console`／畫面上有可驗證訊號（勿 Eng 長段）。
+4. 重建單檔後用自動化或手動腳本證明：呼叫 unlock → `renderDex` 計數 ≥1；證據資料夾留「通關後已解鎖 ≥1」截圖。
+5. 若需極小改動改善 file 協議體驗可做；**不要**為此改走路徑 B 或要求上架。不開 Cloud Agent。
 
-### B. 解鎖式物種圖鑑（主交付仍為單檔 `playable.html`）
-- Title／終局保留「圖鑑」入口（文案可改「物種圖鑑」）。
-- 圖鑑列表＝全部終局物種（現有 ≥29；與 `LEVELS` end 節點對齊）。
-- **未解鎖**：顯示為「？？？」或剪影格；可點但只見「尚未解鎖」；頂部／摘要顯示「已解鎖 x／總數 y」與「未知 z」。
-- **已解鎖**：顯示名稱（與終局「你已成為『某某』」一致）、細菌／病毒標籤、簡筆公仔（可用現有 FORMS SVG 或簡化 icon）、**特徵**、**歷史**（各 2–4 句繁中，標簡化科普／假設）。
-- **解鎖條件**：該局走到該終局即解鎖；`localStorage` 持久（鍵名自定，例 `virus-fork-dex`）。
-- 終局畫面可提示「已記入圖鑑」。
+### B. 未解鎖絕不露名
+- 鎖定卡、詳情、toast、aria、任何提示：**禁止**中文名、拉丁名、暗示性專有名。
+- 鎖定詳情改為中性句，例：「尚未解鎖。走到對應終局後即可記入圖鑑。」
+- 未解鎖格維持「？？？」＋「未知」；剪影可保留外形但不標名。
+- 用字串／DOM 檢查：鎖定態詳情 HTML 不得出現各終局 `FORMS[id].name`／`latin`。
 
-### C. 資料
-- 為每個 end 節點加 `dex: { traits, history, kind }`（或平行 `DEX` 表）；內容須科學向簡化，勿捏造假醫學宣稱。
-- 對局玩法、29（或以上）互斥終局、副標開關、禁選字、封面、科學加深路線**保留**；零假分叉。
+### C. 真實世界外形
+- 重畫／調整 `FORMS`（及圖鑑 icon）使外形貼近真實：
+  - 葡萄球菌＝葡萄串球菌；鏈球菌＝鏈狀；桿菌／腸道＝桿狀；結核／抗酸＝略粗桿；芽孢＝桿＋芽孢；螺旋／幽門＝螺旋；弧菌＝逗點弧；
+  - 有膜 RNA／流感等＝大致球＋棘／套膜示意；裸殼＝二十面體／多角；皰疹＝有膜較大；腺病毒＝二十面體＋纖維；HIV／反轉錄＝圓錐核心／圓形有膜示意；彈狀（狂犬）＝子彈／桿狀病毒示意等。
+- 仍為簡筆 SVG（單檔可負載），但**不得**再用無關抽象形（魚形等）。科普簡化即可，勿偽醫學精度。
+- 對局中下落公仔與圖鑑解鎖／未解鎖剪影同一套形態邏輯。
 
-### D. 驗證與證據
-- 重建／更新單檔 `playable.html`（無三張樹圖 inline）。
+### D. 保留
+- 29（或以上）互斥終局、深度 4–7、副標開關、拖動跟手、零假分叉、單檔 `playable.html`、無三張樹圖。
+
+### E. 驗證與證據
 - `verify-phone-html playable.html --also-landscape` PASS。
-- 證據：`/workspace/scratch/virus-fork-cli-evidence-v8/`（未解鎖列表、解鎖後詳情、進度 x／y、終局記入提示、DECISIONS、checks）。
-
-
-### E. 拖動手感（John 追加）
-- 下落選門的**拖動／滑移不夠順滑**——修觸控拖動與跟手（含 `touch-action`、move 節流／直接跟指、減少卡頓與門高亮延遲）。
-- 鍵盤 ←→ 不受影響；禁選字仍在且不擋拖動。
-- 證據加：拖動跟手短說明或前後對照筆記（DECISIONS）。
-
-
-### F. 進化過程再加深（John 追加・再檢查）
-- John 覺得**進化過程仍太簡單**——在現有「依複雜度 2–5 關」之上再加厚：
-  - 多數終局路線至少再多 1–2 個**有意義的科學分岔／階段關**（結構→適應→定植／複製→特化），避免「兩步就完」。
-  - 複雜物種（HIV、結核、流感等）可到 **6–8 關**；簡單物種也不宜少於 **4 關**（彎曲／弧菌等極短線要加關）。
-  - 關卡文案與分叉須貼生活史／分類特徵；**仍零假分叉**；終局數可維持或略增。
-  - 更新 ROUTES／PROOF／checks 深度統計。
+- 證據：`/workspace/scratch/virus-fork-cli-evidence-v9/`
+  - 未解鎖詳情**不露名**；
+  - 通關後圖鑑已解鎖 ≥1（含計數）；
+  - 數個物種外形對照（球菌／桿菌／螺旋／有膜病毒／彈狀等）；
+  - DECISIONS 寫清 storage 策略與開啟方式提示；
+  - checks（可自動化字串／計數）。
 
 ## 怎樣算做完
-1. 圖鑑無三張演化樹圖；改為物種解鎖格。
-2. 未解鎖可見剩餘未知數；解鎖可見特徵＋歷史。
-3. 拖動選門跟手明顯改善。
-3b. 進化深度加厚（多數線≥4 關；複雜線可 6–8）；過程不再顯得兩步完結。
-4. 單檔手機可開；STATUS=done；無圖回報本席。
+1. John 用瀏覽器開單檔，通關後圖鑑有解鎖；聊天預覽若不可用要有明確提示。
+2. 未解鎖任何 UI 不出現隱藏物種名。
+3. 細胞／病毒外形明顯貼近真實類群。
+4. STATUS=done；無圖回報本席（證據路徑文字即可）。
 
 ## 不要做
-不准讀 `/workspace/notes/`；只改 `virus-fork-cli`；不開 Cloud Agent；對局不塞科技樹；不做假分叉；SendToAgent 不附圖。
+不准讀 `/workspace/notes/`；只改 `virus-fork-cli`；不開 Cloud Agent／路徑 B；不做假分叉；SendToAgent 不附圖。

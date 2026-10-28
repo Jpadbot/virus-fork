@@ -1,15 +1,12 @@
 # STATUS — virus-fork-cli
 
-- status: Accept
-- ticket: 解鎖式物種圖鑑（取代三張樹圖）＋拖動跟手＋進化加深
-- branch: feat/species-dex
-- commit: f92cc4c
-- prior: feat/science-depth-hints @ 3f85f6e（已 Accept）
-- deliverable: /workspace/virus-fork-cli/playable.html（單檔；無樹圖 inline）
-- evidence: /workspace/scratch/virus-fork-cli-evidence-v8/
-- verify: PASS（verify-phone-html --also-landscape；errors=0）
-- endings: 29；depth 4–7；fakeForks []
-- checks: noAtlasTabs／hasDex／noEvolutionTreesInline／dexKeyCount=29
-- accepted_by: Mobile Engineer
-- accepted_at: 2026-10-28 Asia/Hong_Kong
-- note: 路徑 A 驗收 PASS；路徑 B 仍暫緩
+- status: running
+- ticket: 圖鑑解鎖修復＋未解鎖不露名＋真實形態
+- branch: feat/dex-fix-morph
+- prior_accept: feat/species-dex @ f92cc4c（Accept）
+- deliverable: /workspace/virus-fork-cli/playable.html
+- evidence: /workspace/scratch/virus-fork-cli-evidence-v9/
+- john_shot: /workspace/scratch/virus-fork-cli-john-notes-v9/dex-0-unlocked-leak-name.png
+- path: A only；路徑 B 仍暫緩
+- note: 2026-10-28 John 試玩：玩兩次仍 0 解鎖；鎖定洩名；外形須真實
+- started: 2026-10-28 Asia/Hong_Kong

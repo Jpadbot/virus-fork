@@ -1,17 +1,11 @@
 # STATUS — virus-fork-cli
 
-- status: Accept
-- ticket: 圖鑑解鎖修復＋未解鎖不露名＋真實形態
-- branch: feat/dex-fix-morph
-- commit: e05e7ba
-- prior_accept: feat/species-dex @ f92cc4c
+- status: running
+- ticket: 現實環境第二段＋玩時畫面加強
+- branch: feat/env-phase-ui
+- prior_accept: feat/dex-fix-morph @ e05e7ba（Accept 3dbe99c）
 - deliverable: /workspace/virus-fork-cli/playable.html
-- evidence: /workspace/scratch/virus-fork-cli-evidence-v9/
-- verify: PASS（verify-phone-html --also-landscape；errors=0）
-- A: samePageUnlock ≥1；storage 失敗繁中提示＋session 本局可解鎖 PASS
-- B: nameLeakCount=0；鎖定文案中性「走到對應終局…」
-- C: 葡萄串／鏈／桿／螺旋／弧／有膜棘／二十面體＋纖維／HIV 圓錐／彈狀 PASS
-- keep: endings=29；depth 4–7；fakeForks=[]；無樹圖
-- accepted_by: Mobile Engineer
-- accepted_at: 2026-10-28 Asia/Hong_Kong
-- note: 路徑 A 驗收 PASS；路徑 B 仍暫緩
+- evidence: /workspace/scratch/virus-fork-cli-evidence-v10/
+- path: A only；路徑 B 仍暫緩
+- note: 2026-10-28 John：通關後進現實環境消長；玩時畫面要更專業好看
+- started: 2026-10-28 Asia/Hong_Kong

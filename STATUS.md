@@ -3,7 +3,7 @@
 - status: done
 - ticket: 波間仍看不見＋A／B 場景動背景＋生物置中
 - branch: feat/scene-bg-gap-obvious
-- HEAD: (pending commit)
+- HEAD: 1b4ff07
 - base: main @ 165c01e
 - deliverable: /workspace/virus-fork-cli/playable.html
 - evidence: /workspace/scratch/virus-fork-cli-evidence-v15/

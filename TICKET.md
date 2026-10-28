@@ -1,43 +1,50 @@
-# virus-fork-cli — 手機單檔＋科學加深＋副標開關（路徑 A／CLI only）
+# virus-fork-cli — 解鎖式物種圖鑑（取代三張樹圖）（路徑 A／CLI only）
 
 日期：2026-10-28（Asia/Hong_Kong）  
-來源：John 試玩（手機開唔到；演化要科學；關卡可隨複雜度加長；可關按鈕第二行）  
+來源：John  
 路徑：A；路徑 B 仍暫緩  
-`--cwd /workspace/virus-fork-cli`。自 `feat/evolution-atlas` 開新分支（例 `feat/science-depth-hints`）。
+`--cwd /workspace/virus-fork-cli`。自 `feat/science-depth-hints` 開新分支（例 `feat/species-dex`）。
 
 ## John 原文要點
-1. **手機開唔到**——交付必須讓手機瀏覽器直接可玩（勿只交 zip／多檔相對路徑）。
-2. **演化過程根據科學**——分叉與關卡順序要貼近該細菌／病毒真實結構、生活史、傳播／複製特徵（仍標「簡化科普／假設」；非醫療）。
-3. **關卡數量可增加、無特別上限**——依該物種複雜度決定深度（簡單者短、複雜者多關）；不要為湊數做假分叉。
-4. **新增選項**：玩家可自行決定看不看「演化選擇的結果」——即每個按鈕的**第二行**（現有 `.g-sub`／`opt.sub`）。開關放 title／設定；預設建議「顯示」；記住選擇（localStorage）。
+1. **新增圖鑑功能**；**不要**那三張演化樹圖（v1／v2／v3 overview／endosymbiosis／detailed）。
+2. 玩家解鎖一種細菌／病毒後，圖鑑才顯示該物種。
+3. 玩家要看得出**還有多少種未知**未解鎖。
+4. 解鎖後可看該物種的**特徵**與**歷史**（簡化科普／假設；非醫療）。
 
 ## 做什麼（what）
 
-### A. 手機可開（必修）
-- 產出 **單檔**可玩：`/workspace/virus-fork-cli/playable.html`（或等價名）：把 `cover-v1.jpg` 與 `assets/evolution-trees/*` **inline**（data URL 或內嵌 SVG），開一個檔即可完整玩（含圖鑑）。
-- 保留多檔 `index.html`＋相對資產亦可，但 **done 以單檔為驗收交付物**。
-- 禁選字、下落 2–4 門、圖鑑入口保留。
+### A. 拿掉三張樹圖
+- 刪除／停用 atlas 的三版 tab、縮放樹圖、inline 的三張 SVG／PNG data URL（可大幅縮小單檔）。
+- `assets/evolution-trees/` 可留在 repo 但不進 `playable.html` 交付。
 
-### B. 科學加深＋可變關卡深度（必修）
-- 重審 `LEVELS`／`FORMS`：每條終局路線的關卡數可不同；**複雜物種加關**（例：HIV 可含進入／反轉錄／整合等示意關；結核可含抗酸壁／巨噬細胞內等；流感可含血球凝集素／神經胺酸酶示意——名稱通俗繁中即可）。
-- 維持 **≥20 互斥終局**（可多於 21）；**零假分叉**（同關每個 `next` 互異）。
-- 按鈕第一行＝當下結構／策略選擇；第二行＝結果提示（物種或方向）。科學上說得通；勿劇透到破壞探索亦可，但第二行本來就是結果提示。
-- 更新 `PROOF`／`ROUTES.md`；對局內仍不顯示科技樹 HUD。
+### B. 解鎖式物種圖鑑（主交付仍為單檔 `playable.html`）
+- Title／終局保留「圖鑑」入口（文案可改「物種圖鑑」）。
+- 圖鑑列表＝全部終局物種（現有 ≥29；與 `LEVELS` end 節點對齊）。
+- **未解鎖**：顯示為「？？？」或剪影格；可點但只見「尚未解鎖」；頂部／摘要顯示「已解鎖 x／總數 y」與「未知 z」。
+- **已解鎖**：顯示名稱（與終局「你已成為『某某』」一致）、細菌／病毒標籤、簡筆公仔（可用現有 FORMS SVG 或簡化 icon）、**特徵**、**歷史**（各 2–4 句繁中，標簡化科普／假設）。
+- **解鎖條件**：該局走到該終局即解鎖；`localStorage` 持久（鍵名自定，例 `virus-fork-dex`）。
+- 終局畫面可提示「已記入圖鑑」。
 
-### C. 副標（第二行）開關（必修）
-- Title（或明顯設定）開關文案例：「顯示選擇結果（按鈕第二行）」開／關。
-- 關：門槽只顯示第一行（title）；開：顯示 `sub`。
-- `localStorage` 持久化；終局重開仍生效。
+### C. 資料
+- 為每個 end 節點加 `dex: { traits, history, kind }`（或平行 `DEX` 表）；內容須科學向簡化，勿捏造假醫學宣稱。
+- 對局玩法、29（或以上）互斥終局、副標開關、禁選字、封面、科學加深路線**保留**；零假分叉。
 
 ### D. 驗證與證據
-- `verify-phone-html --also-landscape` 對 **單檔** PASS。
-- 證據：`/workspace/scratch/virus-fork-cli-evidence-v7/`（單檔可開證明、副標開／關對照截圖、至少兩條不同深度路線截圖、ROUTES、DECISIONS、checks 含 fakeForks=[]與終局數）。
+- 重建／更新單檔 `playable.html`（無三張樹圖 inline）。
+- `verify-phone-html playable.html --also-landscape` PASS。
+- 證據：`/workspace/scratch/virus-fork-cli-evidence-v8/`（未解鎖列表、解鎖後詳情、進度 x／y、終局記入提示、DECISIONS、checks）。
 
-## 怎樣算做完（done-when）
-1. 只傳 `playable.html` 一個檔，手機可開完整局＋圖鑑。
-2. 副標開關可用且會記住。
-3. 路線深度依物種複雜度有差異；科學簡化合理；零假分叉；≥20 終局。
-4. STATUS=done；無圖回報本席。
+
+### E. 拖動手感（John 追加）
+- 下落選門的**拖動／滑移不夠順滑**——修觸控拖動與跟手（含 `touch-action`、move 節流／直接跟指、減少卡頓與門高亮延遲）。
+- 鍵盤 ←→ 不受影響；禁選字仍在且不擋拖動。
+- 證據加：拖動跟手短說明或前後對照筆記（DECISIONS）。
+
+## 怎樣算做完
+1. 圖鑑無三張演化樹圖；改為物種解鎖格。
+2. 未解鎖可見剩餘未知數；解鎖可見特徵＋歷史。
+3. 拖動選門跟手明顯改善。
+4. 單檔手機可開；STATUS=done；無圖回報本席。
 
 ## 不要做
-不准讀 `/workspace/notes/`；只改 `virus-fork-cli`；不開 Cloud Agent；對局不塞科技樹；不做假分叉；不捏造假醫學宣稱；SendToAgent 不附圖。
+不准讀 `/workspace/notes/`；只改 `virus-fork-cli`；不開 Cloud Agent；對局不塞科技樹；不做假分叉；SendToAgent 不附圖。

@@ -1,12 +1,12 @@
 # STATUS — virus-fork-cli
 
-- status: done
-- ticket: 波間生長要看得見＋Minecraft 外表（保留原有）
-- branch: feat/gap-grow-visible-mc-style @ 8eacfce
+- status: running
+- ticket: 波間仍看不見＋A／B 場景專屬動畫背景
+- branch: feat/scene-bg-gap-obvious
+- base: main @ 165c01e（gap-grow-visible-mc-style）
+- john_notes: /workspace/scratch/virus-fork-cli-john-notes-v15/
 - deliverable: /workspace/virus-fork-cli/playable.html
-- evidence: /workspace/scratch/virus-fork-cli-evidence-v14/
-- path: A — Mobile Engineer（直寫自驗）
-- checks: allPass=true
-- verify: PASS（verify-out/20261028-155356）
-- finished: 2026-10-28 Asia/Hong_Kong
-- note: 預設外表=原有；可切 MC；未改路徑 B 票據
+- evidence: /workspace/scratch/virus-fork-cli-evidence-v15/
+- path: A — Mobile Engineer
+- started: 2026-10-28 Asia/Hong_Kong
+- note: STATUS=done 後本席轉 John 並推 Pages

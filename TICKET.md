@@ -1,32 +1,32 @@
-# virus-fork-cli — 波間生長要「看得見」＋ Minecraft 外表（保留原有）（路徑 A）
+# virus-fork-cli — 波間仍看不見＋A／B 場景專屬動畫背景（路徑 A）
 
 日期：2026-10-28（Asia/Hong_Kong）  
-來源：John 試玩（回覆線上 playable）：「果10秒見唔到任何變化」；「外表嘗試用 Minecraft 風格，但同時保留原有嘅」  
-路徑：A — Mobile Engineer 直開 Grok Build CLI（卡住可直寫）；自驗 STATUS=done。不派 CLI 工房。路徑 B 另票並行，**勿改** `TICKET-PATH-B.md`／`STATUS-PATH-B.md`。  
-`--cwd /workspace/virus-fork-cli`。自 `feat/env-live-grow-ui` @ `1b00313`／`main` @ `e2efe7f` 開分支（例 `feat/gap-grow-visible-mc-style`）。
+來源：John 試玩＋截圖（Pages playable；方塊風／現實環境）  
+路徑：A — Mobile Engineer 直開 grok（卡住可直寫）；自驗 STATUS=done。不派 CLI 工房。  
+`--cwd /workspace/virus-fork-cli`。自 `feat/gap-grow-visible-mc-style`／`main` @ `165c01e` 開分支（例 `feat/scene-bg-gap-obvious`）。  
+John 截圖（只路徑、勿附圖）：`/workspace/scratch/virus-fork-cli-john-notes-v15/gap-still-no-change-1.png`、`…/gap-still-no-change-2.png`
 
 ## 做什麼
 
-### A. 現實環境 10 秒波間：變化必須肉眼明顯
-- 現況：John 在約 10 秒波間**完全看不出變化**（前一版 live-grow 不夠顯眼）。
-- 要求：波間必須有**持續、清楚可見**的生長／變化（大小、形狀、細胞疏密、色澤、分裂／蠕動／呼吸幅度等），無需盯著才察覺。
-- 仍用外表表達；禁止指標條／±數字 HUD。
-- 證據需能對比波間前／中／後的明顯差異（截圖或短說明）。
+### 1）波間生長：John 仍「看不到」——必須修到無可辯駁
+- 現況：v14 後 John 仍回「看不到」；截圖為現實環境＋外表方塊風，畫面幾乎靜止感。
+- 要求：約 10 秒波間，**無需說明也能看出**持續變化（建議同時動：公仔／菌落明顯變大變小或分裂、背景微動、顆粒明顯增減）。原有與方塊風兩種外表都要成立。
+- 自驗標準：證據連續幀差異大到截圖並排一眼可辨；必要時加極短「生長中」視覺提示（非數值 HUD）。
 
-### B. 外表：Minecraft 風格＋保留原有
-- **新增** Minecraft 風格外表（方塊感／像素風微生物呈現，貼合物種可辨）。
-- **同時保留**原有（現有矢量／寫實向）外表，不可刪掉舊風格。
-- 玩家可切換（設定開關或對等清楚入口）；預設可維持原有，或首次提示可切——拍板權歸 ME，須在 DECISIONS 寫明。
-- 兩種風格在進化段與現實環境段皆可用；波間生長在兩風格下都要看得見。
+### 2）場景定義（John 拍板）
+- **A 場景**＝開局依選擇進化的那段（下落／進化樹遊玩）：畫面動畫背景＝**混沌宇宙**（星塵、霧氣、緩慢視差等，持續動，非靜圖）。
+- **B 場景**＝通關成為物種後的**現實環境**：每個場所／處境配**獨有動畫背景**。
+  - 例：城市→城市動畫背景；郊區→郊區動畫背景；其餘場所（室內、野外、宿主相關等）各自可辨、可持續微動。
+  - 切換選項／場所時背景要跟著換，不能整段共用同一塊深色漸層。
 
-### C. 交付
-1. 更新 `index.html`，重建 `playable.html`（勿強制瘦身）。
-2. checks allPass；`verify-phone-html playable.html --also-landscape` PASS。
-3. 證據：`/workspace/scratch/virus-fork-cli-evidence-v14/`（波間明顯變化；原有風格；Minecraft 風格；切換入口）。
-4. push 分支；STATUS=done 後無圖回報本席（路徑／分支／commit）。
+### 3）交付
+- 更新 `index.html`，重建 `playable.html`（勿強制瘦身）。
+- checks allPass；`verify-phone-html playable.html --also-landscape` PASS。
+- 證據：`/workspace/scratch/virus-fork-cli-evidence-v15/`（波間前後明顯對比；A 混沌宇宙；B 至少城市＋郊區兩套不同動畫背景；方塊風與原有）。
+- push 分支；STATUS=done 無圖回報本席。
 
 ## 怎樣算做完
-- John 級標準：波間 10 秒「一眼就覺得有在變」；Minecraft 與原有並存可切；STATUS=done。
+- 波間「一眼有在變」；A＝宇宙動背景；B＝依場所換獨有動背景；STATUS=done。
 
 ## 不要做
-不恢復數值 HUD；不砍長局節奏概念；不上路徑 B；不附圖 SendToAgent；不准讀 `/workspace/notes/`；不強制瘦身；不覆蓋路徑 B 票據檔。
+不恢復數值 HUD；不砍 Minecraft／原有切換；不上路徑 B；不附圖 SendToAgent；不准讀 `/workspace/notes/`；不強制瘦身；不改路徑 B 票據檔。

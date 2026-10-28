@@ -1,35 +1,41 @@
-# virus-fork-cli — 波間仍看不見＋A／B 場景動背景＋生物置中（路徑 A）
+# virus-fork-cli — 現實環境：時間軸持續生長（選項影響；動畫不可還原）（路徑 A）
 
 日期：2026-10-28（Asia/Hong_Kong）  
-來源：John 試玩＋截圖；追加「隻嘢要擺喺畫面正中間，而家係上方同文字重疊」  
+來源：John 英文試玩意見＋截圖  
 路徑：A — Mobile Engineer 直開 grok（卡住可直寫）；自驗 STATUS=done。不派 CLI 工房。  
-`--cwd /workspace/virus-fork-cli`。分支 `feat/scene-bg-gap-obvious`（自 main @ `165c01e`）。  
-John 截圖路徑：`/workspace/scratch/virus-fork-cli-john-notes-v15/gap-still-no-change-1.png`、`…/gap-still-no-change-2.png`
+`--cwd /workspace/virus-fork-cli`。自 `main`／`feat/scene-bg-gap-obvious` @ `1b4ff07` 開分支（例 `feat/env-time-grow-persist`）。  
+John 截圖：`/workspace/scratch/virus-fork-cli-john-notes-v16/gap-anim-options.png`、`…/gap-growing-label.png`
+
+## 問題（John 原意）
+1. 現在波間「生長」動畫**沒意義**：動畫結束後外表／大小**回到跟之前一樣**（演完還原）。
+2. 要的是**時間軸**：時間從 **0 秒**起一直走；細胞／病毒**持續長大**（累積、不可還原到開場尺寸）。
+3. **每約 10 秒**出現一波選項；**思考／選項停留時間要更長**（不要幾乎來不及想）。
+4. 選完後，**之後的生長軌跡受該選擇影響**（興旺／變差／方向分叉須在外表上留下結果，不能選完又長回原樣）。
 
 ## 做什麼
+### A. 時間驅動的持續生長（B 場景／現實環境）
+- 進入現實環境後啟動計時（從 0）；時間持續前進。
+- 主體大小／密度／外表隨時間**單調或有意義地累積變化**（可因壞選擇衰退，但那是「選擇後果」，不是動畫 reset）。
+- 禁止：gap 動畫播完把 scale／vital／芽體重置回 gap 前狀態。
 
-### 1）波間生長：John 仍「看不到」——必須修到無可辯駁
-- 現況：v14 後仍回「看不到」；截圖為現實環境＋方塊風，幾乎靜止感。
-- 約 10 秒波間須**一眼可見**持續變化（菌落明顯縮放／分裂、背景微動、顆粒增減等）。原有與方塊風皆要成立。
-- 證據連續幀並排一眼可辨；必要時加非數值的「生長中」視覺提示。
+### B. 選項節奏與思考時間
+- 約每 **10 秒**一波選項（時間軸上的里程碑，不是「空等 10 秒演假動作」）。
+- 選項出現後的**可思考時間加長**（具體秒數 ME 拍板並寫 DECISIONS；須明顯長於現況，手機上夠讀完 2–4 個選項）。
+- 選項期間生長可減速或暫停——拍板寫進 DECISIONS；選定後生長繼續且套用影響。
 
-### 2）A／B 場景專屬動畫背景（John 拍板）
-- **A 場景**＝開局進化／下落選擇：動畫背景＝**混沌宇宙**（持續動，非靜圖）。
-- **B 場景**＝現實環境：每個場所／處境配**獨有動畫背景**（城市→城市；郊區→郊區；其餘各自可辨）。切換場所時背景跟著換，禁止整段共用同一深色漸層。
+### C. 選擇影響生長
+- 每個選項對後續生長有可感知後果（外表：大小、色澤、疏密、形狀、健康感等；仍無指標條／±數字 HUD）。
+- 證據須能展示：同一時間軸上，選 A 與選 B 之後外觀分叉，且不會「變回選前」。
 
-### 3）生物／菌落置中（本回合追加）
-- 主體（公仔／菌落／方塊風集群）須在**畫面正中央**（視覺中心），不得偏上與標題／狀態文案重疊。
-- 適用 A、B 兩場景與兩種外表；頂部 HUD／說明改避讓或下移層級，主體優先置中。
-- 對齊 John 截圖問題：現況偏上與「幽門螺旋桿菌」等文字重疊。
-
-### 4）交付
+### D. 交付
 - 更新 `index.html`，重建 `playable.html`（勿強制瘦身）。
+- 保留既有：置中、A 宇宙／B 場所動背景、外表 classic／mc 切換。
 - checks allPass；`verify-phone-html playable.html --also-landscape` PASS。
-- 證據：`/workspace/scratch/virus-fork-cli-evidence-v15/`（波間對比；A 宇宙；B 城市＋郊區；置中無重疊；兩外表）。
+- 證據：`/workspace/scratch/virus-fork-cli-evidence-v16/`（t=0／中段／選後持續變大或分叉；證明無 reset；選項停留更長）。
 - push；STATUS=done 無圖回報本席。
 
 ## 怎樣算做完
-波間一眼在變；A＝宇宙動背景；B＝依場所換動背景；主體正中不擋字；STATUS=done。
+- 生長為時間累積、選後有後果、動畫不再還原；每 ~10s 出選項且思考時間加長；STATUS=done。
 
 ## 不要做
-不恢復數值 HUD；不砍外表切換；不上路徑 B；不附圖 SendToAgent；不准讀 `/workspace/notes/`；不強制瘦身；不改路徑 B 票據檔。
+不恢復數值 HUD；不上路徑 B；不附圖 SendToAgent；不准讀 `/workspace/notes/`；不強制瘦身；不改路徑 B 票據；不回退置中與 A／B 背景。

@@ -320,6 +320,21 @@
   }
   .atlas-detail.show { display: block; }
   .atlas-detail strong { color: #f0d78a; }
+
+  body.hide-subs .gate .g-sub { display: none !important; }
+  .settings-row {
+    display: flex; align-items: center; gap: 10px; justify-content: center;
+    max-width: 300px; width: 100%; margin: 0 auto;
+    padding: 10px 12px; border-radius: 12px;
+    background: rgba(20,28,34,0.72); border: 1px solid var(--line);
+    text-align: left;
+  }
+  .settings-row label {
+    flex: 1; font-size: 0.78rem; color: #c8d8e0; line-height: 1.3; cursor: pointer;
+  }
+  .settings-row input[type="checkbox"] {
+    width: 20px; height: 20px; accent-color: #e0a83a; flex-shrink: 0; cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -332,7 +347,11 @@
     <div class="title-body">
       <h1>微粒進化</h1>
       <p class="sub">Proto → Real Species</p>
-      <p class="hint">多門選擇・成為誰　｜　簡化科普／假設・≥20 終局</p>
+      <p class="hint">多門選擇・成為誰　｜　簡化科普／假設・路線深度依物種・≥20 終局</p>
+      <div class="settings-row">
+        <input type="checkbox" id="chkShowSubs" checked />
+        <label for="chkShowSubs">顯示選擇結果（按鈕第二行）</label>
+      </div>
       <button type="button" class="btn" id="btnStart">開始下落</button>
       <button type="button" class="btn btn-secondary" id="btnAtlas">演化圖鑑</button>
     </div>
@@ -703,7 +722,153 @@
           '<circle cx="48" cy="46" r="3" fill="#e8d0f8"/>'
         );
       }
+    },
+    tb_acid: {
+      id: "tb_acid", name: "抗酸壁雛形", latin: "Acid-fast draft（簡化／假設）",
+      blurb: "簡化科普／假設：厚脂質（分枝菌酸樣）外壁，染色抗酸；朝分枝桿菌。",
+      draw: function () {
+        return svg(
+          '<rect x="14" y="20" width="36" height="24" rx="10" fill="#8a6820" stroke="#e0c060" stroke-width="3"/>' +
+          '<rect x="18" y="24" width="28" height="16" rx="8" fill="#5a4010" opacity="0.55"/>' +
+          '<circle cx="24" cy="30" r="2" fill="#fff0c0" opacity="0.4"/>'
+        );
+      }
+    },
+    tb_intra: {
+      id: "tb_intra", name: "巨噬內持存", latin: "Intracellular draft（簡化／假設）",
+      blurb: "簡化科普／假設：在巨噬細胞內生存／持存的示意關；非醫療。",
+      draw: function () {
+        return svg(
+          '<circle cx="32" cy="32" r="22" fill="#3a4830" stroke="#8a9860" stroke-width="2" opacity="0.7"/>' +
+          '<rect x="20" y="22" width="14" height="28" rx="7" fill="#b09038" stroke="#e8c84a" stroke-width="2" transform="rotate(-15 27 36)"/>' +
+          '<rect x="30" y="20" width="12" height="26" rx="6" fill="#a88828" stroke="#d4b848" stroke-width="2" transform="rotate(12 36 33)"/>'
+        );
+      }
+    },
+    leprae: {
+      id: "leprae", name: "麻風分枝桿菌", latin: "Mycobacterium leprae",
+      blurb: "簡化科普／假設：分枝桿菌、偏皮膚／神經嗜性示意；非醫療建議。",
+      draw: function () {
+        return svg(
+          '<rect x="10" y="22" width="16" height="28" rx="8" fill="#a88840" stroke="#d4b860" stroke-width="2" transform="rotate(-18 18 36)"/>' +
+          '<rect x="26" y="18" width="14" height="30" rx="7" fill="#b89848" stroke="#e0c870" stroke-width="2"/>' +
+          '<rect x="40" y="24" width="12" height="24" rx="6" fill="#9a7838" stroke="#c8a850" stroke-width="2" transform="rotate(16 46 36)"/>'
+        );
+      }
+    },
+    mavium: {
+      id: "mavium", name: "鳥分枝桿菌", latin: "Mycobacterium avium complex（簡化）",
+      blurb: "簡化科普／假設：非結核分枝桿菌環境相關示意；非醫療建議。",
+      draw: function () {
+        return svg(
+          '<rect x="16" y="16" width="14" height="32" rx="7" fill="#887838" stroke="#c8b860" stroke-width="2" transform="rotate(-8 23 32)"/>' +
+          '<rect x="32" y="18" width="14" height="30" rx="7" fill="#9a8840" stroke="#d4c070" stroke-width="2" transform="rotate(10 39 33)"/>'
+        );
+      }
+    },
+    flu_ha: {
+      id: "flu_ha", name: "HA 突刺雛形", latin: "HA spike draft（簡化／假設）",
+      blurb: "簡化科普／假設：血球凝集素（HA）樣突刺，助吸附／進入宿主細胞示意。",
+      draw: function () { return virion("#5a98b0", "#c8e8f8", true); }
+    },
+    flu_na: {
+      id: "flu_na", name: "HA＋NA 雛形", latin: "HA/NA draft（簡化／假設）",
+      blurb: "簡化科普／假設：加上神經胺酸酶（NA）樣，助子代粒子釋放示意。",
+      draw: function () { return virion("#6aa8c0", "#d8f0ff", true); }
+    },
+    influenza_b: {
+      id: "influenza_b", name: "流感病毒 B 型", latin: "Influenza B virus（簡化）",
+      blurb: "簡化科普／假設：乙型流感示意；遊戲簡化形態。",
+      draw: function () { return virion("#4a90a8", "#b8e0f0", true); }
+    },
+    parainfluenza: {
+      id: "parainfluenza", name: "副流感病毒", latin: "Parainfluenza virus（簡化）",
+      blurb: "簡化科普／假設：呼吸道有膜 RNA、副黏液病毒科示意；非醫療。",
+      draw: function () { return virion("#3a88a0", "#a8d8e8", true); }
+    },
+    retro_entry: {
+      id: "retro_entry", name: "反轉錄・進入", latin: "Retro entry（簡化／假設）",
+      blurb: "簡化科普／假設：吸附／膜融合進入宿主細胞的示意關。",
+      draw: function () {
+        return svg(
+          '<ellipse cx="32" cy="36" rx="16" ry="13" fill="#6a5080" stroke="#d0b0e8" stroke-width="2.5"/>' +
+          '<circle cx="32" cy="14" r="5" fill="#e8d0f8"/>' +
+          '<line x1="32" y1="19" x2="32" y2="24" stroke="#d0b0e8" stroke-width="2"/>' +
+          '<path d="M48 28 Q58 32 52 42" fill="none" stroke="#a080c0" stroke-width="2" stroke-dasharray="3 2"/>'
+        );
+      }
+    },
+    retro_rt: {
+      id: "retro_rt", name: "反轉錄中", latin: "Reverse transcription（簡化／假設）",
+      blurb: "簡化科普／假設：RNA → DNA（反轉錄酶）示意關；非醫療。",
+      draw: function () {
+        return svg(
+          '<ellipse cx="32" cy="34" rx="15" ry="12" fill="#5a4070" stroke="#c8a0e0" stroke-width="2.5"/>' +
+          '<path d="M20 34 Q26 22 32 34 Q38 46 44 34" fill="none" stroke="#f0d0ff" stroke-width="2"/>' +
+          '<path d="M22 38 Q28 48 34 38" fill="none" stroke="#a0e0f0" stroke-width="1.8"/>'
+        );
+      }
+    },
+    retro_int: {
+      id: "retro_int", name: "整合前", latin: "Integration draft（簡化／假設）",
+      blurb: "簡化科普／假設：病毒 DNA 準備整合入宿主基因組的示意關。",
+      draw: function () {
+        return svg(
+          '<ellipse cx="32" cy="34" rx="14" ry="11" fill="#4a3060" stroke="#d0b0e8" stroke-width="2"/>' +
+          '<rect x="8" y="14" width="48" height="10" rx="2" fill="#2a3848" stroke="#80a0b0" stroke-width="1.5"/>' +
+          '<line x1="32" y1="24" x2="32" y2="30" stroke="#e8d0f8" stroke-width="2"/>' +
+          '<circle cx="32" cy="34" r="4" fill="#e8d0f8" opacity="0.7"/>'
+        );
+      }
+    },
+    htlv: {
+      id: "htlv", name: "人類 T 淋巴病毒", latin: "HTLV（簡化）",
+      blurb: "簡化科普／假設：嗜 T 淋巴反轉錄病毒示意；非醫療建議。",
+      draw: function () {
+        return svg(
+          '<ellipse cx="32" cy="34" rx="15" ry="13" fill="#705090" stroke="#e0c8f0" stroke-width="2.5"/>' +
+          '<ellipse cx="32" cy="34" rx="7" ry="5" fill="#3a2850"/>' +
+          '<circle cx="18" cy="20" r="3.5" fill="#f0e0ff"/>' +
+          '<circle cx="46" cy="20" r="3.5" fill="#f0e0ff"/>'
+        );
+      }
+    },
+    hiv2: {
+      id: "hiv2", name: "人類免疫缺乏病毒第二型", latin: "HIV-2（簡化）",
+      blurb: "簡化科普／假設：另一型慢病毒示意；遊戲簡化，非醫療／診斷。",
+      draw: function () {
+        return svg(
+          '<ellipse cx="32" cy="34" rx="16" ry="14" fill="#5a4070" stroke="#c8a8e0" stroke-width="2.5"/>' +
+          '<ellipse cx="32" cy="34" rx="8" ry="6" fill="#302040"/>' +
+          '<circle cx="32" cy="12" r="3.5" fill="#e0c8f0"/>' +
+          '<circle cx="14" cy="24" r="3" fill="#e0c8f0"/>' +
+          '<circle cx="50" cy="24" r="3" fill="#e0c8f0"/>'
+        );
+      }
+    },
+    herpes_lat: {
+      id: "herpes_lat", name: "疱疹潛伏雛形", latin: "Herpes latent draft（簡化／假設）",
+      blurb: "簡化科普／假設：有膜 DNA、可潛伏於神經／淋巴的示意關。",
+      draw: function () { return virion("#6070a0", "#c0c8e8", true); }
+    },
+    ebv: {
+      id: "ebv", name: "艾伯斯坦－巴爾病毒", latin: "EBV / HHV-4（簡化）",
+      blurb: "簡化科普／假設：疱疹病毒科、淋巴嗜性示意；非醫療建議。",
+      draw: function () { return virion("#7080b0", "#d0d8f0", true); }
+    },
+    foamy: {
+      id: "foamy", name: "泡沫病毒", latin: "Spumavirus / Foamy virus（簡化）",
+      blurb: "簡化科普／假設：反轉錄病毒科、核內複製特徵示意；非醫療。",
+      draw: function () {
+        return svg(
+          '<ellipse cx="32" cy="34" rx="16" ry="14" fill="#806090" stroke="#e8d0f8" stroke-width="2.5"/>' +
+          '<circle cx="32" cy="34" r="6" fill="#403050"/>' +
+          '<circle cx="22" cy="24" r="4" fill="#f0e8ff" opacity="0.5"/>' +
+          '<circle cx="44" cy="40" r="5" fill="#f0e8ff" opacity="0.35"/>'
+        );
+      }
     }
+
   };
 
   function gateIcon(tint) {
@@ -726,18 +891,21 @@
     };
   }
 
-  /* —— 真分叉 ≥21 互斥終局；畫面不畫樹 ——
+/* —— 真分叉 ≥20 互斥終局；複雜物種加關；畫面不畫樹 ——
+     深度例：球菌終局≈3 關；流感 HA→NA≈5；HIV 進入→反轉錄→整合≈5–6
      seed(3)
      ├─ bact_wall(3)
      │  ├─ bact_cocci(3) → aureus | epidermidis | pneumoniae
-     │  ├─ bact_rod(2) → enteric(2)→ecoli|salmonella | tuberculosis
+     │  ├─ bact_rod(2) → enteric(2)→ecoli|salmonella
+     │  │              → tb_acid(2)→tb_intra(2)→tuberculosis|mavium | leprae
      │  └─ bact_spore(3) → tetani | anthracis | botulinum
      ├─ curve_wall(2) → helicobacter | vibrio
      └─ vir_capsid(4)
-        ├─ vir_env_rna(4) → influenza | measles | rabies | dengue
+        ├─ vir_env_rna(4) → flu_ha(2)→flu_na(2)→influenza|parainfluenza | influenza_b
+        │                   | measles | rabies | dengue
         ├─ vir_naked(3) → norovirus | rhinovirus | rotavirus
-        ├─ vir_dna(2) → adenovirus | herpes
-        └─ hiv
+        ├─ vir_dna(2) → adenovirus | herpes_lat(2)→herpes|ebv
+        └─ retro_entry(2) → retro_rt(2)→retro_int→hiv | hiv2 | htlv
   */
   const LEVELS = {
     seed: {
@@ -754,7 +922,7 @@
       prompt: "細胞形態？",
       options: [
         { title: "聚成球菌串", sub: "朝球菌屬", next: "bact_cocci", tint: "bact" },
-        { title: "拉成細桿", sub: "朝桿菌方向", next: "bact_rod", tint: "bact" },
+        { title: "拉成細桿", sub: "朝桿菌／抗酸菌", next: "bact_rod", tint: "bact" },
         { title: "帶芽孢的桿", sub: "朝芽孢桿菌", next: "bact_spore", tint: "bact" }
       ]
     },
@@ -768,18 +936,18 @@
       ]
     },
     aureus: endNode("aureus", "bact", "你已成為「金黃葡萄球菌」細菌",
-      "本局走細菌・球菌・金黃色素向。金黃葡萄球菌（Staphylococcus aureus）在此僅作休閒探索命名。"),
+      "本局走細菌・球菌・金黃色素向（較短路線）。金黃葡萄球菌在此僅作休閒探索命名。"),
     epidermidis: endNode("epidermidis", "bact", "你已成為「表皮葡萄球菌」細菌",
-      "本局走細菌・球菌・表皮共生向。表皮葡萄球菌（Staphylococcus epidermidis）在此僅作休閒探索命名。"),
+      "本局走細菌・球菌・表皮共生向（較短路線）。表皮葡萄球菌在此僅作休閒探索命名。"),
     pneumoniae: endNode("pneumoniae", "bact", "你已成為「肺炎鏈球菌」細菌",
-      "本局走細菌・球菌・鏈狀呼吸道向。肺炎鏈球菌（Streptococcus pneumoniae）在此僅作休閒探索命名。"),
+      "本局走細菌・球菌・鏈狀呼吸道向。肺炎鏈球菌在此僅作休閒探索命名。"),
 
     bact_rod: {
       form: "bact_rod",
       prompt: "桿菌往哪適應？",
       options: [
         { title: "腸道定植", sub: "朝腸道桿菌", next: "enteric", tint: "bact" },
-        { title: "厚脂質外壁", sub: "朝結核分枝桿菌", next: "tuberculosis", tint: "bact" }
+        { title: "厚脂質抗酸壁", sub: "朝分枝桿菌・加關", next: "tb_acid", tint: "bact" }
       ]
     },
     enteric: {
@@ -791,11 +959,32 @@
       ]
     },
     ecoli: endNode("ecoli", "bact", "你已成為「大腸桿菌」細菌",
-      "本局走細菌・腸道桿菌向。大腸桿菌（Escherichia coli）在此僅作休閒探索命名。"),
+      "本局走細菌・腸道桿菌向。大腸桿菌在此僅作休閒探索命名。"),
     salmonella: endNode("salmonella", "bact", "你已成為「沙門氏菌」細菌",
-      "本局走細菌・腸道入侵向。沙門氏菌（Salmonella spp.）在此僅作休閒探索命名。"),
+      "本局走細菌・腸道入侵向。沙門氏菌在此僅作休閒探索命名。"),
+
+    tb_acid: {
+      form: "tb_acid",
+      prompt: "抗酸菌下一步？",
+      options: [
+        { title: "進入巨噬細胞", sub: "細胞內持存・加關", next: "tb_intra", tint: "bact" },
+        { title: "皮膚／神經嗜性", sub: "麻風分枝桿菌", next: "leprae", tint: "bact" }
+      ]
+    },
+    tb_intra: {
+      form: "tb_intra",
+      prompt: "巨噬內策略？",
+      options: [
+        { title: "肉芽腫樣持存", sub: "結核分枝桿菌", next: "tuberculosis", tint: "bact" },
+        { title: "環境非結核向", sub: "鳥分枝桿菌", next: "mavium", tint: "bact" }
+      ]
+    },
     tuberculosis: endNode("tuberculosis", "bact", "你已成為「結核分枝桿菌」細菌",
-      "本局走細菌・抗酸厚壁向。結核分枝桿菌（Mycobacterium tuberculosis）在此僅作休閒探索命名。"),
+      "本局走細菌・抗酸壁→巨噬內持存（較深路線）。結核分枝桿菌在此僅作休閒探索命名；非醫療建議。"),
+    leprae: endNode("leprae", "bact", "你已成為「麻風分枝桿菌」細菌",
+      "本局走細菌・抗酸・皮膚／神經嗜性向。麻風分枝桿菌在此僅作休閒探索命名；非醫療建議。"),
+    mavium: endNode("mavium", "bact", "你已成為「鳥分枝桿菌」細菌",
+      "本局走細菌・抗酸・非結核環境向。鳥分枝桿菌複合群在此僅作休閒探索命名。"),
 
     bact_spore: {
       form: "bact_spore",
@@ -807,11 +996,11 @@
       ]
     },
     tetani: endNode("tetani", "bact", "你已成為「破傷風梭菌」細菌",
-      "本局走細菌・芽孢・厭氧破傷風樣向。破傷風梭菌（Clostridium tetani）在此僅作休閒探索命名。"),
+      "本局走細菌・芽孢・厭氧破傷風樣向。破傷風梭菌在此僅作休閒探索命名。"),
     anthracis: endNode("anthracis", "bact", "你已成為「炭疽芽孢桿菌」細菌",
-      "本局走細菌・芽孢・土壤向。炭疽芽孢桿菌（Bacillus anthracis）在此僅作休閒探索命名。"),
+      "本局走細菌・芽孢・土壤向。炭疽芽孢桿菌在此僅作休閒探索命名。"),
     botulinum: endNode("botulinum", "bact", "你已成為「肉毒桿菌」細菌",
-      "本局走細菌・芽孢・厭氧肉毒樣向。肉毒桿菌（Clostridium botulinum）在此僅作休閒探索命名。"),
+      "本局走細菌・芽孢・厭氧肉毒樣向。肉毒桿菌在此僅作休閒探索命名。"),
 
     curve_wall: {
       form: "curve_wall",
@@ -822,9 +1011,9 @@
       ]
     },
     helicobacter: endNode("helicobacter", "bact", "你已成為「幽門螺旋桿菌」細菌",
-      "本局走彎曲體・螺旋胃黏膜向。幽門螺旋桿菌（Helicobacter pylori）在此僅作休閒探索命名。"),
+      "本局走彎曲體・螺旋胃黏膜向。幽門螺旋桿菌在此僅作休閒探索命名。"),
     vibrio: endNode("vibrio", "bact", "你已成為「霍亂弧菌」細菌",
-      "本局走彎曲體・弧形腸道向。霍亂弧菌（Vibrio cholerae）在此僅作休閒探索命名。"),
+      "本局走彎曲體・弧形腸道向。霍亂弧菌在此僅作休閒探索命名。"),
 
     vir_capsid: {
       form: "vir_capsid",
@@ -833,27 +1022,47 @@
         { title: "有膜 RNA", sub: "朝流感／麻疹等", next: "vir_env_rna", tint: "vir" },
         { title: "堅固裸殼", sub: "朝諾羅／鼻病毒等", next: "vir_naked", tint: "vir" },
         { title: "DNA 殼", sub: "朝腺病毒／疱疹", next: "vir_dna", tint: "vir" },
-        { title: "反轉錄酶", sub: "朝 HIV", next: "hiv", tint: "vir" }
+        { title: "反轉錄酶", sub: "進入→反轉錄→整合・加關", next: "retro_entry", tint: "vir" }
       ]
     },
     vir_env_rna: {
       form: "vir_env_rna",
       prompt: "有膜 RNA 往哪適應？",
       options: [
-        { title: "呼吸道突刺", sub: "流感病毒", next: "influenza", tint: "vir" },
+        { title: "呼吸道突刺", sub: "朝流感 HA／NA・加關", next: "flu_ha", tint: "vir" },
         { title: "皮疹融合", sub: "麻疹病毒", next: "measles", tint: "vir" },
         { title: "神經嗜性", sub: "狂犬病病毒", next: "rabies", tint: "vir" },
         { title: "蟲媒循環", sub: "登革病毒", next: "dengue", tint: "vir" }
       ]
     },
+    flu_ha: {
+      form: "flu_ha",
+      prompt: "血球凝集素之後？",
+      options: [
+        { title: "加上神經胺酸酶", sub: "HA＋NA・續關", next: "flu_na", tint: "vir" },
+        { title: "乙型流感特徵", sub: "流感病毒 B 型", next: "influenza_b", tint: "vir" }
+      ]
+    },
+    flu_na: {
+      form: "flu_na",
+      prompt: "HA／NA 完備後？",
+      options: [
+        { title: "NA 釋放子代", sub: "流感病毒", next: "influenza", tint: "vir" },
+        { title: "副黏液樣呼吸道", sub: "副流感病毒", next: "parainfluenza", tint: "vir" }
+      ]
+    },
     influenza: endNode("influenza", "vir", "你已成為「流感病毒」病毒",
-      "本局走病毒・有膜 RNA・呼吸道向。流感病毒（Influenza virus）在此僅作休閒探索命名。"),
+      "本局走病毒・有膜 RNA・HA→NA（較深路線）。流感病毒在此僅作休閒探索命名。"),
+    influenza_b: endNode("influenza_b", "vir", "你已成為「流感病毒 B 型」病毒",
+      "本局走病毒・有膜 RNA・乙型特徵。流感 B 型在此僅作休閒探索命名。"),
+    parainfluenza: endNode("parainfluenza", "vir", "你已成為「副流感病毒」病毒",
+      "本局走病毒・呼吸道有膜 RNA・副黏液樣。副流感病毒在此僅作休閒探索命名。"),
     measles: endNode("measles", "vir", "你已成為「麻疹病毒」病毒",
-      "本局走病毒・有膜 RNA・皮疹向。麻疹病毒（Measles virus）在此僅作休閒探索命名。"),
+      "本局走病毒・有膜 RNA・皮疹向（較短路線）。麻疹病毒在此僅作休閒探索命名。"),
     rabies: endNode("rabies", "vir", "你已成為「狂犬病病毒」病毒",
-      "本局走病毒・有膜 RNA・神經嗜性向。狂犬病病毒（Rabies virus）在此僅作休閒探索命名。"),
+      "本局走病毒・有膜 RNA・神經嗜性向。狂犬病病毒在此僅作休閒探索命名。"),
     dengue: endNode("dengue", "vir", "你已成為「登革病毒」病毒",
-      "本局走病毒・有膜 RNA・蟲媒向。登革病毒（Dengue virus）在此僅作休閒探索命名。"),
+      "本局走病毒・有膜 RNA・蟲媒向。登革病毒在此僅作休閒探索命名。"),
 
     vir_naked: {
       form: "vir_naked",
@@ -865,26 +1074,67 @@
       ]
     },
     norovirus: endNode("norovirus", "vir", "你已成為「諾羅病毒」病毒",
-      "本局走病毒・裸殼・腸胃向。諾羅病毒（Norovirus）在此僅作休閒探索命名。"),
+      "本局走病毒・裸殼・腸胃向。諾羅病毒在此僅作休閒探索命名。"),
     rhinovirus: endNode("rhinovirus", "vir", "你已成為「鼻病毒」病毒",
-      "本局走病毒・裸殼・鼻腔向。鼻病毒（Rhinovirus）在此僅作休閒探索命名。"),
+      "本局走病毒・裸殼・鼻腔向。鼻病毒在此僅作休閒探索命名。"),
     rotavirus: endNode("rotavirus", "vir", "你已成為「輪狀病毒」病毒",
-      "本局走病毒・裸殼・輪狀雙殼向。輪狀病毒（Rotavirus）在此僅作休閒探索命名。"),
+      "本局走病毒・裸殼・輪狀雙殼向。輪狀病毒在此僅作休閒探索命名。"),
 
     vir_dna: {
       form: "vir_dna",
       prompt: "DNA 病毒分支？",
       options: [
         { title: "腺樣二十面體", sub: "腺病毒", next: "adenovirus", tint: "vir" },
-        { title: "有膜潛伏", sub: "疱疹病毒", next: "herpes", tint: "vir" }
+        { title: "有膜・可潛伏", sub: "朝疱疹科・加關", next: "herpes_lat", tint: "vir" }
       ]
     },
     adenovirus: endNode("adenovirus", "vir", "你已成為「腺病毒」病毒",
-      "本局走病毒・DNA・腺樣向。腺病毒（Adenovirus）在此僅作休閒探索命名。"),
+      "本局走病毒・DNA・腺樣向。腺病毒在此僅作休閒探索命名。"),
+    herpes_lat: {
+      form: "herpes_lat",
+      prompt: "疱疹科潛伏策略？",
+      options: [
+        { title: "潛伏於神經節", sub: "疱疹病毒", next: "herpes", tint: "vir" },
+        { title: "淋巴嗜性", sub: "艾伯斯坦－巴爾病毒", next: "ebv", tint: "vir" }
+      ]
+    },
     herpes: endNode("herpes", "vir", "你已成為「疱疹病毒」病毒",
-      "本局走病毒・DNA・潛伏向。疱疹病毒（Herpesvirus）在此僅作休閒探索命名。"),
+      "本局走病毒・DNA・神經潛伏向。疱疹病毒在此僅作休閒探索命名。"),
+    ebv: endNode("ebv", "vir", "你已成為「艾伯斯坦－巴爾病毒」病毒",
+      "本局走病毒・DNA・淋巴嗜性向。EBV 在此僅作休閒探索命名；非醫療建議。"),
+
+    retro_entry: {
+      form: "retro_entry",
+      prompt: "反轉錄病毒如何進入？",
+      options: [
+        { title: "吸附／膜融合進入", sub: "朝反轉錄・續關", next: "retro_rt", tint: "vir" },
+        { title: "嗜 T 淋巴定殖", sub: "人類 T 淋巴病毒", next: "htlv", tint: "vir" }
+      ]
+    },
+    retro_rt: {
+      form: "retro_rt",
+      prompt: "進入後基因组策略？",
+      options: [
+        { title: "反轉錄成 DNA", sub: "朝整合・續關", next: "retro_int", tint: "vir" },
+        { title: "第二型慢病毒向", sub: "HIV-2", next: "hiv2", tint: "vir" }
+      ]
+    },
+    retro_int: {
+      form: "retro_int",
+      prompt: "整合策略？",
+      options: [
+        { title: "整合入宿主基因組", sub: "人類免疫缺乏病毒", next: "hiv", tint: "vir" },
+        { title: "核內複製・少整合", sub: "泡沫病毒", next: "foamy", tint: "vir" }
+      ]
+    },
     hiv: endNode("hiv", "vir", "你已成為「人類免疫缺乏病毒」病毒",
-      "本局走病毒・反轉錄酶向。HIV 在此僅作休閒探索命名；非醫療建議或診斷依據。")
+      "本局走病毒・進入→反轉錄→整合（最深路線之一）。HIV 在此僅作休閒探索命名；非醫療建議或診斷依據。"),
+    foamy: endNode("foamy", "vir", "你已成為「泡沫病毒」病毒",
+      "本局走病毒・反轉錄・核內複製／少整合向。泡沫病毒（Spumavirus）在此僅作休閒探索命名。"),
+    hiv2: endNode("hiv2", "vir", "你已成為「人類免疫缺乏病毒第二型」病毒",
+      "本局走病毒・反轉錄・HIV-2 向（略淺於完整整合關）。HIV-2 在此僅作休閒探索命名。"),
+    htlv: endNode("htlv", "vir", "你已成為「人類 T 淋巴病毒」病毒",
+      "本局走病毒・反轉錄・嗜 T 淋巴向。HTLV 在此僅作休閒探索命名；非醫療建議。")
   };
 
   function buildProof() {
@@ -908,7 +1158,7 @@
     return {
       endings: endings,
       endingCount: endings.length,
-      note: "第一關三分：細菌壁／彎曲體／病毒殼。細菌線：球菌三終局、桿菌→腸道二終局＋結核、芽孢三終局、彎曲二終局。病毒線：有膜 RNA 四終局、裸殼三終局、DNA 二終局、反轉錄→HIV。所有選項 next 互異，無假分叉。簡化科普／假設。",
+      note: "路線深度依物種：球菌短路線；結核經抗酸→巨噬內；流感經 HA→NA；HIV 經進入→反轉錄→整合。全部選項 next 互異，無假分叉。簡化科普／假設・非醫療。",
       routes: routes
     };
   }
@@ -1059,7 +1309,7 @@
     state.path.push({ label: FORMS[level.form].name, choice: opt.title });
 
     if (opt.next === "bact_wall" || opt.next === "curve_wall") state.domain = "bact";
-    if (opt.next === "vir_capsid") state.domain = "vir";
+    if (opt.next === "vir_capsid" || opt.next === "retro_entry") state.domain = "vir";
 
     var nextId = opt.next;
     var nextNode = LEVELS[nextId];
@@ -1319,6 +1569,29 @@
   }
 
 
+
+  /* —— 副標（第二行）開關；localStorage 持久化 —— */
+  var SUBS_KEY = "virus-fork-show-subs";
+  function getShowSubs() {
+    try {
+      var v = localStorage.getItem(SUBS_KEY);
+      if (v === null || v === undefined) return true;
+      return v === "1" || v === "true";
+    } catch (e) { return true; }
+  }
+  function applyShowSubs(on) {
+    document.body.classList.toggle("hide-subs", !on);
+    var chk = document.getElementById("chkShowSubs");
+    if (chk) chk.checked = !!on;
+    try { localStorage.setItem(SUBS_KEY, on ? "1" : "0"); } catch (e) {}
+  }
+  applyShowSubs(getShowSubs());
+  (function bindSubsToggle() {
+    var chk = document.getElementById("chkShowSubs");
+    if (!chk) return;
+    chk.addEventListener("change", function () { applyShowSubs(chk.checked); });
+  })();
+
   document.getElementById("btnStart").addEventListener("click", startGame);
   document.getElementById("btnAgain").addEventListener("click", function () {
     showScreen("title");
@@ -1418,6 +1691,8 @@
     getState: function () { return state; },
     forcePick: function (idx) { pickOption(idx); },
     assertNoFakeForks: assertNoFakeForks,
+    getShowSubs: getShowSubs,
+    applyShowSubs: applyShowSubs,
     gateIndexFromClientX: gateIndexFromClientX,
     fallInto: function (idx) {
       if (!state || !gateRowEl) return false;

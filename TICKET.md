@@ -1,42 +1,43 @@
-# virus-fork-cli — 演化樹資產接入（圖鑑／說明）（路徑 A／CLI only）
+# virus-fork-cli — 手機單檔＋科學加深＋副標開關（路徑 A／CLI only）
 
 日期：2026-10-28（Asia/Hong_Kong）  
-來源：John 經 Grok Bot 交演化樹資產給 Mobile Orchestrator  
-路徑：A（CLI 工房）；路徑 B 仍暫緩  
-`--cwd /workspace/virus-fork-cli`。自 `feat/evo-tree-20` 開新分支（例 `feat/evolution-atlas`）。
+來源：John 試玩（手機開唔到；演化要科學；關卡可隨複雜度加長；可關按鈕第二行）  
+路徑：A；路徑 B 仍暫緩  
+`--cwd /workspace/virus-fork-cli`。自 `feat/evolution-atlas` 開新分支（例 `feat/science-depth-hints`）。
 
-## 資產（已拷入專案；來源 scratch 只讀對照）
-專案內：`/workspace/virus-fork-cli/assets/evolution-trees/`
-- `v1-overview.svg`／`.png` — App 首屏／快速認知
-- `v2-endosymbiosis.svg`／`.png` — 課程／說明頁（內共生）
-- `v3-detailed.svg`／`.png` — 圖鑑／深入說明  
-來源備份：`/workspace/scratch/evolution-trees/`（勿改 scratch；以專案內為準）
-
-## 科學準則（畫面文案與圖不得違背）
-- 根＝LUCA
-- 細菌域／古菌域二分
-- 真核由古菌系衍生＋內共生（**勿**畫成與細菌／古菌並列的第三域）
-- 病毒＝多起源側群（虛線側枝；**勿**畫成單一「病毒域」）
-- 標籤繁體中文
-
-## 產品定位（必須遵守既有玩法決策）
-- **下落對局內**：進化邏輯仍只在幕後；**不要**把樹當科技樹 HUD／對局 UI（John 先前拍板）。
-- **本票要做的**：把三版樹做成可開關的 **圖鑑／說明** 層（title 或結算可進），App 內嵌優先 **SVG**。
-- 建議：v1 作「認識演化」入口預覽；v2 說明頁；v3 圖鑑深入。互動可點葉片展開細節，**勿一次塞滿**。
+## John 原文要點
+1. **手機開唔到**——交付必須讓手機瀏覽器直接可玩（勿只交 zip／多檔相對路徑）。
+2. **演化過程根據科學**——分叉與關卡順序要貼近該細菌／病毒真實結構、生活史、傳播／複製特徵（仍標「簡化科普／假設」；非醫療）。
+3. **關卡數量可增加、無特別上限**——依該物種複雜度決定深度（簡單者短、複雜者多關）；不要為湊數做假分叉。
+4. **新增選項**：玩家可自行決定看不看「演化選擇的結果」——即每個按鈕的**第二行**（現有 `.g-sub`／`opt.sub`）。開關放 title／設定；預設建議「顯示」；記住選擇（localStorage）。
 
 ## 做什麼（what）
-1. 確認 `assets/evolution-trees/` 六檔齊全；`index.html` 以相對路徑引用 SVG（可加輕量 viewer）。
-2. Title（或終局）加入口：「演化圖鑑」→ 可切換 v1／v2／v3；支援縮放／捲動；手機可讀。
-3. 簡短準則提示（一行繁中即可，勿長文）；標「簡化科普／假設」。
-4. 不改壞現有 21 終局下落玩法、禁選字、封面。
-5. `verify-phone-html --also-landscape` PASS。
-6. 證據：`/workspace/scratch/virus-fork-cli-evidence-v6/`（title 入口、三版圖鑑截圖、DECISIONS、verify）。
+
+### A. 手機可開（必修）
+- 產出 **單檔**可玩：`/workspace/virus-fork-cli/playable.html`（或等價名）：把 `cover-v1.jpg` 與 `assets/evolution-trees/*` **inline**（data URL 或內嵌 SVG），開一個檔即可完整玩（含圖鑑）。
+- 保留多檔 `index.html`＋相對資產亦可，但 **done 以單檔為驗收交付物**。
+- 禁選字、下落 2–4 門、圖鑑入口保留。
+
+### B. 科學加深＋可變關卡深度（必修）
+- 重審 `LEVELS`／`FORMS`：每條終局路線的關卡數可不同；**複雜物種加關**（例：HIV 可含進入／反轉錄／整合等示意關；結核可含抗酸壁／巨噬細胞內等；流感可含血球凝集素／神經胺酸酶示意——名稱通俗繁中即可）。
+- 維持 **≥20 互斥終局**（可多於 21）；**零假分叉**（同關每個 `next` 互異）。
+- 按鈕第一行＝當下結構／策略選擇；第二行＝結果提示（物種或方向）。科學上說得通；勿劇透到破壞探索亦可，但第二行本來就是結果提示。
+- 更新 `PROOF`／`ROUTES.md`；對局內仍不顯示科技樹 HUD。
+
+### C. 副標（第二行）開關（必修）
+- Title（或明顯設定）開關文案例：「顯示選擇結果（按鈕第二行）」開／關。
+- 關：門槽只顯示第一行（title）；開：顯示 `sub`。
+- `localStorage` 持久化；終局重開仍生效。
+
+### D. 驗證與證據
+- `verify-phone-html --also-landscape` 對 **單檔** PASS。
+- 證據：`/workspace/scratch/virus-fork-cli-evidence-v7/`（單檔可開證明、副標開／關對照截圖、至少兩條不同深度路線截圖、ROUTES、DECISIONS、checks 含 fakeForks=[]與終局數）。
 
 ## 怎樣算做完（done-when）
-1. 可從 title（或明確入口）打開三版 SVG 圖鑑並切換。
-2. 對局畫面仍無科技樹面板。
-3. 資產路徑相對專案可離線開 `index.html`。
-4. STATUS → done；無圖回報 Mobile Orchestrator。
+1. 只傳 `playable.html` 一個檔，手機可開完整局＋圖鑑。
+2. 副標開關可用且會記住。
+3. 路線深度依物種複雜度有差異；科學簡化合理；零假分叉；≥20 終局。
+4. STATUS=done；無圖回報本席。
 
-## 不要做（must-not）
-不准讀 `/workspace/notes/`；只改 `virus-fork-cli`；不開 Cloud Agent；不把樹塞進下落 HUD；不改科學準則畫成三域並列或單一病毒域；SendToAgent 不附圖。
+## 不要做
+不准讀 `/workspace/notes/`；只改 `virus-fork-cli`；不開 Cloud Agent；對局不塞科技樹；不做假分叉；不捏造假醫學宣稱；SendToAgent 不附圖。

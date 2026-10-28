@@ -53,3 +53,6 @@
 
 ## 不要做
 不准讀 `/workspace/notes/`；只改 `virus-fork-cli`；不開 Cloud Agent／路徑 B；不做重分數排行；不引入多頁架構；SendToAgent 不附圖。
+
+## 路徑說明（2026-10-28 改規）
+路徑 A：由 **Mobile Engineer** 在虛擬電腦直接開 Grok Build CLI 實作與自驗；寫 STATUS=done。CLI 工房僅緊急備援，本票不派 CLI。

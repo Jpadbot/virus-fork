@@ -1,11 +1,10 @@
 # STATUS — virus-fork-cli
 
-- status: done
-- ticket: 還原未瘦身單檔並推 GitHub（John 指示不要瘦身）
-- branch: main（還原 playable @ ea45442 內容）
-- prior: feat/playable-slim @ 256186f 已作廢（John 不要瘦身）
-- deliverable: /workspace/virus-fork-cli/playable.html（≈633KB；環境長局版）
-- github: https://github.com/Jpadbot/virus-fork
-- path: A — Orchestrator 直接還原並推送
-- finished: 2026-10-28 Asia/Hong_Kong
-- note: 路徑 B 仍暫緩
+- status: queued
+- ticket: 現實環境連續生長＋選項按鈕重設計
+- branch: （ME 開，例 feat/env-live-grow-ui）
+- base: main @ f499832（未瘦身環境長局 playable）
+- deliverable: /workspace/virus-fork-cli/playable.html
+- evidence: /workspace/scratch/virus-fork-cli-evidence-v13/
+- path: A — Mobile Engineer（直開 grok；CLI 工房僅緊急備援）
+- note: 路徑 B 仍暫緩；STATUS=done 後本席轉 John

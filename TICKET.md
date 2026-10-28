@@ -1,50 +1,24 @@
-# virus-fork-cli — 現實環境長局＋現實處境選項＋視覺消長（路徑 A）
+# virus-fork-cli — 單檔瘦身（手機聊天可預覽／可開）（路徑 A）
 
 日期：2026-10-28（Asia/Hong_Kong）  
-來源：John  
-路徑：A — **Mobile Engineer** 在虛擬電腦直接開 Grok Build CLI 實作＋自驗；STATUS=done 後回本席。CLI 工房僅緊急備援，本票不派。  
-路徑 B 仍暫緩。  
-`--cwd /workspace/virus-fork-cli`。自 `feat/env-phase-ui` @ `3bb32dc` 開新分支 `feat/env-long-diegetic`。
+來源：John 截圖「檔案過大，無法預覽」  
+路徑：A — Mobile Engineer 直開 Grok Build CLI；自驗 STATUS=done。不派 CLI 工房。路徑 B 暫緩。  
+`--cwd /workspace/virus-fork-cli`。自 `feat/env-long-diegetic` @ `ea45442` 開分支（例 `feat/playable-slim`）。
 
-## John 原文要點
-1. 現實環境要**可以玩耐啲**；而家睇完約 5 分鐘就完／關掉。
-2. **每隔約 10 秒**才彈一組選項出來（不要密接下落趕完）。
-3. 選項要**貼近現實範疇**，例如：去市區／去郊區、寄生人／寄生動物等——**不要**現有那種「加強／減弱」制式選項。
-4. 細菌強弱、多少、傳播力等**不要用指標**（進度條／數字 HUD）；改用**表情、外表、細胞數量**等可見表達。
+## 問題
+- 現況 `playable.html` ≈ **633 KB**；聊天內建預覽報「檔案過大，無法預覽」。
+- 先前約 470 KB 級尚可在手機流程打開；inline cover JPEG base64 約 **375 KB**，為主因。
+- John 截圖：`/workspace/scratch/virus-fork-cli-john-notes-v11/preview-too-large.png`
 
-## 調度拍板
-- 環境段目標時長：單次環境局約 **8–15 分鐘**可玩完一條線（可提早收束）；選項波次 **間隔約 10 秒**（上一波結束／落地後，冷靜期再出下一波；可 ±2 秒）。
-- 選項文案改為**處境／場所／宿主／行為**分叉（市區／郊區／醫院／農舍、人／伴侶動物／野生動物、飛沫／接觸／食物等，依 bact／vir 與物種覆寫）；幕後仍可有消長權重，但**玩家看不到「+強／-弱」字樣或數值 delta**。
-- 拿掉（或隱藏）`種群穩定度` 數字與 bar；改為：公仔表情／色澤／體態、舞台上**細胞（或病毒顆粒）數量疏密**、可選極短繁中氛圍句（無數字）。
-- 結局仍柔和（繁盛／衰退等），休閒探索；非醫療；零假分叉。
-- 進化段、圖鑑解鎖／不露名／真實形態、單檔 `playable.html`、Safari 提示保留。
-
-## 做什麼（what）
-
-### A. 節拍與長度
-1. 環境關卡數加厚（建議多數線 **8–12 波**選項，或可循環處境池至收束條件）；避免 3–5 波速通。
-2. 實作約 **10 秒**出選間隔（可設定常數 `ENV_OPTION_GAP_MS≈10000`）；下落／點選機制可保留，但兩波之間要有等待。
-3. 證據註明：波次間隔與預估時長。
-
-### B. 現實處境選項（取代加減弱文案）
-1. 重寫 ENV 選項 title／sub：場所、宿主、傳播情境、季節／清潔等人話範疇；禁「強化／削弱／+15／穩定度」類。
-2. 細菌池與病毒池範例對齊 John：市區 vs 郊區、寄生人 vs 寄生動物等，並按物種覆寫合理分支。
-3. 分叉仍互斥 next；科學簡化假設。
-
-### C. 視覺化消長（無指標）
-1. 移除環境 HUD 數值條／「種群穩定度」強數字（結局亦避免「最終穩定度 xx」這類指標句；可改敘事）。
-2. 以 `creature` 表情／外形變化＋背景細胞／顆粒密度表達旺／衰；低潮可略憔悴，旺可略活躍（仍簡筆 SVG，勿嚇人）。
-3. 若需無障礙，可用不含數字的 `aria-live` 短語（「族群顯得稀少」等）。
-
-### D. 保留與驗證
-- evo 29、depth 4–7、fakeForks=[]、nameLeak=0、單檔、verify-phone-html --also-landscape。
-- 證據：`/workspace/scratch/virus-fork-cli-evidence-v11/`（長局／10 秒間隔說明或截圖序列、現實選項文案、無指標 HUD、視覺消長對照、checks、DECISIONS）。
+## 做什麼
+1. **瘦身單檔** `playable.html`：重壓／縮小封面（或改較小 WebP／更低 JPEG 品質與解析度）、去掉無用空白與重複；目標 **≤ 450 KB**（理想 ≤ 400 KB），且手機 Safari／Chrome 開 file 仍正常。
+2. **玩法與畫面功能不砍**：長局環境、10 秒間隔、現實處境選項、視覺消長、圖鑑、29 終局等全部保留。
+3. 重建流程寫進 DECISIONS（如何從 index＋cover 產出 playable）。
+4. `verify-phone-html playable.html --also-landscape` PASS；checks 回歸 allPass。
+5. 證據：`/workspace/scratch/virus-fork-cli-evidence-v12/`（檔案大小前後、封面可辨、首屏／環境仍可玩、checks）。
 
 ## 怎樣算做完
-1. 環境段明顯更耐玩；選項約每 10 秒一波。
-2. 選項是現實處境範疇，不是加減弱制。
-3. 無強弱／數量／傳播力指標條；改外表與細胞量表達。
-4. STATUS=done；無圖回報本席（只給路徑）。
+- `playable.html` ≤ 450 KB；功能不回退；STATUS=done；無圖回報本席。
 
 ## 不要做
-不准讀 `/workspace/notes/`；只改 `virus-fork-cli`；不派 CLI 工房；不開 Cloud Agent／路徑 B；SendToAgent 不附圖。
+不改產品玩法範圍；不上路徑 B；不附圖 SendToAgent；不准讀 `/workspace/notes/`。

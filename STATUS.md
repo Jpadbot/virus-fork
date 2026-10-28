@@ -1,13 +1,10 @@
 # STATUS — virus-fork-cli
 
-- status: done
-- ticket: 現實環境長局＋現實處境選項＋視覺消長
-- branch: feat/env-long-diegetic
-- prior: feat/env-phase-ui @ 3bb32dc
-- deliverable: /workspace/virus-fork-cli/playable.html
-- evidence: /workspace/scratch/virus-fork-cli-evidence-v11/
-- ENV_OPTION_GAP_MS: 10000（測試 ?envGap=0）
-- checks: allPass
-- verify: PASS（--also-landscape）
+- status: running
+- ticket: 單檔瘦身（手機聊天可預覽）
+- branch: feat/playable-slim
+- prior_done: feat/env-long-diegetic @ ea45442（playable ≈633KB）
+- deliverable: /workspace/virus-fork-cli/playable.html（目標 ≤450KB）
+- evidence: /workspace/scratch/virus-fork-cli-evidence-v12/
 - path: A — Mobile Engineer
-- finished: 2026-10-28 Asia/Hong_Kong
+- started: 2026-10-28 Asia/Hong_Kong

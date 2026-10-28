@@ -3,20 +3,29 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>微生物下落（暫名）</title>
+<title>微粒進化</title>
 <style>
   :root {
-    --bg: #161a17;
-    --panel: #1e2420;
-    --ink: #e6e2d6;
-    --muted: #9a9588;
-    --line: #3a4038;
-    --bact: #c9a227;
-    --vir: #6a8fa8;
-    --gate: #2a322c;
-    --gate-hi: #3d4a40;
-    --warn: #c47a5a;
+    --bg: #0b1218;
+    --bg2: #121c24;
+    --panel: #1a2630;
+    --ink: #e8efe8;
+    --muted: #8fa09a;
+    --line: #2e3f48;
+    --bact: #e0a83a;
+    --bact-glow: rgba(224, 168, 58, 0.45);
+    --vir: #5ec8e8;
+    --vir-glow: rgba(94, 200, 232, 0.4);
+    --gate: rgba(22, 34, 42, 0.92);
+    --gate-hi: rgba(36, 52, 62, 0.96);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* 禁選字：全域＋互動區（必修） */
+  html, body, #app, #app * {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
   }
   * { box-sizing: border-box; }
   html, body {
@@ -25,126 +34,199 @@
     font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
     line-height: 1.4; overflow: hidden;
     -webkit-tap-highlight-color: transparent;
-    user-select: none;
   }
   #app {
     width: 100%; max-width: 440px; height: 100%; height: 100dvh;
     margin: 0 auto; display: flex; flex-direction: column;
-    position: relative;
+    position: relative; background: var(--bg);
   }
   .screen { display: none; flex: 1; flex-direction: column; min-height: 0; }
   .screen.active { display: flex; }
 
-  /* Title */
+  /* Title + cover */
   #title {
-    padding: 28px 20px calc(24px + var(--safe-bottom));
-    justify-content: center; gap: 18px; text-align: center;
+    padding: 0 0 calc(20px + var(--safe-bottom));
+    justify-content: flex-end; gap: 12px; text-align: center;
+    position: relative; overflow: hidden;
+    background: #05080c;
   }
-  #title h1 { font-size: 1.5rem; font-weight: 700; margin: 0; letter-spacing: 0.04em; }
-  #title p { margin: 0; color: var(--muted); font-size: 0.95rem; }
-  .title-mascot { width: 120px; height: 120px; margin: 8px auto; }
+  .cover-wrap {
+    position: absolute; inset: 0; z-index: 0;
+    background: #05080c;
+  }
+  .cover-wrap img {
+    width: 100%; height: 100%; object-fit: cover; object-position: center top;
+    display: block; pointer-events: none;
+  }
+  .cover-fade {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 48%;
+    background: linear-gradient(180deg, transparent 0%, rgba(5,8,12,0.55) 35%, rgba(5,8,12,0.96) 78%, #05080c 100%);
+    pointer-events: none;
+  }
+  .title-body {
+    position: relative; z-index: 1;
+    padding: 0 20px 8px;
+    display: flex; flex-direction: column; gap: 10px; align-items: center;
+  }
+  #title h1 {
+    font-size: 1.65rem; font-weight: 700; margin: 0;
+    letter-spacing: 0.12em; color: #f0d78a;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.7);
+  }
+  #title .sub {
+    margin: 0; color: #c8b88a; font-size: 0.88rem; letter-spacing: 0.04em;
+  }
+  #title .hint {
+    margin: 0; color: var(--muted); font-size: 0.8rem; max-width: 300px;
+  }
   .btn {
-    display: block; width: 100%; max-width: 320px; margin: 0 auto;
+    display: block; width: 100%; max-width: 300px; margin: 0 auto;
     min-height: 48px; padding: 14px 16px;
-    border: 1px solid var(--line); border-radius: 10px;
-    background: var(--panel); color: var(--ink);
-    font-size: 1.05rem; font-weight: 600; font-family: inherit;
-    cursor: pointer;
+    border: 1px solid #6a5a30; border-radius: 12px;
+    background: linear-gradient(180deg, #3a3220 0%, #2a2418 100%);
+    color: #f5e6b8;
+    font-size: 1.08rem; font-weight: 700; font-family: inherit;
+    cursor: pointer; letter-spacing: 0.06em;
+    box-shadow: 0 0 20px rgba(224, 168, 58, 0.2);
   }
-  .btn:active { background: var(--gate-hi); }
-  .btn-main { background: #2c3830; border-color: #4a5c50; }
-  .hint-list { text-align: left; color: var(--muted); font-size: 0.85rem; max-width: 320px; margin: 0 auto; padding-left: 1.1em; }
-  .hint-list li { margin: 4px 0; }
+  .btn:active { filter: brightness(1.15); }
+  .btn-ghost {
+    background: transparent; border-color: var(--line); color: var(--muted);
+    box-shadow: none; font-weight: 600; font-size: 0.95rem; min-height: 44px;
+  }
 
   /* Play */
-  #play { position: relative; background: var(--bg); }
+  #play { position: relative; background: radial-gradient(ellipse at 50% 20%, #152028 0%, var(--bg) 55%); }
   #hud {
     position: absolute; top: 0; left: 0; right: 0; z-index: 5;
-    padding: 10px 12px 8px;
+    padding: 12px 14px 10px;
     pointer-events: none;
-    background: linear-gradient(180deg, rgba(22,26,23,0.92) 0%, rgba(22,26,23,0) 100%);
+    background: linear-gradient(180deg, rgba(11,18,24,0.9) 0%, rgba(11,18,24,0) 100%);
   }
-  #hud .name { font-size: 1rem; font-weight: 700; margin: 0; }
-  #hud .latin { font-size: 0.78rem; color: var(--muted); font-style: italic; margin: 2px 0 0; }
-  #hud .blurb { font-size: 0.75rem; color: var(--muted); margin: 6px 0 0; }
+  #hud .name { font-size: 1.05rem; font-weight: 700; margin: 0; letter-spacing: 0.03em; }
+  #hud .latin { font-size: 0.76rem; color: var(--muted); font-style: italic; margin: 2px 0 0; }
+  #hud .blurb { font-size: 0.74rem; color: var(--muted); margin: 6px 0 0; max-width: 95%; }
   #stage {
     flex: 1; position: relative; overflow: hidden; touch-action: none;
     cursor: pointer;
   }
+  .particles {
+    position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .particles i {
+    position: absolute; width: 3px; height: 3px; border-radius: 50%;
+    background: rgba(140, 200, 210, 0.35);
+    animation: drift linear infinite;
+  }
+  @keyframes drift {
+    from { transform: translateY(-10px); opacity: 0; }
+    10% { opacity: 0.6; }
+    to { transform: translateY(110vh); opacity: 0; }
+  }
   .lane-hint {
-    position: absolute; inset: 0; display: flex; pointer-events: none; opacity: 0.08;
+    position: absolute; inset: 0; display: flex; pointer-events: none; opacity: 0.07; z-index: 1;
   }
   .lane-hint span { flex: 1; border-right: 1px dashed #fff; }
   .lane-hint span:last-child { border-right: none; }
 
   #creature {
-    position: absolute; width: 72px; height: 72px;
-    margin-left: -36px; margin-top: -36px;
+    position: absolute; width: 86px; height: 86px;
+    margin-left: -43px; margin-top: -43px;
     z-index: 3; will-change: left, top;
+    filter: drop-shadow(0 0 10px rgba(160, 210, 220, 0.35));
     transition: filter 0.2s;
   }
-  #creature.flash { filter: brightness(1.4); }
+  #creature.flash { filter: drop-shadow(0 0 18px rgba(255, 230, 160, 0.85)) brightness(1.25); }
 
   .gate-row {
-    position: absolute; left: 0; right: 0; height: 88px;
+    position: absolute; left: 0; right: 0; height: 100px;
     display: flex; gap: 8px; padding: 0 10px;
     z-index: 2; will-change: top;
   }
   .gate {
-    flex: 1; min-width: 0;
+    flex: 1; min-width: 0; min-height: 88px;
     border: 2px solid var(--line);
-    border-radius: 8px;
+    border-radius: 12px;
     background: var(--gate);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 6px 4px; text-align: center;
+    padding: 8px 6px; text-align: center;
+    box-shadow: inset 0 0 24px rgba(0,0,0,0.35);
+    position: relative;
   }
-  .gate.hi { border-color: var(--bact); background: var(--gate-hi); }
-  .gate.vir-hi { border-color: var(--vir); background: var(--gate-hi); }
-  .gate .g-title { font-size: 0.82rem; font-weight: 700; line-height: 1.2; }
+  .gate::before {
+    content: ""; position: absolute; inset: 4px; border-radius: 8px;
+    border: 1px dashed rgba(255,255,255,0.08); pointer-events: none;
+  }
+  .gate.hi {
+    border-color: var(--bact);
+    background: var(--gate-hi);
+    box-shadow: 0 0 16px var(--bact-glow), inset 0 0 20px rgba(224,168,58,0.08);
+  }
+  .gate.vir-hi {
+    border-color: var(--vir);
+    background: var(--gate-hi);
+    box-shadow: 0 0 16px var(--vir-glow), inset 0 0 20px rgba(94,200,232,0.08);
+  }
+  .gate .g-icon { width: 28px; height: 28px; margin-bottom: 4px; opacity: 0.9; }
+  .gate .g-title { font-size: 0.84rem; font-weight: 700; line-height: 1.2; }
   .gate .g-sub { font-size: 0.68rem; color: var(--muted); margin-top: 3px; line-height: 1.15; }
 
   #toast {
-    position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%);
+    position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%);
     z-index: 6; pointer-events: none;
-    background: var(--panel); border: 1px solid var(--line);
-    border-radius: 8px; padding: 10px 14px;
-    font-size: 0.9rem; text-align: center; max-width: 86%;
+    background: rgba(20, 30, 38, 0.94); border: 1px solid var(--line);
+    border-radius: 10px; padding: 10px 16px;
+    font-size: 0.92rem; text-align: center; max-width: 86%;
     opacity: 0; transition: opacity 0.2s;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
   }
   #toast.show { opacity: 1; }
 
   #controls-hint {
     position: absolute; bottom: calc(10px + var(--safe-bottom)); left: 0; right: 0;
-    text-align: center; color: var(--muted); font-size: 0.75rem;
+    text-align: center; color: var(--muted); font-size: 0.74rem;
     z-index: 4; pointer-events: none;
   }
 
   /* End */
   #end {
     padding: 24px 18px calc(24px + var(--safe-bottom));
-    justify-content: center; gap: 14px; text-align: center; overflow-y: auto;
+    justify-content: center; gap: 12px; text-align: center; overflow-y: auto;
+    background: radial-gradient(ellipse at 50% 18%, #1a2830 0%, var(--bg) 55%);
   }
-  #end h2 { margin: 0; font-size: 1.35rem; line-height: 1.35; }
+  #end h2 {
+    margin: 0; font-size: 1.4rem; line-height: 1.35;
+    color: #f0d78a; letter-spacing: 0.02em;
+  }
   #end .latin { color: var(--muted); font-style: italic; font-size: 0.9rem; margin: 0; }
-  #end .end-mascot { width: 140px; height: 140px; margin: 4px auto; }
-  #end .story { color: var(--muted); font-size: 0.9rem; margin: 0; text-align: left; }
-  #end .path { font-size: 0.8rem; color: var(--muted); text-align: left;
-    border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; }
+  #end .end-mascot {
+    width: 160px; height: 160px; margin: 4px auto;
+    filter: drop-shadow(0 0 18px rgba(160, 210, 220, 0.4));
+  }
+  #end .story { color: var(--muted); font-size: 0.88rem; margin: 0; text-align: left; }
+  #end .path {
+    font-size: 0.8rem; color: var(--muted); text-align: left;
+    border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px;
+  }
   #end .path ol { margin: 6px 0 0; padding-left: 1.2em; }
+  .disclaimer {
+    font-size: 0.72rem; color: #6a7a74; margin: 0; text-align: left;
+  }
 </style>
 </head>
 <body>
 <div id="app">
   <section id="title" class="screen active" aria-label="開局">
-    <div class="title-mascot" id="titleMascot"></div>
-    <h1>微生物下落</h1>
-    <p>暫名原型・休閒探索・非正式品名</p>
-    <ul class="hint-list">
-      <li>公仔會不斷往下掉</li>
-      <li>左右鍵、左右滑、或點左／右半邊，對準門槽</li>
-      <li>不同選擇會走到不同終局（真分叉）</li>
-    </ul>
-    <button type="button" class="btn btn-main" id="btnStart">開始下落</button>
+    <div class="cover-wrap" aria-hidden="true">
+      <img src="cover-v1.jpg" alt="" width="440" height="780" />
+      <div class="cover-fade"></div>
+    </div>
+    <div class="title-body">
+      <h1>微粒進化</h1>
+      <p class="sub">Proto → Real Species</p>
+      <p class="hint">左右選擇・成為誰　｜　簡化科普／假設</p>
+      <button type="button" class="btn" id="btnStart">開始下落</button>
+    </div>
   </section>
 
   <section id="play" class="screen" aria-label="遊戲">
@@ -154,6 +236,7 @@
       <p class="blurb" id="hudBlurb">簡化科普／假設：尚未分化成細菌或病毒。</p>
     </div>
     <div id="stage">
+      <div class="particles" id="particles" aria-hidden="true"></div>
       <div class="lane-hint" aria-hidden="true"><span></span><span></span><span></span></div>
       <div id="creature" aria-hidden="true"></div>
       <div id="toast" role="status"></div>
@@ -166,11 +249,12 @@
     <h2 id="endTitle">你已成為……</h2>
     <p class="latin" id="endLatin"></p>
     <p class="story" id="endStory"></p>
+    <p class="disclaimer">簡化科普／假設・休閒探索；非醫療建議或診斷依據。</p>
     <div class="path">
       <strong>本局路徑</strong>
       <ol id="endPath"></ol>
     </div>
-    <button type="button" class="btn btn-main" id="btnAgain">再玩一次</button>
+    <button type="button" class="btn" id="btnAgain">再玩一次</button>
   </section>
 </div>
 
@@ -178,19 +262,24 @@
 (function () {
   "use strict";
 
-  /* —— 形態 SVG（原創簡筆） —— */
   function svg(inner, vb) {
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + (vb || "0 0 64 64") +
       '" width="100%" height="100%" aria-hidden="true">' + inner + "</svg>";
   }
+
+  /* —— 原創 SVG 形態（圖鑑感） —— */
   const FORMS = {
     seed: {
       id: "seed", name: "原始微粒", latin: "Proto-microbe（簡化／假設）",
       blurb: "簡化科普／假設：共同起點，尚未分化成細菌或病毒。",
       draw: function () {
         return svg(
-          '<circle cx="32" cy="32" r="14" fill="#8a8680" stroke="#cfcac0" stroke-width="2"/>' +
-          '<circle cx="28" cy="28" r="3" fill="#cfcac0" opacity="0.5"/>'
+          '<defs><radialGradient id="sg" cx="40%" cy="35%"><stop offset="0%" stop-color="#c8e8f0"/><stop offset="100%" stop-color="#4a7080"/></radialGradient></defs>' +
+          '<ellipse cx="32" cy="34" rx="16" ry="14" fill="url(#sg)" opacity="0.95"/>' +
+          '<ellipse cx="32" cy="34" rx="16" ry="14" fill="none" stroke="#a8d8e8" stroke-width="1.5" opacity="0.7"/>' +
+          '<circle cx="26" cy="28" r="3.5" fill="#e8f8ff" opacity="0.55"/>' +
+          '<circle cx="38" cy="30" r="2" fill="#fff" opacity="0.35"/>' +
+          '<path d="M20 48 Q26 56 32 50 Q38 56 44 48" fill="none" stroke="#6a98a8" stroke-width="1.5" opacity="0.5"/>'
         );
       }
     },
@@ -200,8 +289,10 @@
       draw: function () {
         return svg(
           '<ellipse cx="32" cy="34" rx="18" ry="14" fill="#a88820" stroke="#e8c84a" stroke-width="2.5"/>' +
+          '<ellipse cx="32" cy="34" rx="18" ry="14" fill="none" stroke="#ffe08a" stroke-width="1" opacity="0.4"/>' +
           '<ellipse cx="32" cy="34" rx="10" ry="7" fill="#6a5810" opacity="0.55"/>' +
-          '<circle cx="26" cy="30" r="2.5" fill="#f0e6a8"/>'
+          '<circle cx="26" cy="30" r="2.5" fill="#f0e6a8"/>' +
+          '<circle cx="38" cy="36" r="1.8" fill="#f0e6a8" opacity="0.7"/>'
         );
       }
     },
@@ -210,9 +301,10 @@
       blurb: "簡化科普／假設：球形細胞聚集，朝葡萄球菌屬方向。",
       draw: function () {
         return svg(
-          '<circle cx="24" cy="28" r="10" fill="#b89220" stroke="#e8c84a" stroke-width="2"/>' +
-          '<circle cx="40" cy="28" r="10" fill="#c9a227" stroke="#e8c84a" stroke-width="2"/>' +
-          '<circle cx="32" cy="42" r="10" fill="#a88820" stroke="#e8c84a" stroke-width="2"/>'
+          '<circle cx="24" cy="28" r="11" fill="#b89220" stroke="#e8c84a" stroke-width="2"/>' +
+          '<circle cx="40" cy="28" r="11" fill="#c9a227" stroke="#e8c84a" stroke-width="2"/>' +
+          '<circle cx="32" cy="42" r="11" fill="#a88820" stroke="#e8c84a" stroke-width="2"/>' +
+          '<circle cx="26" cy="26" r="2.5" fill="#fff0c0" opacity="0.45"/>'
         );
       }
     },
@@ -224,7 +316,8 @@
           '<circle cx="22" cy="26" r="11" fill="#d4a820" stroke="#ffe08a" stroke-width="2"/>' +
           '<circle cx="40" cy="24" r="11" fill="#e0b428" stroke="#ffe08a" stroke-width="2"/>' +
           '<circle cx="30" cy="40" r="12" fill="#c99618" stroke="#ffe08a" stroke-width="2"/>' +
-          '<circle cx="44" cy="40" r="9" fill="#d4a820" stroke="#ffe08a" stroke-width="2"/>'
+          '<circle cx="44" cy="40" r="9" fill="#d4a820" stroke="#ffe08a" stroke-width="2"/>' +
+          '<circle cx="34" cy="28" r="3" fill="#fff8d0" opacity="0.55"/>'
         );
       }
     },
@@ -237,7 +330,76 @@
           '<circle cx="38" cy="22" r="12" fill="#f0c040" stroke="#fff0a8" stroke-width="2"/>' +
           '<circle cx="28" cy="38" r="12" fill="#d4a018" stroke="#fff0a8" stroke-width="2"/>' +
           '<circle cx="46" cy="38" r="10" fill="#e8b020" stroke="#fff0a8" stroke-width="2"/>' +
-          '<circle cx="34" cy="28" r="3" fill="#fff8d0" opacity="0.7"/>'
+          '<circle cx="34" cy="28" r="3" fill="#fff8d0" opacity="0.7"/>' +
+          '<circle cx="22" cy="22" r="2" fill="#fff" opacity="0.35"/>'
+        );
+      }
+    },
+    bact_rod: {
+      id: "bact_rod", name: "桿菌雛形", latin: "Bacillus draft（簡化／假設）",
+      blurb: "簡化科普／假設：細長桿狀細胞；可走向腸道菌或抗酸菌方向。",
+      draw: function () {
+        return svg(
+          '<rect x="12" y="26" width="40" height="16" rx="8" fill="#b89830" stroke="#e8c84a" stroke-width="2.5"/>' +
+          '<ellipse cx="22" cy="34" rx="5" ry="4" fill="#6a5810" opacity="0.45"/>' +
+          '<ellipse cx="42" cy="34" rx="5" ry="4" fill="#6a5810" opacity="0.45"/>' +
+          '<circle cx="20" cy="30" r="2" fill="#f0e6a8" opacity="0.5"/>' +
+          '<line x1="52" y1="30" x2="58" y2="24" stroke="#c9a227" stroke-width="1.5"/>' +
+          '<line x1="52" y1="38" x2="58" y2="44" stroke="#c9a227" stroke-width="1.5"/>'
+        );
+      }
+    },
+    ecoli_draft: {
+      id: "ecoli_draft", name: "腸道桿菌前體", latin: "Enteric rod（簡化／假設）",
+      blurb: "簡化科普／假設：偏腸道環境適應；朝大腸桿菌方向。",
+      draw: function () {
+        return svg(
+          '<rect x="10" y="24" width="44" height="18" rx="9" fill="#c9a040" stroke="#f0d060" stroke-width="2.5"/>' +
+          '<ellipse cx="24" cy="33" rx="6" ry="5" fill="#7a6020" opacity="0.4"/>' +
+          '<ellipse cx="40" cy="33" rx="6" ry="5" fill="#7a6020" opacity="0.4"/>' +
+          '<line x1="54" y1="28" x2="60" y2="20" stroke="#e8c84a" stroke-width="1.8"/>' +
+          '<line x1="54" y1="33" x2="62" y2="33" stroke="#e8c84a" stroke-width="1.8"/>' +
+          '<line x1="54" y1="38" x2="60" y2="46" stroke="#e8c84a" stroke-width="1.8"/>' +
+          '<circle cx="18" cy="28" r="2" fill="#fff0c0" opacity="0.45"/>'
+        );
+      }
+    },
+    ecoli: {
+      id: "ecoli", name: "大腸桿菌", latin: "Escherichia coli",
+      blurb: "簡化科普／假設：常見腸道細菌；此為遊戲簡化形態，非臨床診斷依據。",
+      draw: function () {
+        return svg(
+          '<rect x="8" y="22" width="48" height="20" rx="10" fill="#d4b048" stroke="#ffe08a" stroke-width="2.5"/>' +
+          '<ellipse cx="22" cy="32" rx="7" ry="6" fill="#8a6820" opacity="0.4"/>' +
+          '<ellipse cx="42" cy="32" rx="7" ry="6" fill="#8a6820" opacity="0.4"/>' +
+          '<line x1="56" y1="26" x2="62" y2="16" stroke="#f0d060" stroke-width="2"/>' +
+          '<line x1="56" y1="32" x2="63" y2="32" stroke="#f0d060" stroke-width="2"/>' +
+          '<line x1="56" y1="38" x2="62" y2="48" stroke="#f0d060" stroke-width="2"/>' +
+          '<circle cx="16" cy="28" r="2.5" fill="#fff8d0" opacity="0.5"/>' +
+          '<circle cx="36" cy="30" r="1.8" fill="#fff8d0" opacity="0.4"/>'
+        );
+      }
+    },
+    myco_draft: {
+      id: "myco_draft", name: "抗酸菌前體", latin: "Acid-fast draft（簡化／假設）",
+      blurb: "簡化科普／假設：厚脂質外壁傾向；朝結核分枝桿菌方向。",
+      draw: function () {
+        return svg(
+          '<rect x="14" y="20" width="20" height="28" rx="8" fill="#8a7028" stroke="#c9a84a" stroke-width="2.5" transform="rotate(-18 24 34)"/>' +
+          '<rect x="30" y="18" width="18" height="30" rx="8" fill="#a88830" stroke="#d4b858" stroke-width="2.5" transform="rotate(12 39 33)"/>' +
+          '<circle cx="28" cy="30" r="2" fill="#e8d090" opacity="0.4"/>'
+        );
+      }
+    },
+    tuberculosis: {
+      id: "tuberculosis", name: "結核分枝桿菌", latin: "Mycobacterium tuberculosis",
+      blurb: "簡化科普／假設：抗酸桿菌；此為遊戲簡化形態，非醫療建議。",
+      draw: function () {
+        return svg(
+          '<rect x="12" y="18" width="18" height="32" rx="9" fill="#9a7830" stroke="#e0c060" stroke-width="2.5" transform="rotate(-20 21 34)"/>' +
+          '<rect x="28" y="16" width="16" height="34" rx="8" fill="#b09038" stroke="#e8c84a" stroke-width="2.5" transform="rotate(8 36 33)"/>' +
+          '<rect x="36" y="20" width="14" height="28" rx="7" fill="#a88828" stroke="#d4b848" stroke-width="2" transform="rotate(22 43 34)"/>' +
+          '<circle cx="30" cy="28" r="2.2" fill="#fff0c0" opacity="0.45"/>'
         );
       }
     },
@@ -246,20 +408,26 @@
       blurb: "簡化科普／假設：核酸外包蛋白殼，需宿主才能複製。",
       draw: function () {
         return svg(
-          '<polygon points="32,12 50,22 50,42 32,52 14,42 14,22" fill="#4a6a80" stroke="#9ec0d8" stroke-width="2"/>' +
-          '<circle cx="32" cy="32" r="7" fill="#2a4050"/>'
+          '<polygon points="32,10 52,21 52,43 32,54 12,43 12,21" fill="#3a6078" stroke="#9ec8e0" stroke-width="2"/>' +
+          '<polygon points="32,18 44,25 44,39 32,46 20,39 20,25" fill="#2a4858" opacity="0.7"/>' +
+          '<circle cx="32" cy="32" r="6" fill="#1a3040"/>' +
+          '<circle cx="32" cy="30" r="2" fill="#b8e0f0" opacity="0.5"/>'
         );
       }
     },
-    vir_rna: {
-      id: "vir_rna", name: "RNA 粒子", latin: "RNA virion draft（簡化／假設）",
-      blurb: "簡化科普／假設：偏向 RNA 基因組；真實分類遠更細。",
+    vir_envelope: {
+      id: "vir_envelope", name: "有膜粒子", latin: "Enveloped virion（簡化／假設）",
+      blurb: "簡化科普／假設：具脂膜包膜；朝流感樣方向。",
       draw: function () {
         return svg(
-          '<ellipse cx="32" cy="34" rx="16" ry="12" fill="#5a7a90" stroke="#a8d0e8" stroke-width="2"/>' +
-          '<path d="M20 34 Q26 26 32 34 Q38 42 44 34" fill="none" stroke="#c8e8f8" stroke-width="2"/>' +
-          '<circle cx="18" cy="22" r="3" fill="#8ab0c8"/><circle cx="46" cy="22" r="3" fill="#8ab0c8"/>' +
-          '<circle cx="32" cy="16" r="3" fill="#8ab0c8"/>'
+          '<ellipse cx="32" cy="36" rx="16" ry="12" fill="#4a7890" stroke="#a8d8f0" stroke-width="2"/>' +
+          '<ellipse cx="32" cy="36" rx="9" ry="7" fill="#2a4860"/>' +
+          '<circle cx="32" cy="14" r="3.5" fill="#c8e8f8"/>' +
+          '<line x1="32" y1="17" x2="32" y2="25" stroke="#b0d8f0" stroke-width="2"/>' +
+          '<circle cx="14" cy="22" r="3" fill="#c8e8f8"/>' +
+          '<line x1="16" y1="24" x2="22" y2="30" stroke="#b0d8f0" stroke-width="2"/>' +
+          '<circle cx="50" cy="22" r="3" fill="#c8e8f8"/>' +
+          '<line x1="48" y1="24" x2="42" y2="30" stroke="#b0d8f0" stroke-width="2"/>'
         );
       }
     },
@@ -268,7 +436,7 @@
       blurb: "簡化科普／假設：表面突刺利於附著細胞；流感病毒亦有類似結構（簡化）。",
       draw: function () {
         return svg(
-          '<ellipse cx="32" cy="36" rx="15" ry="11" fill="#6a8fa8" stroke="#b8d8f0" stroke-width="2"/>' +
+          '<ellipse cx="32" cy="36" rx="15" ry="11" fill="#5a8aa0" stroke="#b8d8f0" stroke-width="2"/>' +
           '<line x1="32" y1="12" x2="32" y2="25" stroke="#c8e0f0" stroke-width="2"/>' +
           '<circle cx="32" cy="11" r="4" fill="#d0e8f8"/>' +
           '<line x1="16" y1="20" x2="22" y2="28" stroke="#c8e0f0" stroke-width="2"/>' +
@@ -287,7 +455,7 @@
       blurb: "簡化科普／假設：常見呼吸道病毒；此為遊戲簡化形態，非臨床診斷依據。",
       draw: function () {
         return svg(
-          '<ellipse cx="32" cy="36" rx="16" ry="12" fill="#7aa0b8" stroke="#d0ecff" stroke-width="2.5"/>' +
+          '<ellipse cx="32" cy="36" rx="16" ry="12" fill="#6aa0b8" stroke="#d0ecff" stroke-width="2.5"/>' +
           '<ellipse cx="32" cy="36" rx="8" ry="6" fill="#3a5568"/>' +
           '<line x1="32" y1="8" x2="32" y2="24" stroke="#e0f0ff" stroke-width="2.5"/>' +
           '<circle cx="32" cy="7" r="5" fill="#f0f8ff"/>' +
@@ -301,28 +469,106 @@
           '<circle cx="58" cy="42" r="3.5" fill="#f0f8ff"/>'
         );
       }
+    },
+    vir_naked: {
+      id: "vir_naked", name: "裸殼粒子", latin: "Naked capsid（簡化／假設）",
+      blurb: "簡化科普／假設：無脂膜、堅固蛋白殼；可走向諾羅或鼻病毒方向。",
+      draw: function () {
+        return svg(
+          '<circle cx="32" cy="32" r="16" fill="#3a7088" stroke="#90c8e0" stroke-width="2.5"/>' +
+          '<circle cx="32" cy="32" r="10" fill="none" stroke="#70a8c0" stroke-width="1.5"/>' +
+          '<circle cx="32" cy="32" r="4" fill="#1a4050"/>' +
+          '<circle cx="24" cy="24" r="2.5" fill="#a8d8f0" opacity="0.5"/>' +
+          '<circle cx="40" cy="26" r="2" fill="#a8d8f0" opacity="0.4"/>' +
+          '<circle cx="28" cy="40" r="2" fill="#a8d8f0" opacity="0.35"/>'
+        );
+      }
+    },
+    noro_draft: {
+      id: "noro_draft", name: "杯狀殼前體", latin: "Calici-like draft（簡化／假設）",
+      blurb: "簡化科普／假設：杯狀／嵌杯外觀傾向；朝諾羅病毒方向。",
+      draw: function () {
+        return svg(
+          '<circle cx="32" cy="32" r="17" fill="#2a6880" stroke="#80c0d8" stroke-width="2"/>' +
+          '<path d="M18 28 Q24 18 32 28 Q40 18 46 28" fill="none" stroke="#a0d8e8" stroke-width="2"/>' +
+          '<path d="M18 36 Q24 46 32 36 Q40 46 46 36" fill="none" stroke="#a0d8e8" stroke-width="2"/>' +
+          '<circle cx="32" cy="32" r="5" fill="#183848"/>'
+        );
+      }
+    },
+    norovirus: {
+      id: "norovirus", name: "諾羅病毒", latin: "Norovirus",
+      blurb: "簡化科普／假設：常見腸胃道病毒；此為遊戲簡化形態，非醫療建議。",
+      draw: function () {
+        return svg(
+          '<circle cx="32" cy="32" r="18" fill="#2480a0" stroke="#a0e0f8" stroke-width="2.5"/>' +
+          '<path d="M16 26 Q24 14 32 26 Q40 14 48 26" fill="none" stroke="#c0f0ff" stroke-width="2.2"/>' +
+          '<path d="M16 38 Q24 50 32 38 Q40 50 48 38" fill="none" stroke="#c0f0ff" stroke-width="2.2"/>' +
+          '<circle cx="32" cy="32" r="6" fill="#104058"/>' +
+          '<circle cx="24" cy="28" r="2.5" fill="#e0f8ff" opacity="0.45"/>' +
+          '<circle cx="40" cy="34" r="2" fill="#e0f8ff" opacity="0.4"/>'
+        );
+      }
+    },
+    rhino_draft: {
+      id: "rhino_draft", name: "小RNA前體", latin: "Picorna-like draft（簡化／假設）",
+      blurb: "簡化科普／假設：小型無膜 RNA 殼；朝鼻病毒方向。",
+      draw: function () {
+        return svg(
+          '<circle cx="32" cy="32" r="14" fill="#4a88a0" stroke="#b0d8e8" stroke-width="2"/>' +
+          '<polygon points="32,20 40,28 32,36 24,28" fill="#2a5870" opacity="0.6"/>' +
+          '<circle cx="32" cy="28" r="2.5" fill="#d0ecf8" opacity="0.5"/>'
+        );
+      }
+    },
+    rhinovirus: {
+      id: "rhinovirus", name: "鼻病毒", latin: "Rhinovirus",
+      blurb: "簡化科普／假設：常見感冒相關病毒；此為遊戲簡化形態，非臨床診斷依據。",
+      draw: function () {
+        return svg(
+          '<circle cx="32" cy="32" r="16" fill="#58a0b8" stroke="#d0f0ff" stroke-width="2.5"/>' +
+          '<polygon points="32,16 42,26 32,36 22,26" fill="#3a7088" opacity="0.55"/>' +
+          '<polygon points="32,28 42,38 32,48 22,38" fill="#2a6078" opacity="0.4"/>' +
+          '<circle cx="32" cy="30" r="3" fill="#e8f8ff" opacity="0.55"/>' +
+          '<circle cx="24" cy="24" r="2" fill="#fff" opacity="0.3"/>'
+        );
+      }
     }
   };
 
-  /* —— 真分叉關卡（背後樹；畫面不畫樹） ——
-     每一關 options[].next 指向下一形態；終局 next 為 null 且 endKind 標示。
-     細菌線與病毒線從第一關即分叉，終點不同。 */
+  /* 門槽小圖示 */
+  function gateIcon(tint) {
+    if (tint === "bact") {
+      return svg('<circle cx="32" cy="32" r="14" fill="#c9a227" stroke="#ffe08a" stroke-width="3"/>', "0 0 64 64");
+    }
+    if (tint === "vir") {
+      return svg('<circle cx="32" cy="32" r="12" fill="#5a8aa0" stroke="#b8d8f0" stroke-width="3"/>' +
+        '<line x1="32" y1="8" x2="32" y2="18" stroke="#d0e8f8" stroke-width="3"/>' +
+        '<circle cx="32" cy="6" r="4" fill="#e8f4ff"/>', "0 0 64 64");
+    }
+    return svg('<circle cx="32" cy="32" r="12" fill="#6a7870" stroke="#a8b0a8" stroke-width="2"/>', "0 0 64 64");
+  }
+
+  /* —— 真分叉關卡（≥5 互斥終局；畫面不畫樹） ——
+     seed
+     ├─ bact_wall
+     │  ├─ bact_cocci → bact_pigment → aureus
+     │  └─ bact_rod
+     │     ├─ ecoli_draft → ecoli
+     │     └─ myco_draft → tuberculosis
+     └─ vir_capsid
+        ├─ vir_envelope → vir_spike → influenza
+        └─ vir_naked
+           ├─ noro_draft → norovirus
+           └─ rhino_draft → rhinovirus
+  */
   const LEVELS = {
     seed: {
       form: "seed",
       prompt: "你要往哪種結構長？",
       options: [
         { title: "築起細胞壁", sub: "獨立代謝・細菌向", next: "bact_wall", tint: "bact" },
-        { title: "包進蛋白殼", sub: "寄生複製・病毒向", next: "vir_capsid", tint: "vir" },
-        { title: "再觀望一下", sub: "仍停留未分化", next: "seed_loop", tint: "" }
-      ]
-    },
-    seed_loop: {
-      form: "seed",
-      prompt: "不能再拖了——選一邊",
-      options: [
-        { title: "築起細胞壁", sub: "細菌向", next: "bact_wall", tint: "bact" },
-        { title: "包進蛋白殼", sub: "病毒向", next: "vir_capsid", tint: "vir" }
+        { title: "包進蛋白殼", sub: "寄生複製・病毒向", next: "vir_capsid", tint: "vir" }
       ]
     },
     bact_wall: {
@@ -330,14 +576,7 @@
       prompt: "細胞形態？",
       options: [
         { title: "聚成球菌串", sub: "朝葡萄球菌屬", next: "bact_cocci", tint: "bact" },
-        { title: "拉成細桿", sub: "偏桿菌（仍細菌向）", next: "bact_cocci_via_rod", tint: "bact" }
-      ]
-    },
-    bact_cocci_via_rod: {
-      form: "bact_cocci",
-      prompt: "環境壓力下又縮回球菌團",
-      options: [
-        { title: "維持球菌團", sub: "繼續細菌線", next: "bact_cocci", tint: "bact" }
+        { title: "拉成細桿", sub: "朝桿菌方向", next: "bact_rod", tint: "bact" }
       ]
     },
     bact_cocci: {
@@ -345,8 +584,7 @@
       prompt: "色素與酶？",
       options: [
         { title: "金黃色素", sub: "朝金黃葡萄球菌", next: "bact_pigment", tint: "bact" },
-        { title: "偏白菌落", sub: "仍可轉金黃（簡化）", next: "bact_pigment", tint: "bact" },
-        { title: "加強表面黏附", sub: "形態接近金黃前體", next: "bact_pigment", tint: "bact" }
+        { title: "加強表面黏附", sub: "仍朝金黃前體", next: "bact_pigment", tint: "bact" }
       ]
     },
     bact_pigment: {
@@ -354,30 +592,62 @@
       prompt: "定植何處？",
       options: [
         { title: "人體鼻腔／皮膚", sub: "成為金黃葡萄球菌", next: "aureus", tint: "bact" },
-        { title: "傷口周圍", sub: "同樣收束金黃葡萄球菌", next: "aureus", tint: "bact" }
+        { title: "傷口周圍", sub: "成為金黃葡萄球菌", next: "aureus", tint: "bact" }
       ]
     },
     aureus: {
-      form: "aureus", end: true,
-      endKind: "bact",
+      form: "aureus", end: true, endKind: "bact",
       endTitle: "你已成為「金黃葡萄球菌」細菌",
-      endStory: "本局走細菌向真分叉終局。金黃葡萄球菌（Staphylococcus aureus）在此僅作休閒探索命名；非醫療建議。"
+      endStory: "本局走細菌・球菌向真分叉終局。金黃葡萄球菌（Staphylococcus aureus）在此僅作休閒探索命名。"
+    },
+    bact_rod: {
+      form: "bact_rod",
+      prompt: "桿菌往哪適應？",
+      options: [
+        { title: "腸道定植", sub: "朝大腸桿菌", next: "ecoli_draft", tint: "bact" },
+        { title: "厚脂質外壁", sub: "朝結核分枝桿菌", next: "myco_draft", tint: "bact" }
+      ]
+    },
+    ecoli_draft: {
+      form: "ecoli_draft",
+      prompt: "定植場域？",
+      options: [
+        { title: "大腸黏膜", sub: "成為大腸桿菌", next: "ecoli", tint: "bact" },
+        { title: "腸道菌叢", sub: "成為大腸桿菌", next: "ecoli", tint: "bact" }
+      ]
+    },
+    ecoli: {
+      form: "ecoli", end: true, endKind: "bact",
+      endTitle: "你已成為「大腸桿菌」細菌",
+      endStory: "本局走細菌・腸道桿菌向真分叉終局。大腸桿菌（Escherichia coli）在此僅作休閒探索命名。"
+    },
+    myco_draft: {
+      form: "myco_draft",
+      prompt: "抗酸外壁之後？",
+      options: [
+        { title: "肺內慢殖", sub: "成為結核分枝桿菌", next: "tuberculosis", tint: "bact" },
+        { title: "巨噬細胞內生存", sub: "成為結核分枝桿菌", next: "tuberculosis", tint: "bact" }
+      ]
+    },
+    tuberculosis: {
+      form: "tuberculosis", end: true, endKind: "bact",
+      endTitle: "你已成為「結核分枝桿菌」細菌",
+      endStory: "本局走細菌・抗酸菌向真分叉終局。結核分枝桿菌（Mycobacterium tuberculosis）在此僅作休閒探索命名。"
     },
     vir_capsid: {
       form: "vir_capsid",
-      prompt: "基因組傾向？",
+      prompt: "殼體策略？",
       options: [
-        { title: "RNA 單股", sub: "朝流感樣", next: "vir_rna", tint: "vir" },
-        { title: "碎成多節段 RNA", sub: "亦朝流感樣（簡化）", next: "vir_rna", tint: "vir" }
+        { title: "加一層脂膜", sub: "有膜・朝流感樣", next: "vir_envelope", tint: "vir" },
+        { title: "堅固裸殼", sub: "無膜・朝腸胃／感冒樣", next: "vir_naked", tint: "vir" }
       ]
     },
-    vir_rna: {
-      form: "vir_rna",
+    vir_envelope: {
+      form: "vir_envelope",
       prompt: "表面構造？",
       options: [
         { title: "長出突刺蛋白", sub: "朝流感病毒", next: "vir_spike", tint: "vir" },
-        { title: "加一層脂膜", sub: "之後仍長突刺", next: "vir_spike", tint: "vir" },
-        { title: "強化殼體對稱", sub: "再進化出突刺", next: "vir_spike", tint: "vir" }
+        { title: "強化包膜對稱", sub: "再長突刺", next: "vir_spike", tint: "vir" }
       ]
     },
     vir_spike: {
@@ -385,22 +655,61 @@
       prompt: "複製場域？",
       options: [
         { title: "呼吸道上皮", sub: "成為流感病毒", next: "influenza", tint: "vir" },
-        { title: "飛沫傳播循環", sub: "同樣收束流感病毒", next: "influenza", tint: "vir" }
+        { title: "飛沫傳播循環", sub: "成為流感病毒", next: "influenza", tint: "vir" }
       ]
     },
     influenza: {
-      form: "influenza", end: true,
-      endKind: "vir",
+      form: "influenza", end: true, endKind: "vir",
       endTitle: "你已成為「流感病毒」病毒",
-      endStory: "本局走病毒向真分叉終局。流感病毒（Influenza virus）在此僅作休閒探索命名；非醫療建議。"
+      endStory: "本局走病毒・有膜突刺向真分叉終局。流感病毒（Influenza virus）在此僅作休閒探索命名。"
+    },
+    vir_naked: {
+      form: "vir_naked",
+      prompt: "裸殼往哪適應？",
+      options: [
+        { title: "腸胃杯狀殼", sub: "朝諾羅病毒", next: "noro_draft", tint: "vir" },
+        { title: "小型鼻腔殼", sub: "朝鼻病毒", next: "rhino_draft", tint: "vir" }
+      ]
+    },
+    noro_draft: {
+      form: "noro_draft",
+      prompt: "傳播場域？",
+      options: [
+        { title: "腸道黏膜", sub: "成為諾羅病毒", next: "norovirus", tint: "vir" },
+        { title: "糞口循環", sub: "成為諾羅病毒", next: "norovirus", tint: "vir" }
+      ]
+    },
+    norovirus: {
+      form: "norovirus", end: true, endKind: "vir",
+      endTitle: "你已成為「諾羅病毒」病毒",
+      endStory: "本局走病毒・裸殼腸胃向真分叉終局。諾羅病毒（Norovirus）在此僅作休閒探索命名。"
+    },
+    rhino_draft: {
+      form: "rhino_draft",
+      prompt: "定植何處？",
+      options: [
+        { title: "鼻腔上皮", sub: "成為鼻病毒", next: "rhinovirus", tint: "vir" },
+        { title: "上呼吸道", sub: "成為鼻病毒", next: "rhinovirus", tint: "vir" }
+      ]
+    },
+    rhinovirus: {
+      form: "rhinovirus", end: true, endKind: "vir",
+      endTitle: "你已成為「鼻病毒」病毒",
+      endStory: "本局走病毒・裸殼感冒向真分叉終局。鼻病毒（Rhinovirus）在此僅作休閒探索命名。"
     }
   };
 
-  /* 證明非假分叉：從 seed 選細胞壁永不達 influenza；選蛋白殼永不達 aureus */
   const PROOF = {
-    bactExclusiveEnd: "aureus",
-    virExclusiveEnd: "influenza",
-    note: "第一關「築起細胞壁」鎖細菌線→金黃葡萄球菌；「包進蛋白殼」鎖病毒線→流感病毒。兩線無匯合節點。"
+    endings: ["aureus", "ecoli", "tuberculosis", "influenza", "norovirus", "rhinovirus"],
+    note: "第一關鎖細菌／病毒域。細菌線：球菌→金黃葡萄球菌；桿菌→腸道（大腸桿菌）或抗酸（結核分枝桿菌）。病毒線：有膜→流感；裸殼→諾羅或鼻病毒。五條以上互斥終局，無跨線匯合。",
+    routes: {
+      aureus: ["seed→bact_wall", "bact_wall→bact_cocci", "bact_cocci→bact_pigment", "bact_pigment→aureus"],
+      ecoli: ["seed→bact_wall", "bact_wall→bact_rod", "bact_rod→ecoli_draft", "ecoli_draft→ecoli"],
+      tuberculosis: ["seed→bact_wall", "bact_wall→bact_rod", "bact_rod→myco_draft", "myco_draft→tuberculosis"],
+      influenza: ["seed→vir_capsid", "vir_capsid→vir_envelope", "vir_envelope→vir_spike", "vir_spike→influenza"],
+      norovirus: ["seed→vir_capsid", "vir_capsid→vir_naked", "vir_naked→noro_draft", "noro_draft→norovirus"],
+      rhinovirus: ["seed→vir_capsid", "vir_capsid→vir_naked", "vir_naked→rhino_draft", "rhino_draft→rhinovirus"]
+    }
   };
 
   const el = {
@@ -413,21 +722,32 @@
     hudName: document.getElementById("hudName"),
     hudLatin: document.getElementById("hudLatin"),
     hudBlurb: document.getElementById("hudBlurb"),
-    titleMascot: document.getElementById("titleMascot"),
     endMascot: document.getElementById("endMascot"),
     endTitle: document.getElementById("endTitle"),
     endLatin: document.getElementById("endLatin"),
     endStory: document.getElementById("endStory"),
-    endPath: document.getElementById("endPath")
+    endPath: document.getElementById("endPath"),
+    particles: document.getElementById("particles")
   };
 
-  el.titleMascot.innerHTML = FORMS.seed.draw();
+  /* 背景微粒 */
+  (function spawnParticles() {
+    var n = 18;
+    for (var i = 0; i < n; i++) {
+      var d = document.createElement("i");
+      d.style.left = (Math.random() * 100) + "%";
+      d.style.animationDuration = (8 + Math.random() * 14) + "s";
+      d.style.animationDelay = (-Math.random() * 12) + "s";
+      d.style.width = d.style.height = (2 + Math.random() * 3) + "px";
+      el.particles.appendChild(d);
+    }
+  })();
 
-  let state = null;
-  let raf = 0;
-  let lastTs = 0;
-  let keys = { left: false, right: false };
-  let gateRowEl = null;
+  var state = null;
+  var raf = 0;
+  var lastTs = 0;
+  var keys = { left: false, right: false };
+  var gateRowEl = null;
 
   function showScreen(name) {
     el.title.classList.toggle("active", name === "title");
@@ -436,7 +756,7 @@
   }
 
   function setForm(formId) {
-    const f = FORMS[formId];
+    var f = FORMS[formId];
     el.creature.innerHTML = f.draw();
     el.hudName.textContent = f.name;
     el.hudLatin.textContent = f.latin;
@@ -459,32 +779,30 @@
 
   function spawnGates(level) {
     clearGates();
-    const row = document.createElement("div");
+    var row = document.createElement("div");
     row.className = "gate-row";
     row.setAttribute("role", "group");
     row.setAttribute("aria-label", level.prompt || "選擇");
     level.options.forEach(function (opt, i) {
-      const g = document.createElement("div");
+      var g = document.createElement("div");
       g.className = "gate" + (opt.tint === "bact" ? " hi" : opt.tint === "vir" ? " vir-hi" : "");
       g.dataset.idx = String(i);
-      g.innerHTML = '<div class="g-title"></div><div class="g-sub"></div>';
+      g.innerHTML = '<div class="g-icon"></div><div class="g-title"></div><div class="g-sub"></div>';
+      g.querySelector(".g-icon").innerHTML = gateIcon(opt.tint || "");
       g.querySelector(".g-title").textContent = opt.title;
       g.querySelector(".g-sub").textContent = opt.sub || "";
       row.appendChild(g);
     });
     el.stage.appendChild(row);
     gateRowEl = row;
-    const sh = el.stage.clientHeight;
-    state.gateY = -100;
-    state.gateTargetY = sh * 0.62;
-    state.gateSpeed = 0; /* gates stay; creature falls into them */
+    var sh = el.stage.clientHeight;
+    state.gateTargetY = sh * 0.60;
     row.style.top = state.gateTargetY + "px";
     state.gateY = state.gateTargetY;
     state.gatesReady = true;
     state.resolved = false;
-    /* place creature near top for this segment */
-    state.y = Math.max(90, sh * 0.18);
-    state.fallSpeed = Math.min(160, 110 + state.segment * 8);
+    state.y = Math.max(90, sh * 0.16);
+    state.fallSpeed = Math.min(170, 115 + state.segment * 10);
   }
 
   function startGame() {
@@ -501,12 +819,11 @@
       gatesReady: false,
       resolved: false,
       pauseUntil: 0,
-      domain: null /* 'bact' | 'vir' after first real fork */
+      domain: null
     };
     showScreen("play");
     setForm("seed");
-    const sw = el.stage.clientWidth;
-    state.x = sw / 2;
+    state.x = el.stage.clientWidth / 2;
     spawnGates(LEVELS.seed);
     lastTs = 0;
     raf = requestAnimationFrame(tick);
@@ -515,27 +832,25 @@
 
   function pickOption(idx) {
     if (!state || state.resolved) return;
-    const level = LEVELS[state.nodeId];
+    var level = LEVELS[state.nodeId];
     if (!level || level.end || !level.options) return;
-    const opt = level.options[idx];
+    var opt = level.options[idx];
     if (!opt) return;
     state.resolved = true;
-
     state.path.push({ label: FORMS[level.form].name, choice: opt.title });
 
-    /* domain lock */
     if (opt.next === "bact_wall") state.domain = "bact";
     if (opt.next === "vir_capsid") state.domain = "vir";
 
-    const nextId = opt.next;
-    const nextNode = LEVELS[nextId];
+    var nextId = opt.next;
+    var nextNode = LEVELS[nextId];
 
     toast(opt.title, 700);
     clearGates();
     state.gatesReady = false;
 
     if (nextNode && nextNode.end) {
-      const formId = nextNode.form;
+      var formId = nextNode.form;
       setForm(formId);
       state.path.push({ label: FORMS[formId].name, choice: "終局" });
       state.pauseUntil = performance.now() + 600;
@@ -543,11 +858,9 @@
       return;
     }
 
-    /* morph then next segment */
-    const formId = nextNode.form;
     state.nodeId = nextId;
     state.segment += 1;
-    setForm(formId);
+    setForm(nextNode.form);
     state.pauseUntil = performance.now() + 500;
     state.pendingSpawn = nextId;
   }
@@ -555,14 +868,14 @@
   function finish(endNode) {
     cancelAnimationFrame(raf);
     clearGates();
-    const form = FORMS[endNode.form];
+    var form = FORMS[endNode.form];
     el.endMascot.innerHTML = form.draw();
     el.endTitle.textContent = endNode.endTitle;
     el.endLatin.textContent = form.latin;
     el.endStory.textContent = endNode.endStory + " " + PROOF.note;
     el.endPath.innerHTML = "";
     state.path.forEach(function (p) {
-      const li = document.createElement("li");
+      var li = document.createElement("li");
       li.textContent = p.label + " ← " + p.choice;
       el.endPath.appendChild(li);
     });
@@ -571,14 +884,14 @@
 
   function nearestGateIndex() {
     if (!gateRowEl) return 0;
-    const gates = gateRowEl.querySelectorAll(".gate");
-    const cx = state.x;
-    let best = 0, bestDist = Infinity;
+    var gates = gateRowEl.querySelectorAll(".gate");
+    var cx = state.x;
+    var best = 0, bestDist = Infinity;
     gates.forEach(function (g, i) {
-      const r = g.getBoundingClientRect();
-      const sr = el.stage.getBoundingClientRect();
-      const mid = (r.left + r.right) / 2 - sr.left;
-      const d = Math.abs(mid - cx);
+      var r = g.getBoundingClientRect();
+      var sr = el.stage.getBoundingClientRect();
+      var mid = (r.left + r.right) / 2 - sr.left;
+      var d = Math.abs(mid - cx);
       if (d < bestDist) { bestDist = d; best = i; }
     });
     return best;
@@ -586,9 +899,9 @@
 
   function highlightGate() {
     if (!gateRowEl) return;
-    const idx = nearestGateIndex();
+    var idx = nearestGateIndex();
     gateRowEl.querySelectorAll(".gate").forEach(function (g, i) {
-      g.style.outline = i === idx ? "2px solid #e6e2d6" : "none";
+      g.style.outline = i === idx ? "2px solid #e8efe8" : "none";
       g.style.outlineOffset = "2px";
     });
   }
@@ -596,7 +909,7 @@
   function tick(ts) {
     if (!state) return;
     if (!lastTs) lastTs = ts;
-    const dt = Math.min(0.05, (ts - lastTs) / 1000);
+    var dt = Math.min(0.05, (ts - lastTs) / 1000);
     lastTs = ts;
 
     if (ts < state.pauseUntil) {
@@ -604,38 +917,36 @@
       return;
     }
     if (state.pendingEnd) {
-      const e = state.pendingEnd;
+      var e = state.pendingEnd;
       state.pendingEnd = null;
       finish(e);
       return;
     }
     if (state.pendingSpawn) {
-      const id = state.pendingSpawn;
+      var id = state.pendingSpawn;
       state.pendingSpawn = null;
       spawnGates(LEVELS[id]);
       toast(LEVELS[id].prompt, 1000);
     }
 
-    const sw = el.stage.clientWidth;
-    const sh = el.stage.clientHeight;
-    const speed = 280;
+    var sw = el.stage.clientWidth;
+    var sh = el.stage.clientHeight;
+    var speed = 300;
     if (keys.left) state.vx = -speed;
     else if (keys.right) state.vx = speed;
     else state.vx *= 0.82;
 
     state.x += state.vx * dt;
-    const margin = 36;
+    var margin = 40;
     if (state.x < margin) { state.x = margin; state.vx = 0; }
     if (state.x > sw - margin) { state.x = sw - margin; state.vx = 0; }
 
     if (state.gatesReady && !state.resolved) {
       state.y += state.fallSpeed * dt;
       highlightGate();
-      /* collide with gate row */
       if (state.y >= state.gateY + 10) {
         pickOption(nearestGateIndex());
       }
-      /* wrap if somehow missed */
       if (state.y > sh + 40 && !state.resolved) {
         pickOption(nearestGateIndex());
       }
@@ -647,7 +958,6 @@
     raf = requestAnimationFrame(tick);
   }
 
-  /* controls */
   document.getElementById("btnStart").addEventListener("click", startGame);
   document.getElementById("btnAgain").addEventListener("click", function () {
     showScreen("title");
@@ -662,25 +972,35 @@
     if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") keys.right = false;
   });
 
-  let touchX0 = null;
+  /* 觸控：preventDefault 擋長按選字／callout，仍保留左右半屏點／滑 */
+  var touchX0 = null;
+  el.stage.addEventListener("touchstart", function (e) {
+    if (!state || !el.play.classList.contains("active")) return;
+    e.preventDefault();
+  }, { passive: false });
+  el.stage.addEventListener("touchmove", function (e) {
+    if (!state || !el.play.classList.contains("active")) return;
+    e.preventDefault();
+  }, { passive: false });
+
   el.stage.addEventListener("pointerdown", function (e) {
     if (!state || !el.play.classList.contains("active")) return;
+    if (e.pointerType === "touch") e.preventDefault();
     touchX0 = e.clientX;
-    const rect = el.stage.getBoundingClientRect();
-    const mid = rect.left + rect.width / 2;
+    var rect = el.stage.getBoundingClientRect();
+    var mid = rect.left + rect.width / 2;
     if (e.clientX < mid) keys.left = true;
     else keys.right = true;
-    el.stage.setPointerCapture(e.pointerId);
+    try { el.stage.setPointerCapture(e.pointerId); } catch (err) {}
   });
   el.stage.addEventListener("pointermove", function (e) {
     if (touchX0 == null || !state) return;
-    const dx = e.clientX - touchX0;
+    var dx = e.clientX - touchX0;
     if (Math.abs(dx) > 8) {
       keys.left = dx < 0;
       keys.right = dx > 0;
     }
-    /* direct steer toward pointer x within stage */
-    const rect = el.stage.getBoundingClientRect();
+    var rect = el.stage.getBoundingClientRect();
     state.x = e.clientX - rect.left;
   });
   function clearPointer(e) {
@@ -690,7 +1010,12 @@
   el.stage.addEventListener("pointerup", clearPointer);
   el.stage.addEventListener("pointercancel", clearPointer);
 
-  /* expose for evidence scripts */
+  /* 長按選單保險：contextmenu 在遊戲區擋掉 */
+  el.stage.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+  document.getElementById("app").addEventListener("contextmenu", function (e) {
+    if (el.play.classList.contains("active")) e.preventDefault();
+  });
+
   window.__VIRUS_FORK__ = {
     FORMS: FORMS,
     LEVELS: LEVELS,
@@ -698,10 +1023,9 @@
     startGame: startGame,
     getState: function () { return state; },
     forcePick: function (idx) { pickOption(idx); },
-    /** 將公仔移到第 idx 個門中央並立即落入 */
     fallInto: function (idx) {
       if (!state || !gateRowEl) return false;
-      var gates = gateRowEl.querySelectorAll('.gate');
+      var gates = gateRowEl.querySelectorAll(".gate");
       var g = gates[idx];
       if (!g) return false;
       var r = g.getBoundingClientRect();

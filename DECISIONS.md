@@ -1,5 +1,12 @@
 # virus-fork-cli — 決策紀錄
 
+## 2026-10-28 單檔瘦身（feat/playable-slim）
+- 問題：`playable.html` ≈633KB，聊天預覽「檔案過大」；inline cover base64 為主因（原 cover-v1.jpg ≈281KB → base64 ≈375KB）。
+- 作法：另存 `cover-playable.jpg`（440×782、JPEG q=62、optimize）≈40KB；`scripts/build-playable.py` 將 `index.html` 的 `cover-v1.jpg` 換成 data URL 產出 `playable.html`。
+- 結果：playable **≈312KB**（≤450／理想≤400）；`index.html` 仍用完整 `cover-v1.jpg` 開發。
+- 玩法未砍；checks allPass；verify-phone-html PASS。
+- 證據：`/workspace/scratch/virus-fork-cli-evidence-v12/`
+
 ## 2026-10-28 現實環境第二段＋玩時畫面加強（feat/env-phase-ui）
 - 接手 CLI WIP `8dd89c3`；Grok CLI 無頭一度因權限中斷，改由本席直寫收尾。
 - **環境段**：終局「進入現實環境」→ 依物種分池 `ENV_POOLS`（13 池覆蓋 29 終局）；`pop` 0–100 消長；繁盛／持平／衰退柔和結局；零假分叉。

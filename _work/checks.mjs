@@ -2,7 +2,7 @@ import { chromium } from "playwright-core";
 import fs from "fs";
 import path from "path";
 
-const outDir = "/workspace/scratch/virus-fork-cli-evidence-v13";
+const outDir = "/workspace/scratch/virus-fork-cli-evidence-v14";
 fs.mkdirSync(outDir, { recursive: true });
 const file = path.resolve("/workspace/virus-fork-cli/playable.html");
 const url = "file://" + file + "?envGap=0";
@@ -185,10 +185,28 @@ const gapEvidence = await page.evaluate(async () => {
       liveGrow: !!(c && c.classList.contains("live-grow")),
       gapGrowing: document.getElementById("play").classList.contains("gap-growing"),
       y: st && Math.round(st.y),
-      className: c ? c.className : ""
+      className: c ? c.className : "",
+      transform: c ? (c.style.transform || "") : "",
+      buds: document.querySelectorAll("#colony .bud").length
     });
   }
-  return { before, after, frames, liveGrowFlag: !!V.liveGrow };
+  const transforms = frames.map((f) => f.transform || "");
+  const scales = transforms.map((tr) => {
+    const m = /scale\(([^)]+)\)/.exec(tr || "");
+    return m ? parseFloat(m[1]) : 1;
+  });
+  const scaleSpan = scales.length ? Math.max(...scales) - Math.min(...scales) : 0;
+  // style toggle smoke
+  V.setArtStyle("mc", { silent: true });
+  const mcOn = V.artStyleGet() === "mc" && document.getElementById("creature").classList.contains("art-mc");
+  const mcHtml = document.getElementById("creature").innerHTML || "";
+  V.setArtStyle("classic", { silent: true });
+  const classicOn = V.artStyleGet() === "classic";
+  return {
+    before, after, frames, liveGrowFlag: !!V.liveGrow,
+    scaleSpan, budMax: Math.max(...frames.map((f) => f.buds || 0)),
+    mcOn, classicOn, mcHasRect: mcHtml.includes("<rect")
+  };
 });
 
 await page.screenshot({ path: path.join(outDir, "23-env-gap-grow-a.png"), fullPage: true });
@@ -329,6 +347,10 @@ const checks = {
     gateTitleBig: parseFloat(envStart.gateTitleFs || "0") >= 15, // ~0.96–1.02rem at 390
     gateTall: (envStart.gateMinH || 0) >= 100,
     gapLiveFrames: (gapEvidence.frames || []).filter((f) => f.liveGrow || f.gapGrowing).length >= 2,
+    gapScaleVisible: (gapEvidence.scaleSpan || 0) >= 0.25,
+    gapBuds: (gapEvidence.budMax || 0) >= 1,
+    artMc: !!(gapEvidence.mcOn && gapEvidence.mcHasRect),
+    artClassic: !!gapEvidence.classicOn,
     vitalHigh: /vital-high/.test(midHigh.creatureClass || "") || (midHigh.particles || 0) >= (envStart.particleCount || 0),
     vitalLow: /vital-low/.test(midLow.creatureClass || "") || (midLow.pop || 99) < (envStart.pop || 0),
     thriveOk: !!(thrive.active && /繁盛|適應/.test(thrive.title || "")),

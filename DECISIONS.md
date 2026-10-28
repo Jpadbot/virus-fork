@@ -1,5 +1,11 @@
 # virus-fork-cli — 決策紀錄
 
+## 2026-10-28 波間明顯生長＋Minecraft 外表並存（feat/gap-grow-visible-mc-style）
+- John：前版 10 秒波間「見唔到變化」→ 改為大幅縮放／色相／分裂芽體（`#colony`），一眼可見。
+- 外表：**預設原有**；可切 Minecraft 方塊風（標題 checkbox＋玩時 chip）；`localStorage` 鍵 `virus-fork-art-style`；舊 `draw()` 保留。
+- 路徑 A 直寫（不派 CLI 工房）；未動路徑 B 票據檔；未強制瘦身。
+- checks allPass；verify PASS；證據 `/workspace/scratch/virus-fork-cli-evidence-v14/`。
+
 ## 2026-10-28 現實環境連續生長＋選項按鈕重設計（feat/env-live-grow-ui）
 - Grok CLI 無頭探索逾數分鐘未改檔 → 本席直寫收尾（路徑 A 既有備援）。
 - **波間**：`tick` 在 env＋`pendingSpawn`／`pendingEnvEnd` 期間呼叫 `updateEnvLiveGrow`（pop 外表插值、呼吸 keyframes、顆粒桶、輕微漂浮）；`?envGap=0` 仍可瞬切（測試用）。

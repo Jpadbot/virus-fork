@@ -298,6 +298,94 @@
   @keyframes wet-shim { from { opacity: 0.5; } to { opacity: 1; } }
   @keyframes wet-ripple { from { transform: translateY(0); } to { transform: translateY(30px); } }
   @keyframes wet-bubble { from { transform: translateY(6px); opacity: 0.4; } to { transform: translateY(-10px); opacity: 1; } }
+  #tempo-bar {
+    display: none; position: absolute; top: 0; left: 0; right: 0; z-index: 8;
+    padding: 6px 8px 4px; gap: 6px; flex-wrap: wrap; align-items: flex-start;
+    justify-content: space-between;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(8,14,12,0.94) 0%, rgba(8,14,12,0.55) 70%, transparent 100%);
+  }
+  #play.phase-env #tempo-bar { display: flex; }
+  #tempo-bar .tempo-left { flex: 1 1 140px; min-width: 0; pointer-events: none; }
+  #tempo-bar .tempo-stage {
+    font-size: 1.05rem; font-weight: 800; letter-spacing: 0.04em;
+    color: #f2f7f4; text-shadow: 0 1px 8px rgba(0,0,0,0.5); line-height: 1.15;
+  }
+  #tempo-bar .tempo-sub {
+    font-size: 0.62rem; color: #8aa898; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  #tempo-bar .tempo-progress {
+    margin-top: 5px; height: 3px; border-radius: 99px; background: rgba(255,255,255,0.12);
+    overflow: hidden; max-width: 220px;
+  }
+  #tempo-bar .tempo-progress > i {
+    display: block; height: 100%; width: 0%; border-radius: 99px;
+    background: linear-gradient(90deg, #6ecf9a, #e8b060);
+  }
+  #tempo-bar .tempo-right {
+    display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end;
+    pointer-events: auto; max-width: 100%;
+  }
+  #tempo-bar .tempo-right button {
+    pointer-events: auto; cursor: pointer;
+    border: 1px solid #3a4a44; background: rgba(16,28,24,0.85); color: #c8ddd0;
+    border-radius: 8px; padding: 4px 7px; font-size: 0.62rem; line-height: 1.2;
+    min-height: 28px;
+  }
+  #tempo-bar .tempo-right button.on,
+  #tempo-bar .tempo-right button[aria-pressed="true"] {
+    background: #eef3ef; color: #122018; border-color: #eef3ef; font-weight: 700;
+  }
+  #tempo-bar .tempo-right .btn-skip { font-size: 0.6rem; padding: 4px 8px; }
+  #id-card {
+    display: none; position: absolute; left: 6px; top: 58px; z-index: 7;
+    width: 128px; max-width: 34vw; pointer-events: auto;
+    background: rgba(12,22,18,0.78); border: 1px solid rgba(90,140,110,0.45);
+    border-radius: 12px; padding: 0; overflow: hidden;
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  }
+  #play.phase-env #id-card { display: block; }
+  #id-card.collapsed { width: 36px; }
+  #id-card.collapsed .id-body, #id-card.collapsed .id-mrz { display: none; }
+  #id-card .id-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 5px 7px; background: rgba(80,40,70,0.55);
+    font-size: 0.58rem; letter-spacing: 0.06em; color: #f0c8d8; font-weight: 700;
+  }
+  #id-card .id-toggle {
+    border: 0; background: transparent; color: #f0c8d8; cursor: pointer;
+    font-size: 0.7rem; padding: 0 2px; min-width: 18px; min-height: 18px;
+  }
+  #id-card .id-body { padding: 7px 8px 6px; }
+  #id-card .id-row { display: flex; gap: 6px; align-items: flex-start; }
+  #id-card .id-avatar {
+    width: 36px; height: 36px; flex-shrink: 0; border-radius: 8px;
+    background: rgba(20,36,28,0.9); border: 1px solid #3a5a48;
+    overflow: hidden;
+  }
+  #id-card .id-avatar > div, #id-card .id-avatar svg { width: 100%; height: 100%; display: block; }
+  #id-card .id-meta { min-width: 0; flex: 1; }
+  #id-card .id-name {
+    font-size: 0.72rem; font-weight: 800; color: #f0f6f2; line-height: 1.15;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  #id-card .id-fields { margin-top: 4px; font-size: 0.58rem; color: #9bb0a4; line-height: 1.35; }
+  #id-card .id-fields div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #id-card .id-fields b { color: #7a9088; font-weight: 600; margin-right: 3px; }
+  #id-card .id-mrz {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.48rem; letter-spacing: 0.04em; color: #5a7068;
+    padding: 4px 6px 5px; border-top: 1px dashed rgba(90,120,100,0.35);
+    white-space: nowrap; overflow: hidden;
+  }
+  @media (max-width: 360px) {
+    #id-card { width: 112px; top: 54px; }
+    #tempo-bar .tempo-right button { padding: 3px 5px; font-size: 0.58rem; }
+  }
+  #play.phase-env #hud .blurb { display: none; }
+  #play.phase-env #hud .name, #play.phase-env #hud .latin { display: none; }
+  #play.phase-env #hud { padding-top: 52px; }
   #hud {
     position: absolute; top: 0; left: 0; right: 0; z-index: 5;
     padding: 8px 14px 8px;
@@ -453,8 +541,25 @@
   }
   #creature.flash { filter: drop-shadow(0 0 20px rgba(255, 230, 160, 0.9)) brightness(1.28); }
   #play.phase-env #creature {
+    width: 110px; height: 110px; margin-left: -55px; margin-top: -55px;
     filter: drop-shadow(0 6px 14px rgba(0,0,0,0.45)) drop-shadow(0 0 12px rgba(140, 210, 160, 0.42));
   }
+  #creature[data-face] svg .vf-face { pointer-events: none; }
+  #creature[data-env-hint="heat_resp"] { --hint-glow: rgba(255,110,40,0.72); }
+  #creature[data-env-hint="wet_gi"] { --hint-glow: rgba(40,210,170,0.7); }
+  #creature[data-env-hint="skin"] { --hint-glow: rgba(230,160,50,0.7); }
+  #creature[data-env-hint="hospital"] { --hint-glow: rgba(190,230,240,0.75); }
+  #creature[data-env-hint="soil"] { --hint-glow: rgba(160,120,60,0.65); }
+  #colony .bud[data-env-hint="heat_resp"] { filter: drop-shadow(0 0 10px rgba(255,110,40,0.55)); }
+  #colony .bud[data-env-hint="wet_gi"] { filter: drop-shadow(0 0 10px rgba(40,210,170,0.55)); }
+  #colony .bud[data-env-hint="skin"] { filter: drop-shadow(0 0 10px rgba(230,160,50,0.55)); }
+  #colony .bud[data-env-hint="hospital"] { filter: drop-shadow(0 0 10px rgba(190,230,240,0.55)); }
+  #colony .bud[data-env-hint="soil"] { filter: drop-shadow(0 0 10px rgba(160,120,60,0.5)); }
+  .particles.hint-heat i { background: rgba(255,140,60,0.55) !important; box-shadow: 0 0 5px rgba(255,120,40,0.45); }
+  .particles.hint-wet i { background: rgba(60,220,180,0.5) !important; box-shadow: 0 0 5px rgba(40,200,160,0.4); }
+  .particles.hint-skin i { background: rgba(230,170,70,0.5) !important; box-shadow: 0 0 5px rgba(220,150,40,0.4); }
+  .particles.hint-hospital i { background: rgba(200,230,240,0.55) !important; box-shadow: 0 0 5px rgba(180,220,235,0.45); }
+  .particles.hint-soil i { background: rgba(170,130,70,0.5) !important; box-shadow: 0 0 5px rgba(140,100,50,0.4); }
 
   .gate-row {
     position: absolute; left: 0; right: 0; height: 128px;
@@ -729,6 +834,38 @@
   </section>
 
   <section id="play" class="screen" aria-label="遊戲">
+    <div id="tempo-bar" aria-label="節奏列">
+      <div class="tempo-left">
+        <div class="tempo-stage" id="tempoStage">現實環境</div>
+        <div class="tempo-sub" id="tempoSub">生長進行中</div>
+        <div class="tempo-progress" aria-hidden="true"><i id="tempoFill"></i></div>
+      </div>
+      <div class="tempo-right">
+        <button type="button" id="btnTempoPause" aria-pressed="false">暫停</button>
+        <button type="button" class="spd on" data-speed="1" aria-pressed="true">1x</button>
+        <button type="button" class="spd" data-speed="2" aria-pressed="false">2x</button>
+        <button type="button" class="spd" data-speed="4" aria-pressed="false">4x</button>
+        <button type="button" class="btn-skip" id="btnSkipChoice">快轉到下一抉擇 »</button>
+        <button type="button" id="btnAutoChoice" aria-pressed="false">自動抉擇</button>
+      </div>
+    </div>
+    <aside id="id-card" aria-label="身分卡">
+      <div class="id-head"><span>微生物・現場</span><button type="button" class="id-toggle" id="btnIdFold" aria-label="折疊">‹</button></div>
+      <div class="id-body">
+        <div class="id-row">
+          <div class="id-avatar" id="idAvatar" aria-hidden="true"></div>
+          <div class="id-meta">
+            <div class="id-name" id="idName">？？？</div>
+            <div class="id-fields">
+              <div><b>域</b><span id="idKind">—</span></div>
+              <div><b>處</b><span id="idScene">—</span></div>
+              <div><b>貌</b><span id="idFace">—</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="id-mrz" id="idMrz">VF&lt;MICROBE&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</div>
+    </aside>
     <div id="hud">
       <p class="name" id="hudName">原始微粒</p>
       <p class="latin" id="hudLatin">Proto-microbe（簡化／假設）</p>
@@ -1932,6 +2069,37 @@ function svg(inner, vb) {
     adenovirus: 52, herpes: 50, ebv: 50,
     hiv: 48, hiv2: 48, foamy: 50, htlv: 48
   };
+
+  /* 環境偏好色／形暗示（無文字）：同特徵同 key → 同色同形 */
+  var ENV_HINT_OF = {
+    aureus: "skin", epidermidis: "skin", pneumoniae: "heat_resp",
+    ecoli: "wet_gi", salmonella: "wet_gi",
+    tuberculosis: "heat_resp", leprae: "skin", mavium: "wet_gi",
+    tetani: "soil", botulinum: "soil", anthracis: "soil",
+    helicobacter: "wet_gi", vibrio: "wet_gi",
+    influenza: "heat_resp", influenza_b: "heat_resp", parainfluenza: "heat_resp",
+    measles: "heat_resp", rabies: "skin", dengue: "skin",
+    norovirus: "wet_gi", rotavirus: "wet_gi", rhinovirus: "heat_resp",
+    adenovirus: "heat_resp", herpes: "skin", ebv: "hospital",
+    hiv: "hospital", hiv2: "hospital", foamy: "hospital", htlv: "hospital"
+  };
+  var ENV_HINT_STYLE = {
+    heat_resp: { glow: "rgba(255,110,40,", shape: "spike", particleClass: "hint-heat", hueBias: 18, satBias: 0.28 },
+    wet_gi: { glow: "rgba(40,210,170,", shape: "wave", particleClass: "hint-wet", hueBias: -28, satBias: 0.22 },
+    skin: { glow: "rgba(230,160,50,", shape: "block", particleClass: "hint-skin", hueBias: 8, satBias: 0.18 },
+    hospital: { glow: "rgba(190,230,240,", shape: "cross", particleClass: "hint-hospital", hueBias: -8, satBias: -0.05 },
+    soil: { glow: "rgba(160,120,60,", shape: "block", particleClass: "hint-soil", hueBias: 22, satBias: 0.12 }
+  };
+  function envHintKey(formId) {
+    if (!formId) return "skin";
+    if (ENV_HINT_OF[formId]) return ENV_HINT_OF[formId];
+    var pool = ENV_POOL_OF[formId] || "";
+    if (/rna|resp|naked_resp/.test(pool)) return "heat_resp";
+    if (/rod|spiral|naked_gi/.test(pool)) return "wet_gi";
+    if (/retro|dna/.test(pool)) return "hospital";
+    if (/spore|myco/.test(pool)) return "soil";
+    return "skin";
+  }
 
   function envEnd(id, outcome, title, story) {
     return { id: id, end: true, outcome: outcome, endTitle: title, endStory: story };
@@ -4085,8 +4253,23 @@ function svg(inner, vb) {
     styleChip: document.getElementById("btnStyleChip"),
     colony: document.getElementById("colony"),
     sceneBg: document.getElementById("scene-bg"),
-    growHint: document.getElementById("grow-hint")
+    growHint: document.getElementById("grow-hint"),
+    tempoBar: document.getElementById("tempo-bar"),
+    tempoStage: document.getElementById("tempoStage"),
+    tempoSub: document.getElementById("tempoSub"),
+    tempoFill: document.getElementById("tempoFill"),
+    idCard: document.getElementById("id-card"),
+    idAvatar: document.getElementById("idAvatar"),
+    idName: document.getElementById("idName"),
+    idKind: document.getElementById("idKind"),
+    idScene: document.getElementById("idScene"),
+    idFace: document.getElementById("idFace"),
+    idMrz: document.getElementById("idMrz")
   };
+  var tempoPaused = false;
+  var tempoSpeed = 1;
+  var autoChoice = false;
+  var autoChoiceArmed = false;
 
   function rebuildParticles(count) {
     el.particles.innerHTML = "";
@@ -4157,6 +4340,188 @@ function svg(inner, vb) {
     if (el.colony) el.colony.innerHTML = "";
   }
 
+  function faceMood() {
+    if (!state || state.phase !== "env") return "smile";
+    var threat = typeof state.threat === "number" ? state.threat : 0;
+    var rate = typeof state.growthRate === "number" ? state.growthRate : GROWTH_RATE_BASE;
+    var danger = threat;
+    if (rate < GROWTH_RATE_BASE * 0.5) danger += 2;
+    else if (rate < GROWTH_RATE_BASE * 0.85) danger += 1;
+    if (typeof state.pop === "number" && state.pop <= 28) danger += 1;
+    if (danger >= 3) return "angry";
+    if (danger >= 1) return "neutral";
+    return "smile";
+  }
+
+  function faceMarkup(mood) {
+    var m = mood || "smile";
+    var eyes, mouth;
+    if (m === "angry") {
+      eyes = '<path d="M20 24 L26 28" stroke="#1a1210" stroke-width="2.4" stroke-linecap="round"/>' +
+             '<path d="M44 24 L38 28" stroke="#1a1210" stroke-width="2.4" stroke-linecap="round"/>' +
+             '<circle cx="24" cy="30" r="2.6" fill="#1a1210"/>' +
+             '<circle cx="40" cy="30" r="2.6" fill="#1a1210"/>';
+      mouth = '<path d="M24 44 Q32 38 40 44" fill="none" stroke="#1a1210" stroke-width="2.6" stroke-linecap="round"/>';
+    } else if (m === "neutral") {
+      eyes = '<circle cx="24" cy="28" r="2.8" fill="#1a1210"/>' +
+             '<circle cx="40" cy="28" r="2.8" fill="#1a1210"/>';
+      mouth = '<path d="M25 42 L39 42" fill="none" stroke="#1a1210" stroke-width="2.4" stroke-linecap="round"/>';
+    } else {
+      eyes = '<circle cx="24" cy="28" r="2.8" fill="#1a1210"/>' +
+             '<circle cx="40" cy="28" r="2.8" fill="#1a1210"/>' +
+             '<circle cx="25" cy="27" r="0.9" fill="#fff8e8"/>' +
+             '<circle cx="41" cy="27" r="0.9" fill="#fff8e8"/>';
+      mouth = '<path d="M24 40 Q32 48 40 40" fill="none" stroke="#1a1210" stroke-width="2.5" stroke-linecap="round"/>';
+    }
+    var hintShape = "";
+    var hk = state && state.envFormId ? envHintKey(state.envFormId) : "";
+    var st = ENV_HINT_STYLE[hk];
+    if (st && st.shape === "spike") {
+      hintShape = '<polygon points="32,4 36,14 32,12 28,14" fill="rgba(255,120,40,0.85)"/>' +
+                  '<polygon points="56,32 46,36 48,32 46,28" fill="rgba(255,120,40,0.7)"/>' +
+                  '<polygon points="8,32 18,28 16,32 18,36" fill="rgba(255,120,40,0.7)"/>';
+    } else if (st && st.shape === "wave") {
+      hintShape = '<path d="M8 54 Q20 48 32 54 Q44 60 56 54" fill="none" stroke="rgba(40,210,170,0.75)" stroke-width="2.2"/>';
+    } else if (st && st.shape === "block") {
+      hintShape = '<rect x="6" y="6" width="8" height="8" fill="none" stroke="rgba(230,160,50,0.8)" stroke-width="1.8"/>' +
+                  '<rect x="50" y="6" width="8" height="8" fill="none" stroke="rgba(230,160,50,0.8)" stroke-width="1.8"/>';
+    } else if (st && st.shape === "cross") {
+      hintShape = '<path d="M30 8 H34 V14 H40 V18 H34 V24 H30 V18 H24 V14 H30 Z" fill="rgba(200,230,240,0.85)"/>';
+    }
+    return '<g class="vf-face" data-mood="' + m + '">' + hintShape + eyes + mouth + "</g>";
+  }
+
+  function injectFaceOntoCreature() {
+    if (!el.creature) return;
+    var mood = faceMood();
+    el.creature.setAttribute("data-face", mood);
+    var svgEl = el.creature.querySelector("svg");
+    if (!svgEl) return;
+    var old = svgEl.querySelector("g.vf-face");
+    if (old) old.parentNode.removeChild(old);
+    var ns = "http://www.w3.org/2000/svg";
+    var wrap = document.createElement("div");
+    wrap.innerHTML = '<svg xmlns="' + ns + '">' + faceMarkup(mood) + "</svg>";
+    var g = wrap.querySelector("g.vf-face");
+    if (!g) return;
+    try {
+      svgEl.appendChild(document.importNode(g, true));
+    } catch (eImp) {
+      svgEl.insertAdjacentHTML("beforeend", faceMarkup(mood));
+    }
+  }
+
+  function desiredColonyCount() {
+    if (!state || state.phase !== "env") return 0;
+    var rate = typeof state.growthRate === "number" ? state.growthRate : GROWTH_RATE_BASE;
+    var scale = typeof state.bodyScale === "number" ? state.bodyScale : BODY_SCALE_START;
+    var r = rate / GROWTH_RATE_BASE;
+    var s = (scale - BODY_SCALE_START) / Math.max(0.01, BODY_SCALE_MAX - BODY_SCALE_START);
+    var n = Math.round(1 + Math.max(0, r) * 5 + Math.max(0, s) * 8);
+    if (r < 0.7) n = Math.min(n, 3);
+    return Math.max(0, Math.min(14, n));
+  }
+
+  function syncColonyCount(desired) {
+    if (!el.colony || !state) return 0;
+    var want = typeof desired === "number" ? desired : desiredColonyCount();
+    var html = el.creature ? el.creature.innerHTML : "";
+    if (!html) { clearColony(); return 0; }
+    var hk = state.envFormId ? envHintKey(state.envFormId) : "";
+    while (el.colony.children.length > want) {
+      el.colony.removeChild(el.colony.lastChild);
+    }
+    while (el.colony.children.length < want) {
+      var bud = document.createElement("div");
+      bud.className = "bud" + (artStyle === "mc" ? " art-mc" : "");
+      if (hk) bud.setAttribute("data-env-hint", hk);
+      bud.innerHTML = html;
+      /* strip nested faces on buds to reduce clutter — keep one face on main */
+      var fg = bud.querySelector("g.vf-face");
+      if (fg) fg.remove();
+      el.colony.appendChild(bud);
+    }
+    var ts = performance.now();
+    syncColonyToCreature(ts, Math.min(1, (state.bodyScale || BODY_SCALE_START) / BODY_SCALE_MAX));
+    return el.colony.children.length;
+  }
+
+  function colonyCount() {
+    return el.colony ? el.colony.children.length : 0;
+  }
+
+  function sceneLabel(key) {
+    var k = key || currentSceneKey || "";
+    if (k === "city") return "市區";
+    if (k === "suburb") return "近郊";
+    if (k === "hospital") return "醫院";
+    if (k === "host") return "宿主";
+    if (k === "wet") return "潮濕";
+    if (k === "cosmos") return "演化";
+    return "現場";
+  }
+
+  function faceLabel(mood) {
+    if (mood === "angry") return "怒";
+    if (mood === "neutral") return "平";
+    return "笑";
+  }
+
+  function refreshIdCard() {
+    if (!el.idCard) return;
+    if (!state || state.phase !== "env") {
+      el.idCard.style.display = "";
+      return;
+    }
+    var fid = state.envFormId;
+    var unlocked = loadUnlocked();
+    var on = !!(fid && unlocked[fid]);
+    var form = fid && FORMS[fid];
+    if (el.idAvatar) {
+      el.idAvatar.innerHTML = fid && FORMS[fid] ? renderFormHtml(fid) : "";
+      var fg = el.idAvatar.querySelector("g.vf-face");
+      if (fg) fg.remove();
+    }
+    if (el.idName) el.idName.textContent = on && form ? form.name : "？？？";
+    var kind = (DEX[fid] && DEX[fid].kind) || "";
+    if (el.idKind) el.idKind.textContent = on ? (kind === "vir" ? "病毒" : kind === "bact" ? "細菌" : "微粒") : "未知";
+    if (el.idScene) el.idScene.textContent = sceneLabel(currentSceneKey);
+    var mood = faceMood();
+    if (el.idFace) el.idFace.textContent = faceLabel(mood);
+    if (el.idMrz) {
+      var code = (fid || "UNK").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
+      el.idMrz.textContent = "VF<" + code + "<<<<<<<<<<<<<<<<<<<";
+    }
+  }
+
+  function refreshTempoUI() {
+    if (!el.tempoBar) return;
+    if (!state || state.phase !== "env") return;
+    var mood = faceMood();
+    if (el.tempoStage) el.tempoStage.textContent = "現實環境";
+    var elapsed = state.envElapsed || 0;
+    var needAt = typeof state.nextMilestoneAt === "number" ? state.nextMilestoneAt : ENV_MILESTONE_MS;
+    var span = Math.max(1, ENV_MILESTONE_MS || 10000);
+    var into = needAt - span;
+    var prog = state.gatesReady ? 1 : Math.max(0, Math.min(1, (elapsed - into) / span));
+    if (el.tempoFill) el.tempoFill.style.width = (prog * 100).toFixed(1) + "%";
+    var sec = Math.floor(elapsed / 1000);
+    var sub = tempoPaused ? "已暫停" : (state.gatesReady ? "抉擇中・思考" : ("生長 " + sec + "s・下一抉擇"));
+    if (el.tempoSub) el.tempoSub.textContent = sub + "・" + tempoSpeed + "x";
+  }
+
+  function applyEnvHintAttrs() {
+    if (!el.creature || !state) return;
+    var hk = state.envFormId ? envHintKey(state.envFormId) : "";
+    if (hk) el.creature.setAttribute("data-env-hint", hk);
+    else el.creature.removeAttribute("data-env-hint");
+    if (el.particles) {
+      el.particles.classList.remove("hint-heat", "hint-wet", "hint-skin", "hint-hospital", "hint-soil");
+      var st = ENV_HINT_STYLE[hk];
+      if (st && st.particleClass) el.particles.classList.add(st.particleClass);
+    }
+  }
+
   function setLiveGrow(on) {
     if (!el.creature || !el.play) return;
     el.creature.classList.toggle("live-grow", !!on);
@@ -4164,11 +4529,11 @@ function svg(inner, vb) {
     el.play.classList.toggle("gap-growing", !!on);
     if (el.growHint) el.growHint.setAttribute("aria-hidden", on ? "false" : "true");
     if (!on) {
-      clearColony();
-      /* 不得把視覺縮放清回 1／選前——env 持續累積 bodyScale */
       if (state && state.phase === "env") {
+        syncColonyCount(desiredColonyCount());
         applyPersistentBodyVisual(performance.now());
       } else {
+        clearColony();
         el.creature.style.transform = "";
         el.creature.style.filter = "";
       }
@@ -4178,17 +4543,24 @@ function svg(inner, vb) {
   function applyPersistentBodyVisual(ts) {
     if (!el.creature || !state) return;
     var scale = typeof state.bodyScale === "number" ? state.bodyScale : BODY_SCALE_START;
-    var breath = Math.sin((ts || 0) / 380) * 0.035 + Math.sin((ts || 0) / 210) * 0.02;
-    var s = Math.max(BODY_SCALE_MIN, Math.min(BODY_SCALE_MAX + 0.08, scale + breath));
-    var rot = Math.sin((ts || 0) / 900) * 4;
+    var breath = Math.sin((ts || 0) / 380) * 0.045 + Math.sin((ts || 0) / 210) * 0.025;
+    var s = Math.max(BODY_SCALE_MIN, Math.min(BODY_SCALE_MAX + 0.12, scale + breath));
+    var rot = Math.sin((ts || 0) / 900) * 5;
     var rate = typeof state.growthRate === "number" ? state.growthRate : GROWTH_RATE_BASE;
     var rateRatio = rate / GROWTH_RATE_BASE;
-    var hue = (rateRatio - 1) * 38 + (visualPop - 50) * 0.35;
-    var sat = Math.max(0.55, Math.min(1.6, 0.88 + (rateRatio - 1) * 0.42 + (visualPop - 50) * 0.007));
-    var bright = Math.max(0.68, Math.min(1.38, 0.92 + (rateRatio - 1) * 0.28 + (visualPop - 50) * 0.004));
-    var glow = 8 + scale * 12;
+    var hk = state.envFormId ? envHintKey(state.envFormId) : "";
+    var st = ENV_HINT_STYLE[hk] || { glow: "rgba(140,230,160,", hueBias: 0, satBias: 0 };
+    var hue = (rateRatio - 1) * 48 + (visualPop - 50) * 0.45 + (st.hueBias || 0);
+    var sat = Math.max(0.5, Math.min(1.85, 0.9 + (rateRatio - 1) * 0.55 + (visualPop - 50) * 0.008 + (st.satBias || 0)));
+    var bright = Math.max(0.65, Math.min(1.45, 0.9 + (rateRatio - 1) * 0.35 + (visualPop - 50) * 0.005));
+    var glow = 10 + scale * 16;
+    var ga = (0.28 + scale * 0.22).toFixed(2);
     el.creature.style.transform = "scale(" + s.toFixed(3) + ") rotate(" + rot.toFixed(1) + "deg)";
-    el.creature.style.filter = "hue-rotate(" + hue.toFixed(1) + "deg) saturate(" + sat.toFixed(2) + ") brightness(" + bright.toFixed(2) + ") drop-shadow(0 0 " + glow.toFixed(0) + "px rgba(140,230,160," + (0.22 + scale * 0.18).toFixed(2) + "))";
+    el.creature.style.filter = "hue-rotate(" + hue.toFixed(1) + "deg) saturate(" + sat.toFixed(2) + ") brightness(" + bright.toFixed(2) + ") drop-shadow(0 0 " + glow.toFixed(0) + "px " + st.glow + ga + "))";
+    applyEnvHintAttrs();
+    injectFaceOntoCreature();
+    refreshIdCard();
+    refreshTempoUI();
   }
 
   function applyEnvGrowthTick(dt, ts) {
@@ -4203,12 +4575,16 @@ function svg(inner, vb) {
   function applyChoiceGrowth(delta) {
     if (!state || state.phase !== "env") return;
     var d = delta || 0;
+    if (typeof state.threat !== "number") state.threat = 0;
+    if (d < 0) state.threat = Math.min(8, state.threat + 1);
+    else if (d > 0) state.threat = Math.max(0, state.threat - 0.5);
     var cur = typeof state.growthRate === "number" ? state.growthRate : GROWTH_RATE_BASE;
     var factor = 1 + Math.max(-0.55, Math.min(0.85, d / 40));
     state.growthRate = Math.max(0.008, Math.min(0.12, cur * factor + d * 0.0012));
     if (d > 0) state.bodyScale = Math.min(BODY_SCALE_MAX, (state.bodyScale || BODY_SCALE_START) + d * 0.004);
     else if (d < 0) state.bodyScale = Math.max(BODY_SCALE_MIN, (state.bodyScale || BODY_SCALE_START) + d * 0.003);
     applyPersistentBodyVisual(performance.now());
+    syncColonyCount(desiredColonyCount());
   }
 
   function scheduleNextMilestone() {
@@ -4233,6 +4609,7 @@ function svg(inner, vb) {
     var k = key || "cosmos";
     currentSceneKey = k;
     el.play.setAttribute("data-scene", k);
+    refreshIdCard();
   }
 
   function refreshSceneFromLevel(level, choiceTitle) {
@@ -4260,7 +4637,6 @@ function svg(inner, vb) {
     var wobble = ts ? (Math.sin(ts / 280) * 14 + Math.sin(ts / 160) * 6) : 0;
     state.y = baseY + wobble;
     if (typeof state.x !== "number" || !isFinite(state.x)) state.x = sw / 2;
-    /* 水平大致置中，僅輕微漂移 */
     var cx = sw / 2;
     state.x = cx + (ts ? Math.sin(ts / 420) * 10 : 0);
     if (state.x < 40) state.x = 40;
@@ -4269,7 +4645,6 @@ function svg(inner, vb) {
   }
 
   function beginEnvGapGrow(fromPop, toPop) {
-    /* 相容 API：開啟「生長中」提示，但不再把 bodyScale 當表演插值後 reset */
     if (!state) return;
     state.growFrom = fromPop;
     state.growTo = toPop;
@@ -4280,23 +4655,12 @@ function svg(inner, vb) {
     applyVisualPop(typeof toPop === "number" ? toPop : (typeof fromPop === "number" ? fromPop : state.pop), true);
     placeCreatureCentered(state.growStart);
     applyPersistentBodyVisual(state.growStart);
+    syncColonyCount(desiredColonyCount());
   }
 
   function spawnGrowBud(ts, scaleHint) {
-    if (!el.colony || !state) return;
-    var html = el.creature.innerHTML;
-    if (!html) return;
-    var bud = document.createElement("div");
-    bud.className = "bud" + (artStyle === "mc" ? " art-mc" : "");
-    bud.innerHTML = html;
-    var ang = (ts / 140 + state.growBudAt * 1.7) % (Math.PI * 2);
-    var rad = 48 + (state.growBudAt % 4) * 22 + scaleHint * 18;
-    bud.style.left = (state.x + Math.cos(ang) * rad) + "px";
-    bud.style.top = (state.y + Math.sin(ang) * rad * 0.9) + "px";
-    bud.style.transform = "scale(" + (0.55 + (state.growBudAt % 5) * 0.14) + ") rotate(" + (ang * 48) + "deg)";
-    el.colony.appendChild(bud);
-    state.growBudAt += 1;
-    while (el.colony.children.length > 12) el.colony.removeChild(el.colony.firstChild);
+    /* 改由 syncColonyCount 主導數量；此函式僅相容保留 */
+    syncColonyCount(desiredColonyCount());
   }
 
   function syncColonyToCreature(ts, e) {
@@ -4304,14 +4668,14 @@ function svg(inner, vb) {
     var buds = el.colony.children;
     for (var bi = 0; bi < buds.length; bi++) {
       var ang = (ts / 140 + bi * 1.7) % (Math.PI * 2);
-      var rad = 48 + (bi % 4) * 22 + (e || 0) * 18;
+      var rad = 52 + (bi % 5) * 18 + (e || 0) * 22;
       buds[bi].style.left = (state.x + Math.cos(ang) * rad) + "px";
       buds[bi].style.top = (state.y + Math.sin(ang) * rad * 0.9) + "px";
+      buds[bi].style.transform = "scale(" + (0.42 + (bi % 4) * 0.12) + ") rotate(" + (ang * 40) + "deg)";
     }
   }
 
   function updateEnvLiveGrow(ts, dt) {
-    /* 改為時間軸累積：不再用假插值表演後 reset */
     if (!state || state.phase !== "env") return;
     applyEnvGrowthTick(dt, ts);
     if (!state.gatesReady) {
@@ -4319,12 +4683,13 @@ function svg(inner, vb) {
       syncColonyToCreature(ts, Math.min(1, (state.bodyScale || BODY_SCALE_START) / BODY_SCALE_MAX));
     }
     growTickAccum += dt;
-    if (growTickAccum > 0.45) {
+    if (growTickAccum > 0.35) {
       growTickAccum = 0;
       applyVisualPop(state.pop, false);
-      if (!state.gatesReady) spawnGrowBud(ts, Math.min(1, ((state.bodyScale || BODY_SCALE_START) - BODY_SCALE_START) / (BODY_SCALE_MAX - BODY_SCALE_START)));
+      syncColonyCount(desiredColonyCount());
       var bump = 8 + Math.round(((state.bodyScale || BODY_SCALE_START) / BODY_SCALE_MAX) * 34);
       rebuildParticles(bump);
+      applyEnvHintAttrs();
     }
   }
 
@@ -4333,8 +4698,37 @@ function svg(inner, vb) {
     applyVisualPop(state.pop, true);
     state.growFrom = state.growTo = null;
     state.growStart = state.growEnd = 0;
-    setLiveGrow(false); /* 內部會保留 bodyScale 視覺 */
+    setLiveGrow(false);
     applyPersistentBodyVisual(performance.now());
+    syncColonyCount(desiredColonyCount());
+  }
+
+  function skipToNextChoice() {
+    if (!state || state.phase !== "env") return false;
+    if (state.gatesReady) return false;
+    if (state.pendingEnvEnd || state.pendingSpawn) return false;
+    state.nextMilestoneAt = state.envElapsed || 0;
+    refreshTempoUI();
+    return true;
+  }
+
+  function maybeAutoChoice() {
+    if (!autoChoice || !state || state.phase !== "env") return;
+    if (!state.gatesReady || state.resolved) return;
+    if (autoChoiceArmed) return;
+    autoChoiceArmed = true;
+    setTimeout(function () {
+      autoChoiceArmed = false;
+      if (!autoChoice || !state || !state.gatesReady || state.resolved) return;
+      var level = currentLevel();
+      if (!level || !level.options || !level.options.length) return;
+      var best = 0, bestD = -999;
+      level.options.forEach(function (o, i) {
+        var d = typeof o.delta === "number" ? o.delta : 0;
+        if (d > bestD) { bestD = d; best = i; }
+      });
+      pickOption(best);
+    }, 480);
   }
 
   var state = null;
@@ -4391,6 +4785,12 @@ function svg(inner, vb) {
     if (el.envEndMascot && state && state.envFormId && FORMS[state.envFormId] && el.envEnd && el.envEnd.classList.contains("active")) {
       el.envEndMascot.innerHTML = renderFormHtml(state.envFormId);
     }
+    if (state && state.phase === "env") {
+      applyEnvHintAttrs();
+      injectFaceOntoCreature();
+      syncColonyCount(desiredColonyCount());
+      refreshIdCard();
+    }
     if (!(opts && opts.silent)) toast(artStyle === "mc" ? "外表：Minecraft 方塊風" : "外表：原有", 900);
   }
 
@@ -4403,6 +4803,12 @@ function svg(inner, vb) {
     el.hudBlurb.textContent = f.blurb;
     el.creature.classList.add("flash");
     setTimeout(function () { el.creature.classList.remove("flash"); }, 220);
+    if (state && state.phase === "env") {
+      applyEnvHintAttrs();
+      injectFaceOntoCreature();
+      syncColonyCount(desiredColonyCount());
+      refreshIdCard();
+    }
   }
 
   function toast(msg, ms) {
@@ -4481,7 +4887,18 @@ function svg(inner, vb) {
   function setPhaseUI(phase) {
     el.play.classList.toggle("phase-env", phase === "env");
     if (el.hudPhase) el.hudPhase.textContent = phase === "env" ? "現實環境" : "進化・實驗室";
-    if (phase !== "env") setSceneKey("cosmos");
+    if (el.tempoStage) el.tempoStage.textContent = phase === "env" ? "現實環境" : "進化・實驗室";
+    if (phase !== "env") {
+      setSceneKey("cosmos");
+      clearColony();
+      if (el.creature) {
+        el.creature.removeAttribute("data-face");
+        el.creature.removeAttribute("data-env-hint");
+      }
+    } else {
+      refreshTempoUI();
+      refreshIdCard();
+    }
   }
 
   function updatePopUI() {
@@ -4551,10 +4968,13 @@ function svg(inner, vb) {
       pendingEnd: null, pendingEnvEnd: null, pendingSpawn: null,
       bodyScale: BODY_SCALE_START,
       growthRate: GROWTH_RATE_BASE,
+      threat: 0,
       envT0: tNow,
       envElapsed: 0,
       nextMilestoneAt: Math.max(0, ENV_MILESTONE_MS)
     };
+    tempoPaused = false;
+    autoChoiceArmed = false;
     showScreen("play");
     setForm(formId);
     el.hudBlurb.textContent = "現實環境示意：選場所與宿主處境；外表與顆粒疏密會跟著變。非醫療。";
@@ -4564,6 +4984,9 @@ function svg(inner, vb) {
     placeCreatureCentered(tNow);
     applyPersistentBodyVisual(tNow);
     setLiveGrow(true);
+    syncColonyCount(desiredColonyCount());
+    refreshIdCard();
+    refreshTempoUI();
     lastTs = 0;
     pointerActive = false;
     /* 測試 ?envGap=0：立刻出第一波；否則等時間軸里程碑 */
@@ -4881,16 +5304,22 @@ function svg(inner, vb) {
   function tick(ts) {
     if (!state) return;
     if (!lastTs) lastTs = ts;
-    var dt = Math.min(0.05, (ts - lastTs) / 1000);
+    var rawDt = Math.min(0.05, (ts - lastTs) / 1000);
     lastTs = ts;
+    var dt = (tempoPaused && state.phase === "env") ? 0 : rawDt * (state.phase === "env" ? tempoSpeed : 1);
 
     if (state.phase === "env") {
-      state.envElapsed = Math.max(0, ts - (state.envT0 || ts));
+      if (!(tempoPaused)) {
+        state.envElapsed = (state.envElapsed || 0) + rawDt * tempoSpeed * 1000;
+      }
       if (!state.pendingEnvEnd) {
         applyEnvGrowthTick(dt, ts);
       } else {
         updateEnvLiveGrow(ts, dt);
       }
+      syncColonyToCreature(ts, Math.min(1, (state.bodyScale || BODY_SCALE_START) / BODY_SCALE_MAX));
+      refreshTempoUI();
+      maybeAutoChoice();
     }
 
     if (ts < state.pauseUntil) {
@@ -5198,6 +5627,47 @@ function svg(inner, vb) {
       });
     }
   })();
+  (function wireTempoAndId() {
+    var btnPause = document.getElementById("btnTempoPause");
+    if (btnPause) {
+      btnPause.addEventListener("click", function () {
+        tempoPaused = !tempoPaused;
+        btnPause.setAttribute("aria-pressed", tempoPaused ? "true" : "false");
+        btnPause.textContent = tempoPaused ? "繼續" : "暫停";
+        btnPause.classList.toggle("on", tempoPaused);
+        refreshTempoUI();
+      });
+    }
+    document.querySelectorAll("#tempo-bar .spd").forEach(function (b) {
+      b.addEventListener("click", function () {
+        tempoSpeed = parseFloat(b.getAttribute("data-speed")) || 1;
+        document.querySelectorAll("#tempo-bar .spd").forEach(function (x) {
+          var on = x === b;
+          x.classList.toggle("on", on);
+          x.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+        refreshTempoUI();
+      });
+    });
+    var btnSkip = document.getElementById("btnSkipChoice");
+    if (btnSkip) btnSkip.addEventListener("click", function () { skipToNextChoice(); });
+    var btnAuto = document.getElementById("btnAutoChoice");
+    if (btnAuto) {
+      btnAuto.addEventListener("click", function () {
+        autoChoice = !autoChoice;
+        btnAuto.setAttribute("aria-pressed", autoChoice ? "true" : "false");
+        btnAuto.classList.toggle("on", autoChoice);
+        maybeAutoChoice();
+      });
+    }
+    var btnFold = document.getElementById("btnIdFold");
+    if (btnFold && el.idCard) {
+      btnFold.addEventListener("click", function () {
+        el.idCard.classList.toggle("collapsed");
+        btnFold.textContent = el.idCard.classList.contains("collapsed") ? "›" : "‹";
+      });
+    }
+  })();
   window.__VIRUS_FORK__ = {
     FORMS: FORMS, LEVELS: LEVELS, DEX: DEX, PROOF: PROOF,
     ENV_POOLS: ENV_POOLS, ENV_POOL_OF: ENV_POOL_OF, ENV_OPTION_GAP_MS: ENV_OPTION_GAP_MS,
@@ -5209,6 +5679,23 @@ function svg(inner, vb) {
     bodyScale: function () { return state && state.bodyScale; },
     growthRate: function () { return state && state.growthRate; },
     envElapsed: function () { return state && state.envElapsed; },
+    faceMood: faceMood,
+    setThreat: function (n) { if (state) { state.threat = Math.max(0, n); injectFaceOntoCreature(); refreshIdCard(); } return state && state.threat; },
+    threat: function () { return state && state.threat; },
+    colonyCount: colonyCount,
+    syncColonyCount: syncColonyCount,
+    desiredColonyCount: desiredColonyCount,
+    envHintKey: envHintKey,
+    ENV_HINT_OF: ENV_HINT_OF,
+    skipToNextChoice: skipToNextChoice,
+    setTempoPaused: function (on) { tempoPaused = !!on; refreshTempoUI(); return tempoPaused; },
+    getTempoPaused: function () { return tempoPaused; },
+    setTempoSpeed: function (s) { tempoSpeed = Math.max(0.25, Number(s) || 1); refreshTempoUI(); return tempoSpeed; },
+    getTempoSpeed: function () { return tempoSpeed; },
+    setAutoChoice: function (on) { autoChoice = !!on; maybeAutoChoice(); return autoChoice; },
+    refreshIdCard: refreshIdCard,
+    refreshTempoUI: refreshTempoUI,
+
     simulateEnvGrowth: function (seconds) {
       if (!state || state.phase !== "env") return null;
       var dt = 1 / 30;
@@ -5221,6 +5708,7 @@ function svg(inner, vb) {
         state.envElapsed = (state.envElapsed || 0) + dt * 1000;
       }
       applyPersistentBodyVisual(performance.now());
+      syncColonyCount(desiredColonyCount());
       return state.bodyScale;
     },
     startGame: startGame, startEnv: startEnv, openDex: openDex, renderDex: renderDex,

@@ -1,5 +1,21 @@
 # virus-fork-cli — 決策紀錄
 
+## 2026-10-29 外觀＋表情＋群體＋環境色形＋頂列／側卡（feat/env-diegetic-face-colony-hint）
+- John：外觀加大但仍正中；加臉（致死／危險感↑ → 笑→怒）；群體增殖細胞數↑；環境偏好用固定色／形（無文字）；並學 UI 參考圖頂列節奏＋左側身分卡。
+- **表情** `faceMood()`：`smile`／`neutral`／`angry`（≥3）。映射：`state.threat`（選 delta<0 +1、>0 −0.5）＋低 `growthRate`／低 pop 加危險階。無 CFR／致死數字 HUD。SVG `g.vf-face` 疊眼＋嘴；`__VIRUS_FORK__.faceMood()`。
+- **群體** `syncColonyCount(desired)`：desired ≈ f(growthRate, bodyScale)，約 2→8→14；環繞置中主體。`colonyCount()` 供測。env 關 live-grow 提示時不清空群體。
+- **環境暗示** `ENV_HINT_OF`／`envHintKey(formId)`：
+  - `heat_resp` 暖橙＋尖角（呼吸道／密閉喜熱向）
+  - `wet_gi` 青綠＋波紋（腸胃／水）
+  - `skin` 琥珀＋方塊邊（皮膚／接觸）
+  - `hospital` 冷青白＋十字（醫院／消毒壓力）
+  - `soil` 土褐＋方塊邊（土壤／芽孢）
+  僅光暈／外輪廓／粒子色；畫面禁「喜熱」「適合城市」等。
+- **頂列 `#tempo-bar`**：階段大字「現實環境」＋細進度（對齊下一里程碑）；暫停、1x／2x／4x、快轉到下一抉擇、自動抉擇。禁止致死／傳染數字。
+- **左側 `#id-card`**：頭像＋名稱（未解鎖「？？？」）＋域／處／貌極短欄；可折疊；MRZ 裝飾線。卡上不寫環境偏好句。
+- 保留：時間軸 bodyScale／growthRate／10s／12s、置中、A cosmos／B 場所、classic·mc。
+- 路徑 A 直寫；證據 v17。
+
 ## 2026-10-28 現實環境時間軸持續生長（feat/env-time-grow-persist）
 - John：波間「生長中…」動畫結束後大小／外表**還原**＝meaningless。要時間從 0 走、持續累積、選後有後果、思考更長。
 - **持久體型** `state.bodyScale`（起 0.55、上限 2.4）；`setLiveGrow(false)`／`endEnvGapGrow` **不得**清 transform 回 1。

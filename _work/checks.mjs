@@ -2,7 +2,7 @@ import { chromium } from "playwright-core";
 import fs from "fs";
 import path from "path";
 
-const outDir = "/workspace/scratch/virus-fork-cli-evidence-v16";
+const outDir = "/workspace/scratch/virus-fork-cli-evidence-v17";
 fs.mkdirSync(outDir, { recursive: true });
 const file = path.resolve("/workspace/virus-fork-cli/playable.html");
 const url = "file://" + file + "?envGap=0";
@@ -462,6 +462,127 @@ const noEndMetrics = !BAN.test(thrive.popLine || "") && !BAN.test(decline.popLin
   !(thrive.popLine || "").includes("穩定度") && !(decline.popLine || "").includes("穩定度");
 const toastClean = !BAN.test(midHigh.toast || "") && !/[＋+\-－]\d/.test(midHigh.toast || "");
 
+
+// --- v17: face / colony / envHint / tempo / id-card ---
+const BAN_HINT = /喜熱|喜濕|適合城市|適合近郊|致死率|CFR|傳染率|環境偏好/;
+const v17 = await page.evaluate((banSrc) => {
+  const ban = new RegExp(banSrc);
+  const V = window.__VIRUS_FORK__;
+  const fid = "aureus";
+  V.startEnv(fid);
+  const s = V.getState();
+  s.gatesReady = false;
+  s.resolved = false;
+  s.threat = 0;
+  V.applyChoiceGrowth(20);
+  V.simulateEnvGrowth(2);
+  const smile = V.faceMood();
+  const hintA = V.envHintKey(fid);
+  const hintB = V.envHintKey("influenza");
+  const hintC = V.envHintKey("norovirus");
+  const hintD = V.envHintKey("hiv");
+  // low colony
+  s.growthRate = V.GROWTH_RATE_BASE * 0.4;
+  s.bodyScale = V.BODY_SCALE_START;
+  V.syncColonyCount(V.desiredColonyCount());
+  const colonyLow = V.colonyCount();
+  // high colony
+  s.growthRate = Math.min(0.12, V.GROWTH_RATE_BASE * 2.2);
+  s.bodyScale = V.BODY_SCALE_MAX * 0.85;
+  V.syncColonyCount(V.desiredColonyCount());
+  const colonyHigh = V.colonyCount();
+  // angry face via threat
+  V.setThreat(4);
+  const angry = V.faceMood();
+  V.setThreat(1);
+  const neutral = V.faceMood();
+  V.setThreat(0);
+  const smile2 = V.faceMood();
+  V.injectFaceOntoCreature && V.injectFaceOntoCreature();
+  // ensure face in DOM
+  const faceEl = document.querySelector("#creature g.vf-face");
+  const faceMoodAttr = faceEl && faceEl.getAttribute("data-mood");
+  const tempo = !!document.getElementById("tempo-bar");
+  const idCard = !!document.getElementById("id-card");
+  const tempoVisible = getComputedStyle(document.getElementById("tempo-bar")).display !== "none";
+  const idVisible = getComputedStyle(document.getElementById("id-card")).display !== "none";
+  const playText = (document.getElementById("play")?.innerText || "");
+  const bannedOnScreen = ban.test(playText);
+  const centered = (() => {
+    V.placeCreatureCentered(performance.now());
+    const c = document.getElementById("creature").getBoundingClientRect();
+    const st = document.getElementById("stage").getBoundingClientRect();
+    const cy = ((c.top + c.bottom) / 2 - st.top) / st.height;
+    return cy >= 0.35 && cy <= 0.68;
+  })();
+  const moods = [smile, neutral, angry, smile2];
+  const uniq = Array.from(new Set([smile2 || smile, neutral, angry].filter(Boolean)));
+  return {
+    smile: smile2 || smile, neutral, angry, faceMoodAttr,
+    hasFaceDom: !!faceEl,
+    colonyLow, colonyHigh,
+    hintA, hintB, hintC, hintD,
+    hintsDiverse: new Set([hintA, hintB, hintC, hintD]).size >= 2,
+    tempo, idCard, tempoVisible, idVisible,
+    bannedOnScreen, centered,
+    moodSteps: uniq.length,
+    faceApi: typeof V.faceMood === "function",
+    colonyApi: typeof V.colonyCount === "function",
+    hintApi: typeof V.envHintKey === "function"
+  };
+}, BAN_HINT.source);
+
+await page.screenshot({ path: path.join(outDir, "70-face-smile.png"), fullPage: true });
+await page.evaluate(() => { window.__VIRUS_FORK__.setThreat(4); window.__VIRUS_FORK__.applyPersistentBodyVisual(performance.now()); });
+await page.waitForTimeout(80);
+await page.screenshot({ path: path.join(outDir, "71-face-angry.png"), fullPage: true });
+await page.evaluate(() => {
+  const V = window.__VIRUS_FORK__;
+  const s = V.getState();
+  s.growthRate = V.GROWTH_RATE_BASE * 0.35;
+  s.bodyScale = V.BODY_SCALE_START;
+  V.syncColonyCount(V.desiredColonyCount());
+  V.setThreat(0);
+  V.applyPersistentBodyVisual(performance.now());
+});
+await page.waitForTimeout(80);
+await page.screenshot({ path: path.join(outDir, "72-colony-low.png"), fullPage: true });
+await page.evaluate(() => {
+  const V = window.__VIRUS_FORK__;
+  const s = V.getState();
+  s.growthRate = Math.min(0.12, V.GROWTH_RATE_BASE * 2.4);
+  s.bodyScale = V.BODY_SCALE_MAX * 0.9;
+  V.syncColonyCount(V.desiredColonyCount());
+  V.applyPersistentBodyVisual(performance.now());
+});
+await page.waitForTimeout(80);
+await page.screenshot({ path: path.join(outDir, "73-colony-high.png"), fullPage: true });
+await page.evaluate((fid) => {
+  const V = window.__VIRUS_FORK__;
+  V.startEnv("influenza");
+  V.setSceneKey("city");
+  V.applyPersistentBodyVisual(performance.now());
+}, "influenza");
+await page.waitForTimeout(100);
+await page.screenshot({ path: path.join(outDir, "74-hint-heat.png"), fullPage: true });
+await page.evaluate(() => {
+  const V = window.__VIRUS_FORK__;
+  V.startEnv("norovirus");
+  V.setSceneKey("wet");
+  V.applyPersistentBodyVisual(performance.now());
+});
+await page.waitForTimeout(100);
+await page.screenshot({ path: path.join(outDir, "75-hint-wet.png"), fullPage: true });
+await page.evaluate(() => {
+  const V = window.__VIRUS_FORK__;
+  V.startEnv("aureus");
+  V.applyPersistentBodyVisual(performance.now());
+  V.refreshTempoUI && V.refreshTempoUI();
+  V.refreshIdCard && V.refreshIdCard();
+});
+await page.waitForTimeout(100);
+await page.screenshot({ path: path.join(outDir, "76-tempo-idcard.png"), fullPage: true });
+
 const checks = {
   endingCount: api.endingCount,
   depthMin: api.depthMin,
@@ -516,10 +637,20 @@ const checks = {
     vitalHigh: /vital-high/.test(midHigh.creatureClass || "") || (midHigh.particles || 0) >= (envStart.particleCount || 0),
     vitalLow: /vital-low/.test(midLow.creatureClass || "") || (midLow.pop || 99) < (envStart.pop || 0),
     thriveOk: !!(thrive.active && /繁盛|適應/.test(thrive.title || "")),
-    declineOk: !!(decline.active && /消退|衰退|清除|改換/.test(thrive.active ? decline.title || "" : decline.title || ""))
+    declineOk: !!(decline.active && /消退|衰退|清除|改換/.test(thrive.active ? decline.title || "" : decline.title || "")),
+    faceApi: !!(v17 && v17.faceApi),
+    faceSteps3: !!(v17 && v17.moodSteps >= 3),
+    faceDom: !!(v17 && v17.hasFaceDom),
+    colonyLowHigh: !!(v17 && v17.colonyHigh >= (v17.colonyLow + 3) && v17.colonyLow <= 4),
+    envHintDiverse: !!(v17 && v17.hintsDiverse),
+    noHintBannedText: !!(v17 && v17.bannedOnScreen === false),
+    v17Centered: !!(v17 && v17.centered),
+    tempoBar: !!(v17 && v17.tempo && v17.tempoVisible),
+    idCard: !!(v17 && v17.idCard && v17.idVisible)
   },
   forkEvidence,
-  thinkEvidence
+  thinkEvidence,
+  v17
 };
 
 // Confirm default constant is 10000 by reading source snippet via evaluate of unbound default:

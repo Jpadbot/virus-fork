@@ -30,3 +30,15 @@ A — Mobile Engineer 在虛擬電腦直接開 Grok Build CLI；自驗寫 STATUS
 ## 筆記路徑
 - john_notes: /workspace/scratch/virus-fork-cli-john-notes-v17/
 - evidence: /workspace/scratch/virus-fork-cli-evidence-v17/
+
+## 追加（John 2026-10-29｜UI／UX 參考）
+參考圖：`/workspace/scratch/virus-fork-cli-john-notes-v17/ui-ref-1in8b-circled.png`（來源 80億分之1 人生模擬，紅圈兩處）
+
+### 可學重點（移植精神，非照搬文案／人生主題）
+1. **頂部狀態列**：當前「年齡／階段」大字＋細時間軸／進度感；右側節奏控制（暫停、倍速、快轉到下一個抉擇、可選自動抉擇）。對我們：可用「演化階段／環境時長」＋快轉到下一選項；勿放傳染／致死數字 HUD。
+2. **左側身分／狀態卡**：小頭像＋精簡欄位卡（名稱／出身／處境類）；頁腳可有機讀感裝飾線。對我們：改成「當前微生物／處境」卡（物種稱號僅已解鎖可顯示；隱藏項目不顯示名稱）；欄位用圖示或極短標籤，環境偏好仍靠主體色／形暗示、卡上也不寫「喜熱」類提示句。
+
+### 約束
+- 手機＋網頁皆可讀；置中主體優先，側卡／頂列不得壓住中央群體。
+- 仍禁止環境偏好文字提示；致死感用表情表達。
+- classic·mc 切換保留。

@@ -11,3 +11,11 @@
 - grok: 1.0.72 / grok-4.7（--cwd 直寫）
 - updated: 2026-10-28 Asia/Hong_Kong
 - note: 路徑 A 完成；無圖回報 Orchestrator
+
+## Accept (Mobile Engineer)
+- accepted: 2026-10-28 Asia/Hong_Kong
+- verdict: PASS
+- deliverable: playable.html（~486KB；external refs=0；cover＋SVG inline）
+- checks: endings 29／fakeForks []／depth 2–5；副標開關＋localStorage；verify-phone-html --also-landscape PASS
+- evidence: /workspace/scratch/virus-fork-cli-evidence-v7/
+- next: Orchestrator 轉 John（手機請開單檔 playable.html）

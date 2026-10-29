@@ -3,7 +3,7 @@
 - status: done
 - ticket: 終局顯示最終外觀＋說明生長好／壞原因
 - branch: feat/ending-final-morph-why
-- tip: 4c1eb96
+- tip: 6e9b9b2
 - base: feat/env-diegetic-face-colony-hint @ 3581e39
 - john_notes: /workspace/scratch/virus-fork-cli-john-notes-v18/
 - deliverable: /workspace/virus-fork-cli/playable.html

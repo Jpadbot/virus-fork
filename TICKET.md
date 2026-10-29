@@ -1,44 +1,31 @@
-# TICKET — feat/env-diegetic-face-colony-hint
+# TICKET — feat/ending-final-morph-why
 
 ## 目標
-現實環境（B 段）主體視覺加強：外觀變化更大、正中、加表情、細胞群數量感、環境偏好用色／形狀暗示（無文字）。
+終局摘要畫面改為顯示「最終完成版」細胞／病毒外觀，並清楚說明這次生長為何好或不好。
 
-## John 需求（原文意譯）
-1. **外觀變化加大**，但主體／群體必須維持畫面正中（不可頂部、不可被標題壓住）。
-2. **加臉**：細胞／病毒要有表情；致死率（CFR）升高時，由微笑 → 生氣。
-3. **細胞數量**：群體迅速增殖時，畫面可見細胞數增加，仍整體置中。
-4. **環境暗示（無文字）**：用顏色或形狀暗示適合哪類環境；同一特徵固定同一色／形（例：喜熱 → 偏紅；僅範例，可自訂一致映射）。畫面上**不得**寫出「喜熱」「適合城市」等文字提示。
+## John 需求
+1. **Show finish version**：終局主視覺用本局最終形態（含表情階、群體密度、環境色／形暗示等本局累積結果），勿用與過程脫節的靜態示意圖示。
+2. **Tell why grow good or bad**：用白話說明本次在現實環境中生長／適應為何成功或失敗（對應選擇與環境匹配、群體消長等），讓玩家看懂因果。
+
+## 現況參考
+- `/workspace/scratch/virus-fork-cli-john-notes-v18/ending-current.png`
+- `/workspace/scratch/virus-fork-cli-john-notes-v18/NOTES.md`
 
 ## 範圍（路徑 A）
-- 在現有 `feat/env-time-grow-persist` 成果上繼續（時間軸 bodyScale、約 10s 選項、12s 思考、growthRate、A/B 場景、classic·mc 保留）。
-- 僅改 B 段（現實環境）主體與群體呈現；A 段下落進化可不動，除非共用繪製需微調。
-- 禁止：螢幕上文字標籤／HUD 指標條說明環境偏好；致死率數字 HUD（用表情表達即可）。
-- 置中硬性：主體與群體錨點在畫面中央。
+- 基底：`feat/env-diegetic-face-colony-hint` @ `3581e39`／tip（表情、群體、hint 色形、頂列／身分卡、時間軸生長）。
+- 主要改終局／摘要畫面；過程玩法可不動，除非需把最終狀態傳入終局繪製。
+- 保留：再玩一次、物種圖鑑、回終局摘要等按鈕；未解鎖物種不露名。
+- 仍禁止：環境偏好文字提示出現在過程 HUD；終局「為何好／壞」可用簡短說明文（這是摘要，不是過程 hint）。
 
 ## 驗收
-1. 外觀差異明顯大於現版，但中心不飄、不頂。
-2. 臉隨致死／危險感由笑→怒（至少 3 階可辨）。
-3. 群體快速生長時可見「更多細胞」，整體仍正中。
-4. 同特徵同色／同形；玩家可不靠文字猜偏好環境；畫面上無該類提示文字。
-5. classic / Minecraft 切換仍可用；證據截圖含：笑臉、怒臉、低／高細胞數、至少兩種環境色／形暗示。
-6. `playable.html` 單檔交付；STATUS=done；checks + verify-phone PASS。
+1. 終局主體＝本局最終外觀（表情／群體／色形與結局狀態一致，可辨）。
+2. 有「為何好／壞」說明，對得上本局選擇與結果（至少成功一則、偏弱／失敗一則可截圖對照）。
+3. classic·mc 切換若影響繪製，終局一致。
+4. `playable.html`；證據 `/workspace/scratch/virus-fork-cli-evidence-v18/`；checks + verify-phone PASS；STATUS=done。
 
 ## 路徑
-A — Mobile Engineer 在虛擬電腦直接開 Grok Build CLI；自驗寫 STATUS=done。
-不開路徑 B。CLI 工房僅緊急備援。
+A — Mobile Engineer 直開 Grok Build CLI；自驗 STATUS=done。不開路徑 B。
 
-## 筆記路徑
-- john_notes: /workspace/scratch/virus-fork-cli-john-notes-v17/
-- evidence: /workspace/scratch/virus-fork-cli-evidence-v17/
-
-## 追加（John 2026-10-29｜UI／UX 參考）
-參考圖：`/workspace/scratch/virus-fork-cli-john-notes-v17/ui-ref-1in8b-circled.png`（來源 80億分之1 人生模擬，紅圈兩處）
-
-### 可學重點（移植精神，非照搬文案／人生主題）
-1. **頂部狀態列**：當前「年齡／階段」大字＋細時間軸／進度感；右側節奏控制（暫停、倍速、快轉到下一個抉擇、可選自動抉擇）。對我們：可用「演化階段／環境時長」＋快轉到下一選項；勿放傳染／致死數字 HUD。
-2. **左側身分／狀態卡**：小頭像＋精簡欄位卡（名稱／出身／處境類）；頁腳可有機讀感裝飾線。對我們：改成「當前微生物／處境」卡（物種稱號僅已解鎖可顯示；隱藏項目不顯示名稱）；欄位用圖示或極短標籤，環境偏好仍靠主體色／形暗示、卡上也不寫「喜熱」類提示句。
-
-### 約束
-- 手機＋網頁皆可讀；置中主體優先，側卡／頂列不得壓住中央群體。
-- 仍禁止環境偏好文字提示；致死感用表情表達。
-- classic·mc 切換保留。
+## 筆記
+- john_notes: /workspace/scratch/virus-fork-cli-john-notes-v18/
+- evidence: /workspace/scratch/virus-fork-cli-evidence-v18/

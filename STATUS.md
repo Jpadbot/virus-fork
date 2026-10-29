@@ -1,15 +1,15 @@
 # STATUS — virus-fork-cli
 
 - status: done
-- ticket: 現實環境：外觀加大＋正中＋表情（笑→怒）＋細胞群＋環境色／形暗示（無文字）＋頂列節奏／左側身分卡
-- branch: feat/env-diegetic-face-colony-hint
-- base: feat/env-time-grow-persist @ f1ee430
-- sha: 3581e39
-- john_notes: /workspace/scratch/virus-fork-cli-john-notes-v17/
+- ticket: 終局顯示最終外觀＋說明生長好／壞原因
+- branch: feat/ending-final-morph-why
+- tip: 6e9b9b2
+- base: feat/env-diegetic-face-colony-hint @ 3581e39
+- john_notes: /workspace/scratch/virus-fork-cli-john-notes-v18/
 - deliverable: /workspace/virus-fork-cli/playable.html
-- evidence: /workspace/scratch/virus-fork-cli-evidence-v17/
+- evidence: /workspace/scratch/virus-fork-cli-evidence-v18/
 - path: A — Mobile Engineer
-- checks: allPass=true
-- verify-phone-html: PASS (also-landscape)
+- checks: allPass true（含 endMorph／endWhy／face／colony／hint／tempo／id-card 回歸）
+- verify-phone-html --also-landscape: PASS errors=0
+- started: 2026-10-29 Asia/Hong_Kong
 - finished: 2026-10-29 Asia/Hong_Kong
-- note: STATUS=done 後本席轉 John 並推 Pages

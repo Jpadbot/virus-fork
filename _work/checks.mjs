@@ -2,7 +2,7 @@ import { chromium } from "playwright-core";
 import fs from "fs";
 import path from "path";
 
-const outDir = "/workspace/scratch/virus-fork-cli-evidence-v17";
+const outDir = "/workspace/scratch/virus-fork-cli-evidence-v18";
 fs.mkdirSync(outDir, { recursive: true });
 const file = path.resolve("/workspace/virus-fork-cli/playable.html");
 const url = "file://" + file + "?envGap=0";
@@ -583,6 +583,145 @@ await page.evaluate(() => {
 await page.waitForTimeout(100);
 await page.screenshot({ path: path.join(outDir, "76-tempo-idcard.png"), fullPage: true });
 
+// --- v18: ending final morph + why ---
+const v18 = await page.evaluate(() => {
+  const V = window.__VIRUS_FORK__;
+  const ban = /加強|減弱|強化|削弱|穩定度|種群[＋+\-－]|[＋+\-－]\d/;
+  const banHint = /喜熱|喜濕|適合城市|適合近郊|致死率|CFR|傳染率|環境偏好/;
+  function runEnd(kind) {
+    V.startEnv("aureus");
+    const s = V.getState();
+    s.gatesReady = false;
+    s.resolved = false;
+    if (kind === "thrive") {
+      s.pop = 88;
+      s.threat = 0;
+      s.growthRate = Math.min(0.12, V.GROWTH_RATE_BASE * 2.2);
+      s.bodyScale = V.BODY_SCALE_MAX * 0.9;
+      s.path = [
+        { label: "金黃色葡萄球菌", choice: "進入現實環境" },
+        { label: "金黃色葡萄球菌", choice: "繁忙市區捷運車廂" },
+        { label: "金黃色葡萄球菌", choice: "近郊住宅陽台" }
+      ];
+      V.syncColonyCount(V.desiredColonyCount());
+      V.applyPersistentBodyVisual(performance.now());
+      V.finishEnv({
+        outcome: "thrive",
+        endTitle: "在現實環境中繁盛適應",
+        endStory: "經過一連串場所與宿主處境，這一支系在簡化示意裡站穩腳跟。休閒探索・非醫療。"
+      });
+    } else {
+      s.pop = 12;
+      s.threat = 4;
+      s.growthRate = V.GROWTH_RATE_BASE * 0.35;
+      s.bodyScale = V.BODY_SCALE_START;
+      s.path = [
+        { label: "金黃色葡萄球菌", choice: "進入現實環境" },
+        { label: "金黃色葡萄球菌", choice: "醫院門診等候區" },
+        { label: "金黃色葡萄球菌", choice: "消毒過的流理台" }
+      ];
+      V.syncColonyCount(V.desiredColonyCount());
+      V.applyPersistentBodyVisual(performance.now());
+      V.finishEnv({
+        outcome: "decline",
+        endTitle: "逐漸消退・場所改換",
+        endStory: "處境變得嚴苛，族群柔和散去。可再玩或回圖鑑。非懲罰・非醫療。"
+      });
+    }
+    const mascot = document.getElementById("envEndMascot");
+    const morph = mascot && mascot.querySelector(".end-final-morph");
+    const face = mascot && mascot.querySelector("g.vf-face");
+    const buds = mascot ? mascot.querySelectorAll(".end-morph-colony .bud").length : 0;
+    const whyEl = document.getElementById("envEndWhy");
+    const why = (whyEl && whyEl.textContent) || "";
+    const snap = V.getLastEnvEndSnap && V.getLastEnvEndSnap();
+    const hint = morph && morph.getAttribute("data-env-hint");
+    const mood = (face && face.getAttribute("data-mood")) || (morph && morph.getAttribute("data-face")) || "";
+    return {
+      active: document.getElementById("envEnd").classList.contains("active"),
+      hasMorph: !!morph,
+      hasFace: !!face,
+      buds,
+      mood,
+      hint,
+      why,
+      whyHasGoodBad: /為何好|為何不好|為何平穩/.test(why),
+      whyBanned: ban.test(why) || banHint.test(why),
+      snapColony: snap && snap.colony,
+      snapMood: snap && snap.mood,
+      outcomeClass: document.getElementById("envEnd").className,
+      renderApi: typeof V.renderEndMorph === "function",
+      whyApi: typeof V.buildEnvWhy === "function",
+      buttons: {
+        again: !!document.getElementById("btnEnvAgain"),
+        dex: !!document.getElementById("btnEnvDex"),
+        back: !!document.getElementById("btnEnvBackEnd")
+      }
+    };
+  }
+  const thrive = runEnd("thrive");
+  // screenshot later from outside
+  const decline = runEnd("decline");
+  // classic/mc consistency on thrive morph
+  V.startEnv("aureus");
+  const s = V.getState();
+  s.pop = 90; s.threat = 0; s.growthRate = V.GROWTH_RATE_BASE * 2; s.bodyScale = V.BODY_SCALE_MAX * 0.85;
+  V.finishEnv({ outcome: "thrive", endTitle: "在現實環境中繁盛適應", endStory: "示意。" });
+  const classicHtml = document.getElementById("envEndMascot").innerHTML;
+  V.setArtStyle("mc", { silent: true });
+  const mcHtml = document.getElementById("envEndMascot").innerHTML;
+  V.setArtStyle("classic", { silent: true });
+  return {
+    thrive, decline,
+    classicHasMorph: classicHtml.includes("end-final-morph") && classicHtml.includes("vf-face"),
+    mcHasMorph: mcHtml.includes("end-final-morph") && mcHtml.includes("art-mc"),
+    mcChanged: classicHtml !== mcHtml
+  };
+});
+
+// thrive ending screenshot
+await page.evaluate(() => {
+  const V = window.__VIRUS_FORK__;
+  V.startEnv("aureus");
+  const s = V.getState();
+  s.pop = 88; s.threat = 0; s.growthRate = Math.min(0.12, V.GROWTH_RATE_BASE * 2.2);
+  s.bodyScale = V.BODY_SCALE_MAX * 0.9;
+  s.path = [
+    { label: "金黃色葡萄球菌", choice: "進入現實環境" },
+    { label: "金黃色葡萄球菌", choice: "繁忙市區捷運車廂" },
+    { label: "金黃色葡萄球菌", choice: "擁擠教室課桌" }
+  ];
+  V.syncColonyCount(V.desiredColonyCount());
+  V.finishEnv({
+    outcome: "thrive",
+    endTitle: "在現實環境中繁盛適應",
+    endStory: "經過一連串場所與宿主處境，這一支系在簡化示意裡站穩腳跟。休閒探索・非醫療。"
+  });
+});
+await page.waitForTimeout(120);
+await page.screenshot({ path: path.join(outDir, "80-end-thrive-morph.png"), fullPage: true });
+
+await page.evaluate(() => {
+  const V = window.__VIRUS_FORK__;
+  V.startEnv("aureus");
+  const s = V.getState();
+  s.pop = 10; s.threat = 5; s.growthRate = V.GROWTH_RATE_BASE * 0.3;
+  s.bodyScale = V.BODY_SCALE_START;
+  s.path = [
+    { label: "金黃色葡萄球菌", choice: "進入現實環境" },
+    { label: "金黃色葡萄球菌", choice: "醫院門診等候區" },
+    { label: "金黃色葡萄球菌", choice: "負壓隔離前室" }
+  ];
+  V.syncColonyCount(V.desiredColonyCount());
+  V.finishEnv({
+    outcome: "decline",
+    endTitle: "逐漸消退・場所改換",
+    endStory: "處境變得嚴苛，族群柔和散去。可再玩或回圖鑑。非懲罰・非醫療。"
+  });
+});
+await page.waitForTimeout(120);
+await page.screenshot({ path: path.join(outDir, "81-end-decline-morph.png"), fullPage: true });
+
 const checks = {
   endingCount: api.endingCount,
   depthMin: api.depthMin,
@@ -646,11 +785,22 @@ const checks = {
     noHintBannedText: !!(v17 && v17.bannedOnScreen === false),
     v17Centered: !!(v17 && v17.centered),
     tempoBar: !!(v17 && v17.tempo && v17.tempoVisible),
-    idCard: !!(v17 && v17.idCard && v17.idVisible)
+    idCard: !!(v17 && v17.idCard && v17.idVisible),
+    endMorphApi: !!(v18 && v18.thrive && v18.thrive.renderApi && v18.thrive.whyApi),
+    endMorphThrive: !!(v18 && v18.thrive && v18.thrive.hasMorph && v18.thrive.hasFace && (v18.thrive.buds >= 8)),
+    endMorphDecline: !!(v18 && v18.decline && v18.decline.hasMorph && v18.decline.hasFace && (v18.decline.buds <= 2)),
+    endFaceThriveSmile: !!(v18 && v18.thrive && v18.thrive.mood === "smile"),
+    endFaceDeclineAngry: !!(v18 && v18.decline && (v18.decline.mood === "angry" || v18.decline.mood === "neutral")),
+    endHintPresent: !!(v18 && v18.thrive && v18.thrive.hint),
+    endWhyThrive: !!(v18 && v18.thrive && v18.thrive.whyHasGoodBad && !v18.thrive.whyBanned),
+    endWhyDecline: !!(v18 && v18.decline && v18.decline.whyHasGoodBad && !v18.decline.whyBanned),
+    endButtons: !!(v18 && v18.thrive && v18.thrive.buttons && v18.thrive.buttons.again && v18.thrive.buttons.dex && v18.thrive.buttons.back),
+    endArtMc: !!(v18 && v18.classicHasMorph && v18.mcHasMorph && v18.mcChanged)
   },
   forkEvidence,
   thinkEvidence,
-  v17
+  v17,
+  v18
 };
 
 // Confirm default constant is 10000 by reading source snippet via evaluate of unbound default:

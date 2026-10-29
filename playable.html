@@ -650,8 +650,8 @@
   }
   #end .latin { color: var(--muted); font-style: italic; font-size: 0.9rem; margin: 0; }
   #end .end-mascot {
-    width: 160px; height: 160px; margin: 4px auto;
-    filter: drop-shadow(0 0 18px rgba(160, 210, 220, 0.4));
+    width: auto; height: auto; margin: 4px auto;
+    filter: none;
   }
   #end .story { color: var(--muted); font-size: 0.88rem; margin: 0; text-align: left; }
   #end .path {
@@ -779,8 +779,8 @@
   #envEnd.outcome-steady h2 { color: #c8d8e0; }
   #envEnd .latin { color: var(--muted); font-style: italic; font-size: 0.9rem; margin: 0; }
   #envEnd .end-mascot {
-    width: 140px; height: 140px; margin: 4px auto;
-    filter: drop-shadow(0 0 16px rgba(140, 210, 160, 0.4));
+    width: auto; height: auto; margin: 4px auto;
+    filter: none;
   }
   #envEnd .story { color: var(--muted); font-size: 0.88rem; margin: 0; text-align: left; }
   #envEnd .pop-final {
@@ -788,9 +788,75 @@
     padding: 8px 10px; border-radius: 10px;
     background: rgba(30,50,38,0.5); border: 1px solid #3a5a48;
   }
+  #envEnd .env-why {
+    font-size: 0.86rem; color: #d8ecc8; margin: 0; text-align: left; line-height: 1.45;
+    padding: 10px 12px; border-radius: 10px;
+    background: rgba(28,48,34,0.62); border: 1px solid #4a7a58;
+  }
+  #envEnd.outcome-decline .env-why {
+    color: #f0d8b8; background: rgba(48,36,22,0.55); border-color: #8a6840;
+  }
+  #envEnd.outcome-steady .env-why {
+    color: #d0dce8; background: rgba(28,36,48,0.55); border-color: #4a5a68;
+  }
   #envEnd .env-note-opt {
     font-size: 0.78rem; color: #a8c8b0; margin: 0; text-align: left;
   }
+  .end-final-morph {
+    position: relative;
+    width: 220px; height: 200px;
+    margin: 0 auto;
+    filter: drop-shadow(0 0 18px rgba(140, 210, 160, 0.45));
+  }
+  #envEnd.outcome-decline .end-final-morph {
+    filter: drop-shadow(0 0 14px rgba(200, 140, 80, 0.42));
+    opacity: 0.94;
+  }
+  #envEnd.outcome-steady .end-final-morph {
+    filter: drop-shadow(0 0 14px rgba(140, 180, 200, 0.4));
+  }
+  #end .end-final-morph {
+    filter: drop-shadow(0 0 18px rgba(160, 210, 220, 0.42));
+  }
+  .end-final-morph .end-morph-main {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 118px; height: 118px;
+    margin-left: -59px; margin-top: -59px;
+    z-index: 3;
+    transform-origin: center;
+  }
+  .end-final-morph .end-morph-colony {
+    position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  }
+  .end-final-morph .end-morph-colony .bud {
+    position: absolute;
+    width: 46px; height: 46px;
+    margin-left: -23px; margin-top: -23px;
+    opacity: 0.86;
+    transform-origin: center;
+  }
+  .end-final-morph[data-env-hint="heat_resp"] .end-morph-main {
+    filter: drop-shadow(0 0 12px rgba(255,110,40,0.55));
+  }
+  .end-final-morph[data-env-hint="wet_gi"] .end-morph-main {
+    filter: drop-shadow(0 0 12px rgba(40,210,170,0.5));
+  }
+  .end-final-morph[data-env-hint="skin"] .end-morph-main {
+    filter: drop-shadow(0 0 12px rgba(230,160,50,0.5));
+  }
+  .end-final-morph[data-env-hint="hospital"] .end-morph-main {
+    filter: drop-shadow(0 0 12px rgba(190,230,240,0.55));
+  }
+  .end-final-morph[data-env-hint="soil"] .end-morph-main {
+    filter: drop-shadow(0 0 12px rgba(160,120,60,0.5));
+  }
+  .end-final-morph .end-morph-colony .bud[data-env-hint="heat_resp"] { filter: drop-shadow(0 0 8px rgba(255,110,40,0.5)); }
+  .end-final-morph .end-morph-colony .bud[data-env-hint="wet_gi"] { filter: drop-shadow(0 0 8px rgba(40,210,170,0.5)); }
+  .end-final-morph .end-morph-colony .bud[data-env-hint="skin"] { filter: drop-shadow(0 0 8px rgba(230,160,50,0.5)); }
+  .end-final-morph .end-morph-colony .bud[data-env-hint="hospital"] { filter: drop-shadow(0 0 8px rgba(190,230,240,0.5)); }
+  .end-final-morph .end-morph-colony .bud[data-env-hint="soil"] { filter: drop-shadow(0 0 8px rgba(160,120,60,0.45)); }
+  .end-final-morph svg .vf-face { pointer-events: none; }
 
   body.hide-subs .gate .g-sub { display: none !important; }
   .settings-row {
@@ -909,6 +975,7 @@
     <h2 id="envEndTitle">環境結局</h2>
     <p class="latin" id="envEndLatin"></p>
     <p class="pop-final" id="envEndPop"></p>
+    <p class="env-why" id="envEndWhy"></p>
     <p class="story" id="envEndStory"></p>
     <p class="env-note-opt" id="envEndNote"></p>
     <p class="disclaimer">簡化科普／假設・休閒探索；非醫療建議或診斷依據。消長為遊戲示意，非真實病程或分數競賽。</p>
@@ -4248,6 +4315,7 @@ function svg(inner, vb) {
     envEndTitle: document.getElementById("envEndTitle"),
     envEndLatin: document.getElementById("envEndLatin"),
     envEndPop: document.getElementById("envEndPop"),
+    envEndWhy: document.getElementById("envEndWhy"),
     envEndStory: document.getElementById("envEndStory"),
     envEndNote: document.getElementById("envEndNote"),
     styleChip: document.getElementById("btnStyleChip"),
@@ -4353,7 +4421,7 @@ function svg(inner, vb) {
     return "smile";
   }
 
-  function faceMarkup(mood) {
+  function faceMarkup(mood, hintKey) {
     var m = mood || "smile";
     var eyes, mouth;
     if (m === "angry") {
@@ -4374,7 +4442,7 @@ function svg(inner, vb) {
       mouth = '<path d="M24 40 Q32 48 40 40" fill="none" stroke="#1a1210" stroke-width="2.5" stroke-linecap="round"/>';
     }
     var hintShape = "";
-    var hk = state && state.envFormId ? envHintKey(state.envFormId) : "";
+    var hk = (hintKey != null && hintKey !== "") ? hintKey : (state && state.envFormId ? envHintKey(state.envFormId) : "");
     var st = ENV_HINT_STYLE[hk];
     if (st && st.shape === "spike") {
       hintShape = '<polygon points="32,4 36,14 32,12 28,14" fill="rgba(255,120,40,0.85)"/>' +
@@ -4779,11 +4847,24 @@ function svg(inner, vb) {
         el.creature.innerHTML = renderFormHtml(state.nodeId);
       }
     }
-    if (el.endMascot && lastEndNode && FORMS[lastEndNode.form]) {
-      el.endMascot.innerHTML = renderFormHtml(endNode.form);
+    if (el.endMascot && lastEndNode && FORMS[lastEndNode.form] && el.end && el.end.classList.contains("active")) {
+      el.endMascot.innerHTML = renderEndMorph({
+        formId: lastEndNode.form,
+        mood: "smile",
+        colony: 0,
+        envHint: envHintKey(lastEndNode.form),
+        bodyScale: BODY_SCALE_START * 1.35,
+        outcome: "evo",
+        artStyle: artStyle
+      });
     }
-    if (el.envEndMascot && state && state.envFormId && FORMS[state.envFormId] && el.envEnd && el.envEnd.classList.contains("active")) {
-      el.envEndMascot.innerHTML = renderFormHtml(state.envFormId);
+    if (el.envEndMascot && el.envEnd && el.envEnd.classList.contains("active") && lastEnvEndSnap) {
+      lastEnvEndSnap.artStyle = artStyle;
+      el.envEndMascot.innerHTML = renderEndMorph(lastEnvEndSnap);
+    } else if (el.envEndMascot && state && state.envFormId && FORMS[state.envFormId] && el.envEnd && el.envEnd.classList.contains("active")) {
+      el.envEndMascot.innerHTML = renderEndMorph(snapshotEndMorph(
+        (el.envEnd.className.match(/outcome-(\w+)/) || [])[1] || "steady"
+      ));
     }
     if (state && state.phase === "env") {
       applyEnvHintAttrs();
@@ -5012,18 +5093,124 @@ function svg(inner, vb) {
     else if (d < 0) el.toast.classList.add("pop-down");
   }
 
+  var lastEnvEndSnap = null;
+
+  function snapshotEndMorph(outcome) {
+    var formId = (state && state.envFormId) || (lastEndNode && lastEndNode.form) || null;
+    var mood = "smile";
+    var desired = 0;
+    var live = 0;
+    if (state && state.phase === "env") {
+      mood = faceMood();
+      desired = desiredColonyCount();
+      live = colonyCount();
+    }
+    var pop = state && typeof state.pop === "number" ? state.pop : 50;
+    var colony = Math.max(live, desired);
+    if (outcome === "thrive" || pop >= 70) colony = Math.max(colony, 8);
+    else if (outcome === "decline" || pop <= 30) colony = Math.min(Math.max(colony, 0), 2);
+    else colony = Math.max(2, Math.min(7, colony || 4));
+    if ((outcome === "decline" || pop <= 30) && mood === "smile") mood = "angry";
+    else if ((outcome === "thrive" || pop >= 70) && mood === "angry") mood = "smile";
+    return {
+      formId: formId,
+      mood: mood,
+      colony: colony,
+      desired: desired,
+      envHint: formId ? envHintKey(formId) : "",
+      bodyScale: (state && typeof state.bodyScale === "number") ? state.bodyScale : BODY_SCALE_START,
+      artStyle: artStyle,
+      pop: pop,
+      threat: (state && typeof state.threat === "number") ? state.threat : 0,
+      growthRate: (state && typeof state.growthRate === "number") ? state.growthRate : GROWTH_RATE_BASE,
+      outcome: outcome || "steady",
+      path: state && state.path ? state.path.slice() : []
+    };
+  }
+
+  function renderEndMorph(snap) {
+    snap = snap || {};
+    var formId = snap.formId;
+    if (!formId || !FORMS[formId]) return "";
+    var mood = snap.mood || "smile";
+    var hk = snap.envHint || (formId ? envHintKey(formId) : "");
+    var n = typeof snap.colony === "number" ? Math.max(0, Math.min(14, snap.colony)) : 0;
+    var base = renderFormHtml(formId);
+    if (!base) return "";
+    var mainHtml = base;
+    if (mainHtml.indexOf("</svg>") >= 0) {
+      mainHtml = mainHtml.replace("</svg>", faceMarkup(mood, hk) + "</svg>");
+    }
+    var scale = typeof snap.bodyScale === "number" ? snap.bodyScale : BODY_SCALE_START;
+    var scaleCss = Math.max(0.72, Math.min(1.38, 0.58 + scale * 0.32));
+    var buds = "";
+    var budClass = "bud" + (artStyle === "mc" ? " art-mc" : "");
+    for (var i = 0; i < n; i++) {
+      var ang = (i / Math.max(1, n)) * Math.PI * 2 - Math.PI / 2;
+      var rad = 64 + (i % 3) * 11;
+      var cx = 50 + Math.cos(ang) * (rad / 2.35);
+      var cy = 48 + Math.sin(ang) * (rad / 2.55);
+      buds += '<div class="' + budClass + '"' + (hk ? ' data-env-hint="' + hk + '"' : "") +
+        ' style="left:' + cx.toFixed(1) + "%;top:" + cy.toFixed(1) + '%">' + base + "</div>";
+    }
+    return '<div class="end-final-morph" data-face="' + mood + '"' +
+      (hk ? ' data-env-hint="' + hk + '"' : "") +
+      ' data-colony="' + n + '" data-outcome="' + (snap.outcome || "") + '">' +
+      '<div class="end-morph-colony">' + buds + "</div>" +
+      '<div class="end-morph-main" style="transform:scale(' + scaleCss.toFixed(3) + ')">' + mainHtml + "</div>" +
+      "</div>";
+  }
+
+  function buildEnvWhy(st, outcome) {
+    st = st || state || {};
+    outcome = outcome || "steady";
+    var pop = typeof st.pop === "number" ? Math.round(st.pop) : 50;
+    var threat = typeof st.threat === "number" ? st.threat : 0;
+    var rate = typeof st.growthRate === "number" ? st.growthRate : GROWTH_RATE_BASE;
+    var rateRatio = rate / GROWTH_RATE_BASE;
+    var path = st.path || [];
+    var choices = [];
+    for (var i = 0; i < path.length; i++) {
+      var c = path[i] && path[i].choice;
+      if (c && c !== "進入現實環境" && c !== "開局" && c !== "終局") choices.push(c);
+    }
+    var shown = choices.slice(-3);
+    var choiceBit = shown.length
+      ? ("你選過「" + shown.join("」「") + "」這幾步")
+      : "這一串場所與宿主處境";
+    if (outcome === "thrive" || pop >= 70) {
+      var why = "為何好：" + choiceBit + "，多半貼近適合繁衍的微環境";
+      if (rateRatio >= 1.05) why += "，生長節奏偏快、群體變密";
+      if (threat <= 1) why += "，威脅感也低";
+      why += "。所以這次算長得好——外表旺盛、顆粒密布。";
+      return why + "（示意・非醫療。）";
+    }
+    if (outcome === "decline" || pop <= 30) {
+      var why2 = "為何不好：" + choiceBit + "，處境偏嚴苛或消長不利";
+      if (rateRatio < 0.95) why2 += "，生長變慢、群體變疏";
+      if (threat >= 1) why2 += "，威脅感升高";
+      why2 += "。所以這次偏弱或失敗——外表憔悴、顆粒疏落。";
+      return why2 + "（示意・非醫療。）";
+    }
+    var why3 = "為何平穩：" + choiceBit + "，有利與不利交錯，族群維持在中段。這次算平穩——不稀不密。";
+    return why3 + "（示意・非醫療。）";
+  }
+
   function finishEnv(endNode) {
     cancelAnimationFrame(raf);
     clearGates();
     endEnvGapGrow();
     pointerActive = false;
-    setPhaseUI("evo");
     var formId = state.envFormId;
     var form = FORMS[formId];
     var outcome = endNode.outcome || "steady";
+    /* snapshot BEFORE setPhaseUI clears colony / face attrs */
+    var snap = snapshotEndMorph(outcome);
+    lastEnvEndSnap = snap;
+    setPhaseUI("evo");
     el.envEnd.classList.remove("outcome-decline", "outcome-steady", "outcome-thrive");
     el.envEnd.classList.add("outcome-" + outcome);
-    el.envEndMascot.innerHTML = renderFormHtml(formId);
+    el.envEndMascot.innerHTML = renderEndMorph(snap);
     el.envEndTitle.textContent = endNode.endTitle;
     el.envEndLatin.textContent = form.latin;
     var pFinal = Math.max(0, Math.min(100, Math.round(state.pop)));
@@ -5034,6 +5221,7 @@ function svg(inner, vb) {
     } else {
       el.envEndPop.textContent = "外表平穩，顆粒不稀不密。";
     }
+    if (el.envEndWhy) el.envEndWhy.textContent = buildEnvWhy(snap, outcome);
     el.envEndStory.textContent = endNode.endStory;
     var noteLine = "";
     if (outcome === "thrive") {
@@ -5244,7 +5432,15 @@ function svg(inner, vb) {
     lastEndNode = endNode;
     var form = FORMS[endNode.form];
     var fresh = unlockSpecies(endNode.form);
-    el.endMascot.innerHTML = renderFormHtml(endNode.form);
+    el.endMascot.innerHTML = renderEndMorph({
+      formId: endNode.form,
+      mood: "smile",
+      colony: 0,
+      envHint: envHintKey(endNode.form),
+      bodyScale: BODY_SCALE_START * 1.35,
+      outcome: "evo",
+      artStyle: artStyle
+    });
     el.endTitle.textContent = endNode.endTitle;
     el.endLatin.textContent = form.latin;
     el.endStory.textContent = endNode.endStory + " " + PROOF.note;
@@ -5723,6 +5919,10 @@ function svg(inner, vb) {
     gateIndexFromClientX: gateIndexFromClientX,
     getLastEnd: function () { return lastEndNode; },
     finishEnv: finishEnv,
+    snapshotEndMorph: snapshotEndMorph,
+    renderEndMorph: renderEndMorph,
+    buildEnvWhy: buildEnvWhy,
+    getLastEnvEndSnap: function () { return lastEnvEndSnap; },
     fallInto: function (idx) {
       if (!state || !gateRowEl) return false;
       var gates = gateRowEl.querySelectorAll(".gate");
